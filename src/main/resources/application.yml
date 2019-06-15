@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost/firesale?useSSL=false&serverTimezone=Europe/Stockholm
+    url: jdbc:mysql://localhost/chess_online?useSSL=false&serverTimezone=Europe/Stockholm
     username: root
     password: password
 
