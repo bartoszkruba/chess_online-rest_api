@@ -1,0 +1,23 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost/firesale?useSSL=false&serverTimezone=Europe/Stockholm
+    username: root
+    password: password
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+
+  servlet:
+    multipart:
+      max-file-size: 1MB
+      max-request-size: 10MB
+
+
+server:
+  tomcat:
+    max-http-post-size: 10485760
