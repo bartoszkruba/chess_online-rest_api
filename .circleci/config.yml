@@ -9,6 +9,13 @@ jobs:
       # specify the version you desire here
       - image: circleci/openjdk:11
 
+      - image: circleci/mysql
+          environment:
+            MYSQL_ROOT_PASSWORD: password
+            MYSQL_DATABASE: chess_online
+            MYSQL_USER: root
+            MYSQL_PASSWORD: password
+
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
       # documented at https://circleci.com/docs/2.0/circleci-images/
