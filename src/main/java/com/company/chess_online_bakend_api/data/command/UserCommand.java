@@ -1,5 +1,6 @@
 package com.company.chess_online_bakend_api.data.command;
 
+import com.company.chess_online_bakend_api.data.model.Role;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
@@ -13,6 +14,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserCommand extends BaseEntityCommand {
+
+    Role role;
 
     @NotEmpty
     private String username;
@@ -31,7 +34,7 @@ public class UserCommand extends BaseEntityCommand {
     @Builder
     public UserCommand(Long id, LocalDateTime created, LocalDateTime updated, @NotEmpty String username,
                        @NotEmpty String password, String firstName, String lastName, @Email String email,
-                       Byte[] profileImage) {
+                       Byte[] profileImage, Role role) {
 
         super(id, created, updated);
         this.username = username;
@@ -40,5 +43,6 @@ public class UserCommand extends BaseEntityCommand {
         this.lastName = lastName;
         this.email = email;
         this.profileImage = profileImage;
+        this.role = role;
     }
 }
