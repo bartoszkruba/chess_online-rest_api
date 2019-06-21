@@ -14,7 +14,7 @@ public class UserCommandToUser implements Converter<UserCommand, User> {
     @Nullable
     @Override
     public User convert(UserCommand userCommand) {
-        User user = User.builder()
+        return User.builder()
                 .firstName(userCommand.getFirstName())
                 .lastName(userCommand.getLastName())
                 .email(userCommand.getEmail())
@@ -22,7 +22,5 @@ public class UserCommandToUser implements Converter<UserCommand, User> {
                 .password(userCommand.getPassword())
                 .profileImage(userCommand.getProfileImage())
                 .id(userCommand.getId()).build();
-
-        return user;
     }
 }
