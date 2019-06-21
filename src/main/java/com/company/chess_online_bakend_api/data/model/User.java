@@ -5,12 +5,12 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Lob;
+import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
@@ -18,10 +18,18 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class User extends BaseEntity {
 
-    @Column(unique = true)
+    @ManyToMany(fetch = FetchType.EAGER,
+            cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinTable(name = "user_role",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles;
+
+    @Column(nullable = false, unique = true)
     @NotEmpty
     private String username;
 
+    @Column(nullable = false)
     @NotEmpty
     private String password;
 
@@ -32,14 +40,14 @@ public class User extends BaseEntity {
     @Email
     private String email;
 
-    // @Lob Used columns with a lot of data
+    // @Lob Used for large objects
     @Lob
     private Byte[] profileImage;
 
     @Builder
     public User(Long id, LocalDateTime created, LocalDateTime updated, @NotEmpty String username,
                 @NotEmpty String password, String firstName, String lastName, @Email String email,
-                Byte[] profileImage) {
+                Byte[] profileImage, Role role) {
         super(id, created, updated);
         this.username = username;
         this.password = password;
@@ -47,5 +55,6 @@ public class User extends BaseEntity {
         this.lastName = lastName;
         this.email = email;
         this.profileImage = profileImage;
+        this.roles = new HashSet<>();
     }
 }
