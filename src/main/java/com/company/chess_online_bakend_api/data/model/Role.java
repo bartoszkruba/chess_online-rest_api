@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import java.time.LocalDateTime;
 
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class Role extends BaseEntity implements GrantedAuthority {
 
+    @Column(unique = true)
     String description;
 
     @Override
