@@ -18,19 +18,19 @@ public class MyWebMvcConfigurer extends WebSecurityConfigurerAdapter {
 
     private final MyUserDetailsService myUserDetailsService;
     private final RestAuthenticationEntryPoint restAuthenticationEntryPoint;
-    private final MySavedRequestAwareAuthenticationSuccessHandler mySuccesHandler;
+    private final MySavedRequestAwareAuthenticationSuccessHandler mySuccessHandler;
     private final MySimpleUrlAuthenticationFailureHandler myFailureHandler;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
     public MyWebMvcConfigurer(MyUserDetailsService myUserDetailsService, RestAuthenticationEntryPoint
-            restAuthenticationEntryPoint, MySavedRequestAwareAuthenticationSuccessHandler mySuccesHandler,
+            restAuthenticationEntryPoint, MySavedRequestAwareAuthenticationSuccessHandler mySuccessHandler,
                               MySimpleUrlAuthenticationFailureHandler myFailureHandler,
                               BCryptPasswordEncoder bCryptPasswordEncoder) {
 
         this.myUserDetailsService = myUserDetailsService;
         this.restAuthenticationEntryPoint = restAuthenticationEntryPoint;
-        this.mySuccesHandler = mySuccesHandler;
+        this.mySuccessHandler = mySuccessHandler;
         this.myFailureHandler = myFailureHandler;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
@@ -42,12 +42,18 @@ public class MyWebMvcConfigurer extends WebSecurityConfigurerAdapter {
                 .authenticationEntryPoint(restAuthenticationEntryPoint)
                 .and()
                 .formLogin().permitAll()
-                .successHandler(mySuccesHandler)
+                .successHandler(mySuccessHandler)
                 .failureHandler(myFailureHandler)
                 .loginProcessingUrl("/authentication/login")
                 .and()
                 .logout().logoutUrl("/authentication/logout").permitAll()
                 .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.OK));
+
+        declareSecuredRoutes(http);
+    }
+
+    private void declareSecuredRoutes(HttpSecurity http) throws Exception {
+        http.authorizeRequests();
     }
 
     @Override

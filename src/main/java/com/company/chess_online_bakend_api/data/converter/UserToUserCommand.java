@@ -20,8 +20,7 @@ public class UserToUserCommand implements Converter<User, UserCommand> {
                 .lastName(user.getLastName())
                 .username(user.getUsername())
                 .id(user.getId())
-                .profileImage(user.getProfileImage())
-                .role(user.getRole()).build();
+                .profileImage(user.getProfileImage()).build();
 
         return userCommand;
     }
