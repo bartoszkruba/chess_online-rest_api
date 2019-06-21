@@ -6,26 +6,27 @@ import com.company.chess_online_bakend_api.data.repository.RoleRepository;
 import com.company.chess_online_bakend_api.data.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Component
-public class LoadData implements CommandLineRunner {
+public class UserBootstrap implements ApplicationListener<ContextRefreshedEvent> {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
 
     @Autowired
-    public LoadData(UserRepository userRepository, RoleRepository roleRepository) {
+    public UserBootstrap(UserRepository userRepository, RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
     }
 
     @Override
     @Transactional
-    public void run(String... args) throws Exception {
+    public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
         log.debug("Loading user roles");
         loadRoles();
         log.debug("Loading users");
@@ -39,17 +40,17 @@ public class LoadData implements CommandLineRunner {
         roleRepository.save(role2);
     }
 
-    private void loadUsers() throws Exception {
+    private void loadUsers() {
         Role adminRole = roleRepository.findByDescription("ROLE_ADMIN");
         if (adminRole == null) {
             log.error("ROLE_ADMIN not found");
-            throw new Exception("ROLE_ADMIN not found");
+            throw new RuntimeException("ROLE_ADMIN not found");
         }
 
         Role userRole = roleRepository.findByDescription("ROLE_USER");
         if (userRole == null) {
             log.error("ROLE_USER not found");
-            throw new Exception("ROLE_USER not found");
+            throw new RuntimeException("ROLE_USER not found");
         }
 
         User adminUser = User.builder()
@@ -66,4 +67,5 @@ public class LoadData implements CommandLineRunner {
                 .password("tyler1").build().addRole(userRole);
         userRepository.save(normalUser);
     }
+
 }
