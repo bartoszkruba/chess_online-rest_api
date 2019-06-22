@@ -7,10 +7,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -22,24 +25,28 @@ class UserRepositoryTest {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    BCryptPasswordEncoder bCryptPasswordEncoder;
+
     @BeforeEach
     void setUp() {
         roleRepository.deleteAll();
         userRepository.deleteAll();
 
-        UserBootstrap userBootstrap = new UserBootstrap(userRepository, roleRepository);
+        UserBootstrap userBootstrap = new UserBootstrap(userRepository, roleRepository, bCryptPasswordEncoder);
         userBootstrap.onApplicationEvent(null);
     }
 
     @Test
-    public void testFindByDescription() throws Exception {
-        User user = userRepository.findByUsername("ken123");
-        assertEquals("ken123", user.getUsername());
+    public void testFindByUsername() throws Exception {
+        Optional<User> userOptional = userRepository.findByUsername("ken123");
+        assertTrue(userOptional.isPresent());
+        assertEquals("ken123", userOptional.get().getUsername());
     }
 
     @Test
-    public void findByDescriptionNoMatch() throws Exception {
-        User user = userRepository.findByUsername("Do not exists");
-        assertNull(user);
+    public void findByUsernameNoMatch() throws Exception {
+        Optional<User> userOptional = userRepository.findByUsername("Do not exists");
+        assertTrue(userOptional.isEmpty());
     }
 }
