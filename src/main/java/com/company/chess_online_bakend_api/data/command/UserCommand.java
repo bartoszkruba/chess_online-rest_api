@@ -26,12 +26,9 @@ public class UserCommand extends BaseEntityCommand {
     @Email
     private String email;
 
-    private Byte[] profileImage;
-
     @Builder
     public UserCommand(Long id, LocalDateTime created, LocalDateTime updated, @NotEmpty String username,
-                       @NotEmpty String password, String firstName, String lastName, @Email String email,
-                       Byte[] profileImage) {
+                       @NotEmpty String password, String firstName, String lastName, @Email String email) {
 
         super(id, created, updated);
         this.username = username;
@@ -39,6 +36,5 @@ public class UserCommand extends BaseEntityCommand {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.profileImage = profileImage;
     }
 }
