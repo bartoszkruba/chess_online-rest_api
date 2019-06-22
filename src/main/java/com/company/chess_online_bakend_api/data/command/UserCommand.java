@@ -5,7 +5,6 @@ import lombok.*;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
-import java.time.LocalDateTime;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -27,10 +26,10 @@ public class UserCommand extends BaseEntityCommand {
     private String email;
 
     @Builder
-    public UserCommand(Long id, LocalDateTime created, LocalDateTime updated, @NotEmpty String username,
+    public UserCommand(Long id, @NotEmpty String username,
                        @NotEmpty String password, String firstName, String lastName, @Email String email) {
 
-        super(id, created, updated);
+        super(id);
         this.username = username;
         this.password = password;
         this.firstName = firstName;
