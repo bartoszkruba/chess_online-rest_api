@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,11 +18,14 @@ public class UserBootstrap implements ApplicationListener<ContextRefreshedEvent>
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final BCryptPasswordEncoder encoder;
 
     @Autowired
-    public UserBootstrap(UserRepository userRepository, RoleRepository roleRepository) {
+    public UserBootstrap(UserRepository userRepository, RoleRepository roleRepository,
+                         BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.encoder = bCryptPasswordEncoder;
     }
 
     @Override
@@ -57,14 +61,14 @@ public class UserBootstrap implements ApplicationListener<ContextRefreshedEvent>
                 .firstName("Kirk")
                 .lastName("Kennedy")
                 .username("ken123")
-                .password("devo").build().addRole(adminRole);
+                .password(encoder.encode("devo")).build().addRole(adminRole);
         userRepository.save(adminUser);
 
         User normalUser = User.builder()
                 .firstName("Carl")
                 .lastName("Soto")
                 .username("carl69")
-                .password("tyler1").build().addRole(userRole);
+                .password(encoder.encode("tyler1")).build().addRole(userRole);
         userRepository.save(normalUser);
     }
 
