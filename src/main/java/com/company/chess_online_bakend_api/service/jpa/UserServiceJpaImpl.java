@@ -24,10 +24,16 @@ public class UserServiceJpaImpl implements UserService {
 
     @Override
     public User findById(Long id) {
-        Optional<User> userOptional = userRepository.findById(id);
 
+        if (id == null) {
+            log.error("Id is null");
+            throw new RuntimeException("Id is null");
+        }
+
+        log.debug("Getting user with id: " + id);
+
+        Optional<User> userOptional = userRepository.findById(id);
         if (userOptional.isPresent()) {
-            log.debug("Getting user with id: " + id);
             return userOptional.get();
         } else {
             log.debug("User with following id not found: " + id);
@@ -38,21 +44,50 @@ public class UserServiceJpaImpl implements UserService {
 
     @Override
     public User save(User user) {
+        log.debug("Saving user: " + user);
         return userRepository.save(user);
     }
 
     @Override
     public Set<User> findAll() {
+        log.debug("Finding all users");
         return new HashSet<>(userRepository.findAll());
     }
 
     @Override
     public void delete(User user) {
+        if (user == null) {
+            log.error("User is null");
+            throw new RuntimeException("User is null");
+        }
+        findById(user.getId());
+        log.debug("Deleting user: " + user);
         userRepository.delete(user);
     }
 
     @Override
     public void deleteById(Long id) {
+        findById(id);
+        log.debug("Deleting user with id: " + id);
         userRepository.deleteById(id);
+    }
+
+
+    @Override
+    public User findByUsername(String username) {
+        if (username == null) {
+            log.error("Username is null");
+            return null;
+        }
+
+        log.debug("Getting user with username: " + username);
+        Optional<User> userOptional = userRepository.findByUsername(username);
+        if (userOptional.isPresent()) {
+            return userOptional.get();
+        } else {
+            log.debug("User with following username not found: " + username);
+            // TODO: 2019-06-22 create custom exception and handle error thourgh advice
+            throw new RuntimeException("User with username: " + username + " not found");
+        }
     }
 }

@@ -9,6 +9,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+import java.util.Optional;
+
 @Configuration
 @Slf4j
 public class MyUserDetailsService implements UserDetailsService {
@@ -22,10 +24,10 @@ public class MyUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username);
-        if (user != null) {
+        Optional<User> optionalUser = userRepository.findByUsername(username);
+        if (optionalUser.isPresent()) {
             log.debug("Fetched user with username: " + username);
-            return MyUserPrincipal.builder().user(user).build();
+            return MyUserPrincipal.builder().user(optionalUser.get()).build();
         } else {
             log.debug("User with given username not found: " + username);
             throw new UsernameNotFoundException(username);
