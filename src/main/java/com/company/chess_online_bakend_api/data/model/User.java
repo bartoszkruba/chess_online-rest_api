@@ -19,7 +19,7 @@ import java.util.Set;
 public class User extends BaseEntity {
 
     @ManyToMany(fetch = FetchType.EAGER,
-            cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+            cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinTable(name = "user_role",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
@@ -47,7 +47,7 @@ public class User extends BaseEntity {
     @Builder
     public User(Long id, LocalDateTime created, LocalDateTime updated, @NotEmpty String username,
                 @NotEmpty String password, String firstName, String lastName, @Email String email,
-                Byte[] profileImage, Role role) {
+                Byte[] profileImage, Set<Role> roles) {
         super(id, created, updated);
         this.username = username;
         this.password = password;
@@ -55,6 +55,17 @@ public class User extends BaseEntity {
         this.lastName = lastName;
         this.email = email;
         this.profileImage = profileImage;
-        this.roles = new HashSet<>();
+        if (roles == null) {
+            this.roles = new HashSet<>();
+        }
+    }
+
+    public User addRole(Role role) {
+        if (this.roles == null) {
+            this.roles = new HashSet<>();
+        }
+        this.roles.add(role);
+
+        return this;
     }
 }

@@ -14,13 +14,18 @@ public class UserToUserCommand implements Converter<User, UserCommand> {
     @Nullable
     @Override
     public UserCommand convert(User user) {
+
+        if (user == null) {
+            return null;
+        }
+
         final UserCommand userCommand = UserCommand.builder()
                 .email(user.getEmail())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .username(user.getUsername())
-                .id(user.getId())
-                .profileImage(user.getProfileImage()).build();
+                .password(user.getPassword())
+                .id(user.getId()).build();
 
         return userCommand;
     }
