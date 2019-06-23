@@ -28,8 +28,8 @@ class RoleRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        roleRepository.deleteAll();
         userRepository.deleteAll();
+        roleRepository.deleteAll();
 
         UserBootstrap userBootstrap = new UserBootstrap(userRepository, roleRepository, bCryptPasswordEncoder);
         userBootstrap.onApplicationEvent(null);
