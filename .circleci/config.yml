@@ -61,13 +61,10 @@ jobs:
 
       # run tests!
       - run:
-          name: Run integration tests
-          command: mvn clean integration-test
+          name: Run tests and send to Coveralls
+          command: mvn clean integration-test jacoco:report coveralls:report
 
       - store_test_results:
           path: target/surefire-reports
 
-      # Sent to coveralls
-      - run:
-          name: Send data to Coveralls
-          command: jacoco:report coveralls:report
+
