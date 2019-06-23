@@ -30,20 +30,20 @@ jobs:
     steps:
       - checkout
       - run:
-            # Our primary container isn't MYSQL so run a sleep command until it's ready.
-            name: Waiting for MySQL to be ready
-            command: |
-              for i in `seq 1 10`;
-              do
-              nc -z 127.0.0.1 3306 && echo Success && exit 0
-              echo -n .
-              sleep 1
-              done
-              echo Failed waiting for MySQL && exit 1
-              - run:
-                  name: Install MySQL CLI;
-                  command: |
-                    sudo apt-get install mysql-client
+          # Our primary container isn't MYSQL so run a sleep command until it's ready.
+          name: Waiting for MySQL to be ready
+          command: |
+            for i in `seq 1 10`;
+            do
+            nc -z 127.0.0.1 3306 && echo Success && exit 0
+            echo -n .
+            sleep 1
+            done
+            echo Failed waiting for MySQL && exit 1
+            - run:
+                name: Install MySQL CLI;
+                command: |
+                  sudo apt-get install mysql-client
 
       # Download and cache dependencies
       - restore_cache:
@@ -60,4 +60,11 @@ jobs:
           key: v1-dependencies-{{ checksum "pom.xml" }}
 
       # run tests!
-      - run: mvn integration-test
+      - run:
+          name: Run tests and send to Coveralls
+          command: mvn clean integration-test jacoco:report coveralls:report
+
+      - store_test_results:
+          path: target/surefire-reports
+
+
