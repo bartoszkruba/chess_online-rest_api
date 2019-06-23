@@ -69,5 +69,5 @@ jobs:
 
       # Sent to coveralls
       - run:
-        name: Send data to Coveralls
-        command: jacoco:report coveralls:report
+          name: Send data to Coveralls
+          command: jacoco:report coveralls:report
