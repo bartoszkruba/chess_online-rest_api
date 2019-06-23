@@ -44,9 +44,9 @@ public class MyWebMvcConfigurer extends WebSecurityConfigurerAdapter {
                 .formLogin().permitAll()
                 .successHandler(mySuccessHandler)
                 .failureHandler(myFailureHandler)
-                .loginProcessingUrl("/authentication/login")
+                .loginProcessingUrl("/auth/login")
                 .and()
-                .logout().logoutUrl("/authentication/logout").permitAll()
+                .logout().logoutUrl("/auth/logout").permitAll()
                 .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.OK));
 
         declareSecuredRoutes(http);
