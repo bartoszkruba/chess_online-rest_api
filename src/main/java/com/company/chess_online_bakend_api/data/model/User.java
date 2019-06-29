@@ -57,6 +57,8 @@ public class User extends BaseEntity {
         this.profileImage = profileImage;
         if (roles == null) {
             this.roles = new HashSet<>();
+        } else {
+            this.roles = roles;
         }
     }
 

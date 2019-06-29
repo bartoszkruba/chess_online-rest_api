@@ -38,6 +38,7 @@ class UserServiceJpaImplTest {
 
     @BeforeEach
     void setUp() {
+
         returnUser1 = User.builder()
                 .id(USER1_ID)
                 .username(USERNAME1).build();

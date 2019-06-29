@@ -54,7 +54,8 @@ public class MySecurityConfigurer extends WebSecurityConfigurerAdapter {
     }
 
     private void declareSecuredRoutes(HttpSecurity http) throws Exception {
-        http.authorizeRequests();
+        http.authorizeRequests()
+                .antMatchers(AuthenticationController.BASE_URL + "role").hasAnyRole("USER", "ADMIN");
     }
 
     @Override
