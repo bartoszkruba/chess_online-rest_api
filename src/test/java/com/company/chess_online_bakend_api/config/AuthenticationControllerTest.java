@@ -1,6 +1,7 @@
 package com.company.chess_online_bakend_api.config;
 
 
+import com.company.chess_online_bakend_api.controller.AuthenticationController;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,7 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class AuthenticationTest {
+public class AuthenticationControllerTest {
 
     // TODO: 2019-06-23 Try to create some mock users for testing
 
@@ -39,7 +40,9 @@ public class AuthenticationTest {
 
     @Test
     public void adminCanLog() throws Exception {
-        mockMvc.perform(formLogin().loginProcessingUrl("/auth/login").user("ken123").password("devo"))
+        mockMvc.perform(formLogin().loginProcessingUrl(AuthenticationController.BASE_URL + "login")
+                .user("ken123")
+                .password("devo"))
                 .andExpect(status().isOk())
                 .andExpect(authenticated().withUsername("ken123"));
 
@@ -51,7 +54,9 @@ public class AuthenticationTest {
 
     @Test
     void userCanLog() throws Exception {
-        mockMvc.perform(formLogin().loginProcessingUrl("/auth/login").user("carl69").password("tyler1"))
+        mockMvc.perform(formLogin().loginProcessingUrl(AuthenticationController.BASE_URL + "login")
+                .user("carl69")
+                .password("tyler1"))
                 .andExpect(status().isOk())
                 .andExpect(authenticated().withUsername("carl69"));
 //                .andExpect(authenticated().withRoles("USER"));
@@ -62,13 +67,17 @@ public class AuthenticationTest {
 
     @Test
     void userDoesntExists() throws Exception {
-        mockMvc.perform(formLogin().loginProcessingUrl("/auth/login").user("do not exists").password("password"))
+        mockMvc.perform(formLogin().loginProcessingUrl(AuthenticationController.BASE_URL + "login")
+                .user("do not exists")
+                .password("password"))
                 .andExpect(status().is4xxClientError());
     }
 
     @Test
     void passwordDoesntMatch() throws Exception {
-        mockMvc.perform(formLogin().loginProcessingUrl("/auth/login").user("carl69").password("password"))
+        mockMvc.perform(formLogin().loginProcessingUrl(AuthenticationController.BASE_URL + "login")
+                .user("carl69")
+                .password("password"))
                 .andExpect(status().is4xxClientError());
     }
 }

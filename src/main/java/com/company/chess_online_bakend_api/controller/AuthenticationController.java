@@ -6,13 +6,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/authentication")
-public class Authentication {
+@RequestMapping(AuthenticationController.BASE_URL)
+public class AuthenticationController {
+
+    public static final String BASE_URL = "/auth/";
 
     private final UserService userService;
 
     @Autowired
-    public Authentication(UserService userService) {
+    public AuthenticationController(UserService userService) {
         this.userService = userService;
     }
 }
