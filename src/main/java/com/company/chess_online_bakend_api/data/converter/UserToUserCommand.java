@@ -24,7 +24,7 @@ public class UserToUserCommand implements Converter<User, UserCommand> {
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .username(user.getUsername())
-                .password(user.getPassword())
+//                .password(user.getPassword())
                 .id(user.getId()).build();
 
         return userCommand;

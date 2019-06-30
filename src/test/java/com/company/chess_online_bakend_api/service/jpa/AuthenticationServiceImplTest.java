@@ -1,5 +1,8 @@
 package com.company.chess_online_bakend_api.service.jpa;
 
+import com.company.chess_online_bakend_api.data.command.UserCommand;
+import com.company.chess_online_bakend_api.data.converter.UserCommandToUser;
+import com.company.chess_online_bakend_api.data.converter.UserToUserCommand;
 import com.company.chess_online_bakend_api.data.model.Role;
 import com.company.chess_online_bakend_api.data.model.User;
 import com.company.chess_online_bakend_api.data.repository.UserRepository;
@@ -7,17 +10,17 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -26,16 +29,26 @@ class AuthenticationServiceImplTest {
     @Mock
     UserRepository userRepository;
 
-    @InjectMocks
+    BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+
     AuthenticationServiceImpl authenticationService;
+
+    private final Long ID = 1L;
+    private final String PASSWORD = "password";
+    private final String FIRST_NAME = "John";
+    private final String LAST_NAME = "Doe";
+    private final String EMAIL = "john.doe@email.com";
 
     private final String USERNAME = "john69";
     private final String ROLE_ADMIN = "ROLE_ADMIN";
     private final String ROLE_USER = "ROLE_USER";
 
-
     @BeforeEach
     void setUp() {
+        MockitoAnnotations.initMocks(this);
+
+        authenticationService = new AuthenticationServiceImpl(userRepository, new UserCommandToUser(),
+                new UserToUserCommand(), bCryptPasswordEncoder);
     }
 
     @Test
@@ -68,5 +81,60 @@ class AuthenticationServiceImplTest {
         when(userRepository.findByUsername(USERNAME)).thenReturn(Optional.empty());
 
         Assertions.assertThrows(RuntimeException.class, () -> authenticationService.getRolesForUser(USERNAME));
+    }
+
+    @Test
+    void registerNewUser() {
+        UserCommand userCommand = UserCommand.builder()
+                .username(USERNAME)
+                .password(PASSWORD)
+                .firstName(FIRST_NAME)
+                .lastName(LAST_NAME)
+                .email(EMAIL).build();
+
+        User savedUser = User.builder()
+                .id(ID)
+                .username(USERNAME)
+                .password(bCryptPasswordEncoder.encode(PASSWORD))
+                .firstName(FIRST_NAME)
+                .lastName(LAST_NAME)
+                .email(EMAIL).build();
+
+        when(userRepository.findByUsername(any())).thenReturn(Optional.empty());
+        when(userRepository.save(any())).thenReturn(savedUser);
+
+        UserCommand returnedUser = authenticationService.registerNewUser(userCommand);
+
+        assertEquals(ID, returnedUser.getId());
+        assertEquals(USERNAME, returnedUser.getUsername());
+        assertNull(returnedUser.getPassword());
+        assertEquals(FIRST_NAME, returnedUser.getFirstName());
+        assertEquals(LAST_NAME, returnedUser.getLastName());
+        assertEquals(EMAIL, returnedUser.getEmail());
+
+        verify(userRepository, times(1)).findByUsername(USERNAME);
+        verify(userRepository, times(1)).save(any());
+    }
+
+    @Test()
+    void registerNewUserUsernameAlreadyExists() {
+        UserCommand userCommand = UserCommand.builder()
+                .username(USERNAME)
+                .password(PASSWORD)
+                .firstName(FIRST_NAME)
+                .lastName(LAST_NAME)
+                .email(EMAIL).build();
+
+        User user = User.builder()
+                .id(ID)
+                .username(USERNAME)
+                .password(bCryptPasswordEncoder.encode(PASSWORD))
+                .firstName(FIRST_NAME)
+                .lastName(LAST_NAME)
+                .email(EMAIL).build();
+
+        when(userRepository.findByUsername(USERNAME)).thenReturn(Optional.of(user));
+
+        Assertions.assertThrows(RuntimeException.class, () -> authenticationService.registerNewUser(userCommand));
     }
 }
