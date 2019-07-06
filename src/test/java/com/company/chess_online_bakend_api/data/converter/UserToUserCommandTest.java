@@ -36,7 +36,7 @@ class UserToUserCommandTest {
 
         assertNull(convertedUser.getId());
         assertNull(convertedUser.getUsername());
-        assertNull(convertedUser.getPassword());
+//        assertNull(convertedUser.getPassword());
         assertNull(convertedUser.getFirstName());
         assertNull(convertedUser.getLastName());
         assertNull(convertedUser.getEmail());
@@ -47,7 +47,7 @@ class UserToUserCommandTest {
         User userToConvert = User.builder()
                 .id(USER_ID)
                 .username(USERNAME)
-                .password(PASSWORD)
+//                .password(PASSWORD)
                 .firstName(FIRST_NAME)
                 .lastName(LAST_NAME)
                 .email(EMAIL).build();
@@ -59,7 +59,7 @@ class UserToUserCommandTest {
         assertNotNull(convertedUser);
         assertEquals(USER_ID, convertedUser.getId());
         assertEquals(USERNAME, convertedUser.getUsername());
-        assertEquals(PASSWORD, convertedUser.getPassword());
+//        assertEquals(PASSWORD, convertedUser.getPassword());
         assertEquals(FIRST_NAME, convertedUser.getFirstName());
         assertEquals(LAST_NAME, convertedUser.getLastName());
         assertEquals(EMAIL, convertedUser.getEmail());

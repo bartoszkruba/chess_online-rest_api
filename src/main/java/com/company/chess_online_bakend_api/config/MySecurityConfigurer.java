@@ -2,10 +2,12 @@ package com.company.chess_online_bakend_api.config;
 
 import com.company.chess_online_bakend_api.config.handler.MySavedRequestAwareAuthenticationSuccessHandler;
 import com.company.chess_online_bakend_api.config.handler.MySimpleUrlAuthenticationFailureHandler;
+import com.company.chess_online_bakend_api.controller.AuthenticationController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -14,7 +16,8 @@ import org.springframework.security.web.authentication.logout.HttpStatusReturnin
 
 @Configuration
 @EnableWebSecurity
-public class MyWebMvcConfigurer extends WebSecurityConfigurerAdapter {
+@EnableGlobalMethodSecurity(securedEnabled = true)
+public class MySecurityConfigurer extends WebSecurityConfigurerAdapter {
 
     private final MyUserDetailsService myUserDetailsService;
     private final RestAuthenticationEntryPoint restAuthenticationEntryPoint;
@@ -23,10 +26,10 @@ public class MyWebMvcConfigurer extends WebSecurityConfigurerAdapter {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
-    public MyWebMvcConfigurer(MyUserDetailsService myUserDetailsService, RestAuthenticationEntryPoint
+    public MySecurityConfigurer(MyUserDetailsService myUserDetailsService, RestAuthenticationEntryPoint
             restAuthenticationEntryPoint, MySavedRequestAwareAuthenticationSuccessHandler mySuccessHandler,
-                              MySimpleUrlAuthenticationFailureHandler myFailureHandler,
-                              BCryptPasswordEncoder bCryptPasswordEncoder) {
+                                MySimpleUrlAuthenticationFailureHandler myFailureHandler,
+                                BCryptPasswordEncoder bCryptPasswordEncoder) {
 
         this.myUserDetailsService = myUserDetailsService;
         this.restAuthenticationEntryPoint = restAuthenticationEntryPoint;
@@ -44,9 +47,9 @@ public class MyWebMvcConfigurer extends WebSecurityConfigurerAdapter {
                 .formLogin().permitAll()
                 .successHandler(mySuccessHandler)
                 .failureHandler(myFailureHandler)
-                .loginProcessingUrl("/authentication/login")
+                .loginProcessingUrl(AuthenticationController.BASE_URL + "login")
                 .and()
-                .logout().logoutUrl("/authentication/logout").permitAll()
+                .logout().logoutUrl("/auth/" + "logout").permitAll()
                 .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.OK));
 
         declareSecuredRoutes(http);
@@ -54,6 +57,7 @@ public class MyWebMvcConfigurer extends WebSecurityConfigurerAdapter {
 
     private void declareSecuredRoutes(HttpSecurity http) throws Exception {
         http.authorizeRequests();
+//                .antMatchers(AuthenticationController.BASE_URL + "role").hasAnyRole("USER", "ADMIN");
     }
 
     @Override
