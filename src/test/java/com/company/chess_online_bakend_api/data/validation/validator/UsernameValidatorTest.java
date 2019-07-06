@@ -42,6 +42,6 @@ class UsernameValidatorTest {
     void usernameNull() {
         boolean validation_result = usernameValidator.isValid(null, constraintValidatorContext);
 
-        assertFalse(validation_result);
+        assertTrue(validation_result);
     }
 }

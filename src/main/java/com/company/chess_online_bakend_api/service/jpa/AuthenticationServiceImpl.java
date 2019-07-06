@@ -60,6 +60,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         User user = userCommandToUser.convert(userCommand);
 
         user.setId(null);
+        if (user.getPassword() == null) {
+            log.error("Password is null");
+            throw new RuntimeException("Password is null");
+        }
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 
         return userToUserCommand.convert(userRepository.save(user));

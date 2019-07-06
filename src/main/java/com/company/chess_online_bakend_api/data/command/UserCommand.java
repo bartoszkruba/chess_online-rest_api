@@ -16,22 +16,31 @@ import javax.validation.constraints.Size;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserCommand extends BaseEntityCommand {
 
-    @NotEmpty(message = "Username cannot be empty")
-    @Size(min = 3, max = 20, message = "Username must be between 3 and 20 characters long")
+    public static final String USERNAME_NOT_EMPTY_MESSAGE = "Username cannot be empty";
+    public static final String USERNAME_SIZE_MESSAGE = "Username must be between 3 and 20 characters long";
+
+    public static final String PASSWORD_NOT_EMPTY_MESSAGE = "Password cannot be empty";
+    public static final String PASSWORD_NOT_SIZE_MESSAGE = "Password must be between 3 and 20 characters long";
+
+    public static final String EMAIL_NOT_EMPTY_MESSAGE = "Email cannot be blank";
+    public static final String EMAIL_NOT_VALID_MESSAGE = "Email is not valid";
+
+    @Size(min = 3, max = 30, message = USERNAME_SIZE_MESSAGE)
     @ValidUsernameConstraint
     @UniqueUsernameConstraint
     private String username;
 
-    @NotEmpty(message = "Password cannot be empty")
-    @Size(min = 3, max = 30, message = "Username must be between 3 and 20 characters long")
+
+    @Size(min = 3, max = 30, message = PASSWORD_NOT_SIZE_MESSAGE)
     private String password;
 
+    // TODO: 2019-07-06 Create some custom validators for firstname and lastname
     private String firstName;
 
     private String lastName;
 
-    @NotEmpty(message = "Email cannot be blank")
-    @Email(message = "Email is not valid")
+    @NotEmpty(message = EMAIL_NOT_EMPTY_MESSAGE)
+    @Email(message = EMAIL_NOT_VALID_MESSAGE)
     private String email;
 
     @Builder

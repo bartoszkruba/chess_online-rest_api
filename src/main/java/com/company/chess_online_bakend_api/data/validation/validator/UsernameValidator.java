@@ -25,7 +25,7 @@ public class UsernameValidator implements ConstraintValidator<ValidUsernameConst
     public boolean isValid(String username, ConstraintValidatorContext constraintValidatorContext) {
 
         if (username == null) {
-            return false;
+            return true;
         }
 
         log.debug("Validating username");

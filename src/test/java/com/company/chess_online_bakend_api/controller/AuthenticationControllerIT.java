@@ -51,10 +51,10 @@ public class AuthenticationControllerIT extends AbstractRestControllerTest {
 
     @BeforeEach
     void setup() {
-//        userRepository.deleteAll();
-//        roleRepository.deleteAll();
-//
-//        userBootstrap.onApplicationEvent(null);
+        userRepository.deleteAll();
+        roleRepository.deleteAll();
+
+        userBootstrap.onApplicationEvent(null);
 
         this.mockMvc = MockMvcBuilders
                 .webAppContextSetup(this.wac)
@@ -87,8 +87,8 @@ public class AuthenticationControllerIT extends AbstractRestControllerTest {
     void registerNewUserUsernameAlreadyExists() throws Exception {
         UserCommand userCommand = UserCommand.builder()
                 .username("ken123")
-                .password("devo")
-                .email("ken123@email.com")
+                .password(PASSWORD)
+                .email(EMAIL)
                 .firstName(FIRST_NAME)
                 .lastName(LAST_NAME)
                 .build();
@@ -103,12 +103,12 @@ public class AuthenticationControllerIT extends AbstractRestControllerTest {
 
     }
 
-    @Test()
+    @Test
     void registerNewUserUsernameNull() throws Exception {
         UserCommand userCommand = UserCommand.builder()
                 .username(null)
-                .password("devo")
-                .email("ken123@email.com")
+                .password(PASSWORD)
+                .email(EMAIL)
                 .firstName(FIRST_NAME)
                 .lastName(LAST_NAME)
                 .build();
@@ -118,9 +118,141 @@ public class AuthenticationControllerIT extends AbstractRestControllerTest {
                 .content(asJsonString(userCommand)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status", equalTo(400)))
-                .andExpect(jsonPath("$.errors[0]", equalTo("Username cannot be empty")))
+                .andExpect(jsonPath("$.errors[0]", equalTo(UserCommand.USERNAME_NOT_EMPTY_MESSAGE)))
                 .andExpect(jsonPath("$.errors", hasSize(1)));
+    }
 
+    @Test
+    void registerNewUserUsernameTooShort() throws Exception {
+        UserCommand userCommand = UserCommand.builder()
+                .username("u")
+                .password(PASSWORD)
+                .email(EMAIL)
+                .firstName(FIRST_NAME)
+                .lastName(LAST_NAME)
+                .build();
+
+        mockMvc.perform(post(AuthenticationController.BASE_URL + "register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(userCommand)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status", equalTo(400)))
+                .andExpect(jsonPath("$.errors[0]", equalTo(UserCommand.USERNAME_SIZE_MESSAGE)))
+                .andExpect(jsonPath("$.errors", hasSize(1)));
+    }
+
+    @Test
+    void registerNewUserUsernameTooLong() throws Exception {
+        UserCommand userCommand = UserCommand.builder()
+                .username("thisIsAVeryLongUsernamesddssdsdsdsdsddssdsdsdsddsdssdsdsd")
+                .password(PASSWORD)
+                .email(EMAIL)
+                .firstName(FIRST_NAME)
+                .lastName(LAST_NAME)
+                .build();
+
+        mockMvc.perform(post(AuthenticationController.BASE_URL + "register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(userCommand)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status", equalTo(400)))
+                .andExpect(jsonPath("$.errors[0]", equalTo(UserCommand.USERNAME_SIZE_MESSAGE)))
+                .andExpect(jsonPath("$.errors", hasSize(1)));
+    }
+
+    @Test
+    void registerNewUserInvalidUsername() throws Exception {
+        UserCommand userCommand = UserCommand.builder()
+                .username("This is invalid username")
+                .password(PASSWORD)
+                .email(EMAIL)
+                .firstName(FIRST_NAME)
+                .lastName(LAST_NAME)
+                .build();
+
+        mockMvc.perform(post(AuthenticationController.BASE_URL + "register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(userCommand)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status", equalTo(400)))
+                .andExpect(jsonPath("$.errors[0]", equalTo("Invalid username")))
+                .andExpect(jsonPath("$.errors", hasSize(1)));
+    }
+
+    @Test
+    void registerNewUserEmptyUsername() throws Exception {
+        UserCommand userCommand = UserCommand.builder()
+                .username("")
+                .password(PASSWORD)
+                .email(EMAIL)
+                .firstName(FIRST_NAME)
+                .lastName(LAST_NAME)
+                .build();
+
+        mockMvc.perform(post(AuthenticationController.BASE_URL + "register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(userCommand)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status", equalTo(400)))
+                .andExpect(jsonPath("$.errors[0]", equalTo(UserCommand.USERNAME_SIZE_MESSAGE)))
+                .andExpect(jsonPath("$.errors", hasSize(1)));
+    }
+
+    @Test
+    void registerNewUserEmptyPassword() throws Exception {
+        UserCommand userCommand = UserCommand.builder()
+                .username(USERNAME)
+                .password("")
+                .email(EMAIL)
+                .firstName(FIRST_NAME)
+                .lastName(LAST_NAME)
+                .build();
+
+        mockMvc.perform(post(AuthenticationController.BASE_URL + "register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(userCommand)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status", equalTo(400)))
+                .andExpect(jsonPath("$.errors[0]", equalTo(UserCommand.PASSWORD_NOT_SIZE_MESSAGE)))
+                .andExpect(jsonPath("$.errors", hasSize(1)));
+    }
+
+    @Test
+    void registerNewUserPasswordTooLong() throws Exception {
+        UserCommand userCommand = UserCommand.builder()
+                .username(USERNAME)
+                .password("dsfsfadofsdkofdsaokfdsaokosdfkopfdsopksdfkfdkspdfakpksdafpkfdspkodsfpksdfkpdsfkpsdafpopkdas")
+                .email(EMAIL)
+                .firstName(FIRST_NAME)
+                .lastName(LAST_NAME)
+                .build();
+
+        mockMvc.perform(post(AuthenticationController.BASE_URL + "register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(userCommand)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status", equalTo(400)))
+                .andExpect(jsonPath("$.errors[0]", equalTo(UserCommand.PASSWORD_NOT_SIZE_MESSAGE)))
+                .andExpect(jsonPath("$.errors", hasSize(1)));
+    }
+
+    @Test
+    void registerNewUserPasswordNull() throws Exception {
+        UserCommand userCommand = UserCommand.builder()
+                .username(USERNAME)
+                .password(null)
+                .email(EMAIL)
+                .firstName(FIRST_NAME)
+                .lastName(LAST_NAME)
+                .build();
+
+        mockMvc.perform(post(AuthenticationController.BASE_URL + "register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(userCommand)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status", equalTo(400)))
+                .andExpect(jsonPath("$.errors[0]", equalTo("Invalid password")))
+                .andExpect(jsonPath("$.errors", hasSize(1)));
     }
 
     @Test
