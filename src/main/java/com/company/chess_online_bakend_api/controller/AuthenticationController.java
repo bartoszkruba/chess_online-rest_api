@@ -5,11 +5,14 @@ import com.company.chess_online_bakend_api.service.AuthenticationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Collection;
+
+//import static org.springframework.security.config.annotation.web.configurers.UrlAuthorizationConfigurer.hasAnyRole;
 
 @RestController
 @RequestMapping(AuthenticationController.BASE_URL)
@@ -27,6 +30,7 @@ public class AuthenticationController {
 
     @GetMapping("role")
     @ResponseStatus(HttpStatus.OK)
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
     public Collection<String> getRoles(Principal principal) {
 
         return authenticationService.getRolesForUser(principal.getName());

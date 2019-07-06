@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -34,5 +35,19 @@ public class AuthenticationControllerIT {
     void rolesNotLoggedIn() throws Exception {
         mockMvc.perform(get(AuthenticationController.BASE_URL + "role"))
                 .andExpect(status().is(401));
+    }
+
+    @Test
+    @WithMockUser(username = "carl69", password = "tyler1", authorities = "ROLE_USER")
+    void rolesLoggedInAsUser() throws Exception {
+        mockMvc.perform(get(AuthenticationController.BASE_URL + "role"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser(username = "ken123", password = "devo", authorities = "ROLE_ADMIN")
+    void rolesLoggedInAsAdmin() throws Exception {
+        mockMvc.perform(get(AuthenticationController.BASE_URL + "role"))
+                .andExpect(status().isOk());
     }
 }
