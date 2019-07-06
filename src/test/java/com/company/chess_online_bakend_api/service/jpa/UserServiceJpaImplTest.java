@@ -2,6 +2,7 @@ package com.company.chess_online_bakend_api.service.jpa;
 
 import com.company.chess_online_bakend_api.data.model.User;
 import com.company.chess_online_bakend_api.data.repository.UserRepository;
+import com.company.chess_online_bakend_api.exception.UserNotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -65,8 +66,7 @@ class UserServiceJpaImplTest {
     void findByIdNotFound() {
         when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        // TODO: 2019-06-22 Change to own exception
-        Assertions.assertThrows(RuntimeException.class, () -> userService.findById(USER1_ID));
+        Assertions.assertThrows(UserNotFoundException.class, () -> userService.findById(USER1_ID));
 
     }
 
@@ -161,8 +161,7 @@ class UserServiceJpaImplTest {
     void findByUsernameNotFound() {
         when(userRepository.findByUsername(anyString())).thenReturn(Optional.empty());
 
-        // TODO: 2019-06-22 Change to own Exception
-        Assertions.assertThrows(RuntimeException.class, () -> userService.findByUsername(USERNAME1));
+        Assertions.assertThrows(UserNotFoundException.class, () -> userService.findByUsername(USERNAME1));
     }
 
     @Test

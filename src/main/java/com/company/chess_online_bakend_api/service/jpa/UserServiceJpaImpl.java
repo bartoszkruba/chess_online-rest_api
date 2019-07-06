@@ -2,6 +2,7 @@ package com.company.chess_online_bakend_api.service.jpa;
 
 import com.company.chess_online_bakend_api.data.model.User;
 import com.company.chess_online_bakend_api.data.repository.UserRepository;
+import com.company.chess_online_bakend_api.exception.UserNotFoundException;
 import com.company.chess_online_bakend_api.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,8 +38,8 @@ public class UserServiceJpaImpl implements UserService {
             return userOptional.get();
         } else {
             log.debug("User with following id not found: " + id);
-            // TODO: 2019-06-22 create custom exception and handle error thourgh advice
-            throw new RuntimeException("User with id: " + id + "not found");
+
+            throw new UserNotFoundException("User with id: " + id + "not found");
         }
     }
 
@@ -86,8 +87,8 @@ public class UserServiceJpaImpl implements UserService {
             return userOptional.get();
         } else {
             log.debug("User with following username not found: " + username);
-            // TODO: 2019-06-22 create custom exception and handle error thourgh advice
-            throw new RuntimeException("User with username: " + username + " not found");
+
+            throw new UserNotFoundException("User with username: " + username + " not found");
         }
     }
 }

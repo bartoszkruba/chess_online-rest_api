@@ -23,8 +23,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LoginTest {
 
-    // TODO: 2019-06-23 Try to create some mock users for testing
-
     private MockMvc mockMvc;
 
     @Autowired
@@ -45,8 +43,6 @@ public class LoginTest {
                 .password("devo"))
                 .andExpect(status().isOk())
                 .andExpect(authenticated().withUsername("ken123"));
-
-        // TODO: 2019-06-23 figure out why it's not possible to assert roles
 
         mockMvc.perform(logout().logoutUrl("/auth/logout"))
                 .andExpect(status().isOk());

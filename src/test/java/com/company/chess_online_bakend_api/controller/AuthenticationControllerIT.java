@@ -4,6 +4,8 @@ import com.company.chess_online_bakend_api.bootstrap.UserBootstrap;
 import com.company.chess_online_bakend_api.data.command.UserCommand;
 import com.company.chess_online_bakend_api.data.repository.RoleRepository;
 import com.company.chess_online_bakend_api.data.repository.UserRepository;
+import com.company.chess_online_bakend_api.data.validation.constraint.ValidPasswordConstraint;
+import com.company.chess_online_bakend_api.data.validation.constraint.ValidUsernameConstraint;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,8 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.*;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -175,7 +176,7 @@ public class AuthenticationControllerIT extends AbstractRestControllerTest {
                 .content(asJsonString(userCommand)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status", equalTo(400)))
-                .andExpect(jsonPath("$.errors[0]", equalTo("Invalid username")))
+                .andExpect(jsonPath("$.errors[0]", equalTo(ValidUsernameConstraint.ERROR_MESSAGE)))
                 .andExpect(jsonPath("$.errors", hasSize(1)));
     }
 
@@ -194,8 +195,9 @@ public class AuthenticationControllerIT extends AbstractRestControllerTest {
                 .content(asJsonString(userCommand)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status", equalTo(400)))
-                .andExpect(jsonPath("$.errors[0]", equalTo(UserCommand.USERNAME_SIZE_MESSAGE)))
-                .andExpect(jsonPath("$.errors", hasSize(1)));
+                .andExpect(jsonPath("$.errors", containsInAnyOrder(UserCommand.USERNAME_NOT_EMPTY_MESSAGE,
+                        UserCommand.USERNAME_SIZE_MESSAGE)))
+                .andExpect(jsonPath("$.errors", hasSize(2)));
     }
 
     @Test
@@ -213,8 +215,10 @@ public class AuthenticationControllerIT extends AbstractRestControllerTest {
                 .content(asJsonString(userCommand)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status", equalTo(400)))
-                .andExpect(jsonPath("$.errors[0]", equalTo(UserCommand.PASSWORD_NOT_SIZE_MESSAGE)))
-                .andExpect(jsonPath("$.errors", hasSize(1)));
+                .andExpect(jsonPath("$.errors",
+                        containsInAnyOrder(UserCommand.PASSWORD_NOT_SIZE_MESSAGE,
+                                UserCommand.PASSWORD_NOT_EMPTY_MESSAGE)))
+                .andExpect(jsonPath("$.errors", hasSize(2)));
     }
 
     @Test
@@ -251,7 +255,64 @@ public class AuthenticationControllerIT extends AbstractRestControllerTest {
                 .content(asJsonString(userCommand)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status", equalTo(400)))
-                .andExpect(jsonPath("$.errors[0]", equalTo("Invalid password")))
+                .andExpect(jsonPath("$.errors[0]", equalTo(UserCommand.PASSWORD_NOT_EMPTY_MESSAGE)))
+                .andExpect(jsonPath("$.errors", hasSize(1)));
+    }
+
+    @Test
+    void registerInvalidPassword() throws Exception {
+        UserCommand userCommand = UserCommand.builder()
+                .username(USERNAME)
+                .password("This is invali'ä'äåsdaö")
+                .email(EMAIL)
+                .firstName(FIRST_NAME)
+                .lastName(LAST_NAME)
+                .build();
+
+        mockMvc.perform(post(AuthenticationController.BASE_URL + "register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(userCommand)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status", equalTo(400)))
+                .andExpect(jsonPath("$.errors[0]", equalTo(ValidPasswordConstraint.ERROR_MESSAGE)))
+                .andExpect(jsonPath("$.errors", hasSize(1)));
+    }
+
+    @Test
+    void registerInvalidEmail() throws Exception {
+        UserCommand userCommand = UserCommand.builder()
+                .username(USERNAME)
+                .password(PASSWORD)
+                .email("invalid email")
+                .firstName(FIRST_NAME)
+                .lastName(LAST_NAME)
+                .build();
+
+        mockMvc.perform(post(AuthenticationController.BASE_URL + "register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(userCommand)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status", equalTo(400)))
+                .andExpect(jsonPath("$.errors[0]", equalTo(UserCommand.EMAIL_NOT_VALID_MESSAGE)))
+                .andExpect(jsonPath("$.errors", hasSize(1)));
+    }
+
+    @Test
+    void registerEmailNull() throws Exception {
+        UserCommand userCommand = UserCommand.builder()
+                .username(USERNAME)
+                .password(PASSWORD)
+                .email(null)
+                .firstName(FIRST_NAME)
+                .lastName(LAST_NAME)
+                .build();
+
+        mockMvc.perform(post(AuthenticationController.BASE_URL + "register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(userCommand)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status", equalTo(400)))
+                .andExpect(jsonPath("$.errors[0]", equalTo(UserCommand.EMAIL_NOT_EMPTY_MESSAGE)))
                 .andExpect(jsonPath("$.errors", hasSize(1)));
     }
 

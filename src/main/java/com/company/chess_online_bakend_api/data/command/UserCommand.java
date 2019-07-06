@@ -1,6 +1,7 @@
 package com.company.chess_online_bakend_api.data.command;
 
 import com.company.chess_online_bakend_api.data.validation.constraint.UniqueUsernameConstraint;
+import com.company.chess_online_bakend_api.data.validation.constraint.ValidPasswordConstraint;
 import com.company.chess_online_bakend_api.data.validation.constraint.ValidUsernameConstraint;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
@@ -25,13 +26,15 @@ public class UserCommand extends BaseEntityCommand {
     public static final String EMAIL_NOT_EMPTY_MESSAGE = "Email cannot be blank";
     public static final String EMAIL_NOT_VALID_MESSAGE = "Email is not valid";
 
+    @NotEmpty(message = USERNAME_NOT_EMPTY_MESSAGE)
     @Size(min = 3, max = 30, message = USERNAME_SIZE_MESSAGE)
     @ValidUsernameConstraint
     @UniqueUsernameConstraint
     private String username;
 
-
+    @NotEmpty(message = PASSWORD_NOT_EMPTY_MESSAGE)
     @Size(min = 3, max = 30, message = PASSWORD_NOT_SIZE_MESSAGE)
+    @ValidPasswordConstraint
     private String password;
 
     // TODO: 2019-07-06 Create some custom validators for firstname and lastname

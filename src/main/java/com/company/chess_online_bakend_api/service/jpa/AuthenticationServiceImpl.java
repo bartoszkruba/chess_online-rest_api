@@ -6,6 +6,7 @@ import com.company.chess_online_bakend_api.data.converter.UserToUserCommand;
 import com.company.chess_online_bakend_api.data.model.Role;
 import com.company.chess_online_bakend_api.data.model.User;
 import com.company.chess_online_bakend_api.data.repository.UserRepository;
+import com.company.chess_online_bakend_api.exception.UserNotFoundException;
 import com.company.chess_online_bakend_api.service.AuthenticationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,11 +42,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         log.debug("Getting roles for user:" + username);
 
-        // TODO: 2019-06-29 create custom exception for no user found
-        // TODO: 2019-06-29 create advice for handling exception
         if (userOptional.isEmpty()) {
             log.debug("User not found: " + username);
-            throw new RuntimeException();
+            throw new UserNotFoundException("User not found: " + username);
         }
 
         return userOptional.get()
