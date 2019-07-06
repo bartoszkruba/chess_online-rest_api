@@ -59,12 +59,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         User user = userCommandToUser.convert(userCommand);
 
-        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
-            // TODO: 2019-06-30 Crate custom exception and advice
-            log.debug("Registering new user failed: username already exists");
-            throw new RuntimeException("Username already exists");
-        }
-
         user.setId(null);
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 

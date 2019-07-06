@@ -100,7 +100,6 @@ class AuthenticationServiceImplTest {
                 .lastName(LAST_NAME)
                 .email(EMAIL).build();
 
-        when(userRepository.findByUsername(any())).thenReturn(Optional.empty());
         when(userRepository.save(any())).thenReturn(savedUser);
 
         UserCommand returnedUser = authenticationService.registerNewUser(userCommand);
@@ -112,29 +111,6 @@ class AuthenticationServiceImplTest {
         assertEquals(LAST_NAME, returnedUser.getLastName());
         assertEquals(EMAIL, returnedUser.getEmail());
 
-        verify(userRepository, times(1)).findByUsername(USERNAME);
         verify(userRepository, times(1)).save(any());
-    }
-
-    @Test()
-    void registerNewUserUsernameAlreadyExists() {
-        UserCommand userCommand = UserCommand.builder()
-                .username(USERNAME)
-                .password(PASSWORD)
-                .firstName(FIRST_NAME)
-                .lastName(LAST_NAME)
-                .email(EMAIL).build();
-
-        User user = User.builder()
-                .id(ID)
-                .username(USERNAME)
-                .password(bCryptPasswordEncoder.encode(PASSWORD))
-                .firstName(FIRST_NAME)
-                .lastName(LAST_NAME)
-                .email(EMAIL).build();
-
-        when(userRepository.findByUsername(USERNAME)).thenReturn(Optional.of(user));
-
-        Assertions.assertThrows(RuntimeException.class, () -> authenticationService.registerNewUser(userCommand));
     }
 }

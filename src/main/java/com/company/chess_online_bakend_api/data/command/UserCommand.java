@@ -1,13 +1,13 @@
 package com.company.chess_online_bakend_api.data.command;
 
+import com.company.chess_online_bakend_api.data.validation.constraint.UniqueUsernameConstraint;
 import com.company.chess_online_bakend_api.data.validation.constraint.ValidUsernameConstraint;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
 import javax.validation.constraints.Email;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -16,22 +16,22 @@ import javax.validation.constraints.NotEmpty;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserCommand extends BaseEntityCommand {
 
-    @NotEmpty
-    @Min(3)
-    @Max(15)
+    @NotEmpty(message = "Username cannot be empty")
+    @Size(min = 3, max = 20, message = "Username must be between 3 and 20 characters long")
     @ValidUsernameConstraint
+    @UniqueUsernameConstraint
     private String username;
 
-    @NotEmpty
-    @Min(3)
+    @NotEmpty(message = "Password cannot be empty")
+    @Size(min = 3, max = 30, message = "Username must be between 3 and 20 characters long")
     private String password;
 
-    @Max(20)
     private String firstName;
-    @Max(20)
+
     private String lastName;
 
-    @Email
+    @NotEmpty(message = "Email cannot be blank")
+    @Email(message = "Email is not valid")
     private String email;
 
     @Builder

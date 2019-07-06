@@ -61,6 +61,7 @@ public class UserBootstrap implements ApplicationListener<ContextRefreshedEvent>
                 .firstName("Kirk")
                 .lastName("Kennedy")
                 .username("ken123")
+                .email("ken123@email.com")
                 .password(encoder.encode("devo")).build().addRole(adminRole);
         userRepository.save(adminUser);
 
@@ -68,6 +69,7 @@ public class UserBootstrap implements ApplicationListener<ContextRefreshedEvent>
                 .firstName("Carl")
                 .lastName("Soto")
                 .username("carl69")
+                .email("carl69@email.com")
                 .password(encoder.encode("tyler1")).build().addRole(userRole);
         userRepository.save(normalUser);
     }
