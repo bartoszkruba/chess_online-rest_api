@@ -4,6 +4,7 @@ import com.company.chess_online_bakend_api.data.validation.constraint.UniqueUser
 import com.company.chess_online_bakend_api.data.validation.constraint.ValidPasswordConstraint;
 import com.company.chess_online_bakend_api.data.validation.constraint.ValidUsernameConstraint;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
 import javax.validation.constraints.Email;
@@ -30,11 +31,13 @@ public class UserCommand extends BaseEntityCommand {
     @Size(min = 3, max = 30, message = USERNAME_SIZE_MESSAGE)
     @ValidUsernameConstraint
     @UniqueUsernameConstraint
+    @ApiModelProperty(required = true)
     private String username;
 
     @NotEmpty(message = PASSWORD_NOT_EMPTY_MESSAGE)
     @Size(min = 3, max = 30, message = PASSWORD_NOT_SIZE_MESSAGE)
     @ValidPasswordConstraint
+    @ApiModelProperty(required = true)
     private String password;
 
     // TODO: 2019-07-06 Create some custom validators for firstname and lastname
@@ -44,6 +47,7 @@ public class UserCommand extends BaseEntityCommand {
 
     @NotEmpty(message = EMAIL_NOT_EMPTY_MESSAGE)
     @Email(message = EMAIL_NOT_VALID_MESSAGE)
+    @ApiModelProperty(required = true)
     private String email;
 
     @Builder
