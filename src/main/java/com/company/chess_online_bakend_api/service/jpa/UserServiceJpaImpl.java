@@ -82,7 +82,7 @@ public class UserServiceJpaImpl implements UserService {
         }
 
         log.debug("Getting user with username: " + username);
-        Optional<User> userOptional = userRepository.findByUsername(username);
+        Optional<User> userOptional = userRepository.findByUsernameLike(username);
         if (userOptional.isPresent()) {
             return userOptional.get();
         } else {

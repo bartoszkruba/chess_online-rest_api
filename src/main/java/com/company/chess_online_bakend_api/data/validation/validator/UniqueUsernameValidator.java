@@ -29,9 +29,18 @@ public class UniqueUsernameValidator
     public boolean isValid(String username, ConstraintValidatorContext constraintValidatorContext) {
         log.debug("Checking if username is unique");
 
-        Optional<User> userOptional = userRepository.findByUsername(username);
+        if (username == null) {
+            log.debug("Username is null");
+            return true;
+        }
 
-        return userOptional.isEmpty();
+        Optional<User> userOptional = userRepository.findByUsernameLike(username);
+
+        if (userOptional.isEmpty()) {
+            return true;
+        } else {
+            log.debug("Username already exists");
+            return false;
+        }
     }
-
 }

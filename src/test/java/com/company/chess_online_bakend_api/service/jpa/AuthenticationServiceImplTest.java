@@ -5,6 +5,7 @@ import com.company.chess_online_bakend_api.data.converter.UserCommandToUser;
 import com.company.chess_online_bakend_api.data.converter.UserToUserCommand;
 import com.company.chess_online_bakend_api.data.model.Role;
 import com.company.chess_online_bakend_api.data.model.User;
+import com.company.chess_online_bakend_api.data.repository.RoleRepository;
 import com.company.chess_online_bakend_api.data.repository.UserRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,6 +30,9 @@ class AuthenticationServiceImplTest {
     @Mock
     UserRepository userRepository;
 
+    @Mock
+    RoleRepository roleRepository;
+
     BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
     AuthenticationServiceImpl authenticationService;
@@ -47,7 +51,7 @@ class AuthenticationServiceImplTest {
     void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        authenticationService = new AuthenticationServiceImpl(userRepository, new UserCommandToUser(),
+        authenticationService = new AuthenticationServiceImpl(userRepository, roleRepository, new UserCommandToUser(),
                 new UserToUserCommand(), bCryptPasswordEncoder);
     }
 
@@ -65,7 +69,7 @@ class AuthenticationServiceImplTest {
                 .username(USERNAME)
                 .roles(roles).build();
 
-        when(userRepository.findByUsername(USERNAME)).thenReturn(Optional.of(user));
+        when(userRepository.findByUsernameLike(USERNAME)).thenReturn(Optional.of(user));
 
         Collection<String> returnedRoles = authenticationService.getRolesForUser(USERNAME);
 
@@ -73,12 +77,12 @@ class AuthenticationServiceImplTest {
         assertTrue(returnedRoles.contains(ROLE_ADMIN));
         assertTrue(returnedRoles.contains(ROLE_USER));
 
-        verify(userRepository, times(1)).findByUsername(USERNAME);
+        verify(userRepository, times(1)).findByUsernameLike(USERNAME);
     }
 
     @Test
     void getRolesUsernameNotFound() {
-        when(userRepository.findByUsername(USERNAME)).thenReturn(Optional.empty());
+        when(userRepository.findByUsernameLike(USERNAME)).thenReturn(Optional.empty());
 
         Assertions.assertThrows(RuntimeException.class, () -> authenticationService.getRolesForUser(USERNAME));
     }
@@ -100,6 +104,9 @@ class AuthenticationServiceImplTest {
                 .lastName(LAST_NAME)
                 .email(EMAIL).build();
 
+        Role role = Role.builder().description(ROLE_USER).build();
+
+        when(roleRepository.findByDescription(ROLE_USER)).thenReturn(role);
         when(userRepository.save(any())).thenReturn(savedUser);
 
         UserCommand returnedUser = authenticationService.registerNewUser(userCommand);
@@ -112,5 +119,6 @@ class AuthenticationServiceImplTest {
         assertEquals(EMAIL, returnedUser.getEmail());
 
         verify(userRepository, times(1)).save(any());
+        verify(roleRepository, times(1)).findByDescription(ROLE_USER);
     }
 }

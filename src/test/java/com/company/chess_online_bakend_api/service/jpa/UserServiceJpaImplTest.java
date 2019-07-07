@@ -147,19 +147,19 @@ class UserServiceJpaImplTest {
 
     @Test
     void findByUsername() {
-        when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(returnUser1));
+        when(userRepository.findByUsernameLike(anyString())).thenReturn(Optional.of(returnUser1));
 
         User user = userService.findByUsername(USERNAME1);
 
         assertEquals(USERNAME1, user.getUsername());
         assertEquals(USER1_ID, user.getId());
 
-        verify(userRepository, times(1)).findByUsername(USERNAME1);
+        verify(userRepository, times(1)).findByUsernameLike(USERNAME1);
     }
 
     @Test
     void findByUsernameNotFound() {
-        when(userRepository.findByUsername(anyString())).thenReturn(Optional.empty());
+        when(userRepository.findByUsernameLike(anyString())).thenReturn(Optional.empty());
 
         Assertions.assertThrows(UserNotFoundException.class, () -> userService.findByUsername(USERNAME1));
     }

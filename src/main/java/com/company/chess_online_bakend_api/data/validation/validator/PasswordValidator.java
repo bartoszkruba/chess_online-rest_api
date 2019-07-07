@@ -22,16 +22,23 @@ public class PasswordValidator implements ConstraintValidator<ValidPasswordConst
 
     @Override
     public boolean isValid(String password, ConstraintValidatorContext constraintValidatorContext) {
+        log.debug("Validating password");
+
         if (password == null) {
+            log.debug("Password is null");
             return true;
         }
-
-        log.debug("Validating password");
 
         Pattern pattern = Pattern.compile("^[A-Za-z0-9_-]*$");
 
         Matcher matcher = pattern.matcher(password);
 
-        return matcher.matches();
+        if (matcher.matches()) {
+            return true;
+        } else {
+            log.debug("Password is not valid");
+            return false;
+        }
     }
 }
+
