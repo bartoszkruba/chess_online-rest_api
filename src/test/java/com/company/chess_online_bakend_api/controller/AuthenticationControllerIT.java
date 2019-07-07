@@ -6,6 +6,7 @@ import com.company.chess_online_bakend_api.data.repository.RoleRepository;
 import com.company.chess_online_bakend_api.data.repository.UserRepository;
 import com.company.chess_online_bakend_api.data.validation.constraint.ValidPasswordConstraint;
 import com.company.chess_online_bakend_api.data.validation.constraint.ValidUsernameConstraint;
+import com.company.chess_online_bakend_api.util.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -317,6 +318,25 @@ public class AuthenticationControllerIT extends AbstractRestControllerTest {
     }
 
     @Test
+    void registerNewUserCapitalizedUsername() throws Exception {
+        UserCommand userCommand = UserCommand.builder()
+                .username(USERNAME.toUpperCase())
+                .password(PASSWORD)
+                .firstName(FIRST_NAME)
+                .lastName(LAST_NAME)
+                .email(EMAIL).build();
+
+        mockMvc.perform(post(AuthenticationController.BASE_URL + "register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(userCommand)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.username", equalTo(StringUtils.capitalizeFirstLetter(USERNAME))))
+                .andExpect(jsonPath("$.firstName", equalTo(FIRST_NAME)))
+                .andExpect(jsonPath("$.lastName", equalTo(LAST_NAME)))
+                .andExpect(jsonPath("$.email", equalTo(EMAIL)));
+    }
+
+    @Test
     void registerNewUser() throws Exception {
 
         UserCommand userCommand = UserCommand.builder()
@@ -330,7 +350,7 @@ public class AuthenticationControllerIT extends AbstractRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(userCommand)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.username", equalTo(USERNAME)))
+                .andExpect(jsonPath("$.username", equalTo(StringUtils.capitalizeFirstLetter(USERNAME))))
                 .andExpect(jsonPath("$.firstName", equalTo(FIRST_NAME)))
                 .andExpect(jsonPath("$.lastName", equalTo(LAST_NAME)))
                 .andExpect(jsonPath("$.email", equalTo(EMAIL)));

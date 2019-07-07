@@ -39,14 +39,14 @@ class UserRepositoryTest {
 
     @Test
     public void testFindByUsername() throws Exception {
-        Optional<User> userOptional = userRepository.findByUsername("ken123");
+        Optional<User> userOptional = userRepository.findByUsernameLike("ken123");
         assertTrue(userOptional.isPresent());
         assertEquals("ken123", userOptional.get().getUsername());
     }
 
     @Test
     public void findByUsernameNoMatch() throws Exception {
-        Optional<User> userOptional = userRepository.findByUsername("Do not exists");
+        Optional<User> userOptional = userRepository.findByUsernameLike("Do not exists");
         assertTrue(userOptional.isEmpty());
     }
 }

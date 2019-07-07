@@ -23,15 +23,21 @@ public class UsernameValidator implements ConstraintValidator<ValidUsernameConst
 
     @Override
     public boolean isValid(String username, ConstraintValidatorContext constraintValidatorContext) {
+        log.debug("Validating username");
         if (username == null) {
+            log.debug("Username is null");
             return true;
         }
 
-        log.debug("Validating username");
 
         Pattern pattern = Pattern.compile("^[A-Za-z0-9_-]*$");
         Matcher matcher = pattern.matcher(username);
 
-        return matcher.matches();
+        if (matcher.matches()) {
+            return true;
+        } else {
+            log.debug("Username is not valid");
+            return false;
+        }
     }
 }

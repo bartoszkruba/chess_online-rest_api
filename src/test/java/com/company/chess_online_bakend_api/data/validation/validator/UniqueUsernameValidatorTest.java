@@ -34,7 +34,7 @@ class UniqueUsernameValidatorTest {
 
     @Test
     void isValid() {
-        when(userRepository.findByUsername(anyString())).thenReturn(Optional.empty());
+        when(userRepository.findByUsernameLike(anyString())).thenReturn(Optional.empty());
 
         boolean validationResult = uniqueUsernameValidator.isValid("someUsername", constraintValidatorContext);
 
@@ -44,7 +44,7 @@ class UniqueUsernameValidatorTest {
 
     @Test
     void usernameExists() {
-        when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(User.builder().build()));
+        when(userRepository.findByUsernameLike(anyString())).thenReturn(Optional.of(User.builder().build()));
 
         boolean validationResult = uniqueUsernameValidator.isValid("someUsername", constraintValidatorContext);
 
