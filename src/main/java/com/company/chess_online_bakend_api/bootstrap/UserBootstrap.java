@@ -31,9 +31,9 @@ public class UserBootstrap implements ApplicationListener<ContextRefreshedEvent>
     @Override
     @Transactional
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
-        log.debug("Loading user roles");
         loadRoles();
-        log.debug("Loading users");
+        log.debug("User roles loaded = " + roleRepository.count());
+        log.debug("Users loaded... = " + userRepository.count());
         loadUsers();
     }
 
