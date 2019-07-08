@@ -1,29 +1,41 @@
 package com.company.chess_online_bakend_api.data.model;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @EqualsAndHashCode(callSuper = true, exclude = "room")
 @Entity
 @Data
 @NoArgsConstructor
-public class Game extends BaseEntity{
+public class Game extends BaseEntity {
 
     @OneToOne
-    Room room;
+    private Room room;
 
-    GameStatus status;
-
-    @ManyToOne
-    User whitePlayer;
+    @Enumerated(EnumType.STRING)
+    private GameStatus status;
 
     @ManyToOne
-    User blackPlayer;
+    private User whitePlayer;
 
-    Integer turn;
+    @ManyToOne
+    private User blackPlayer;
+
+    private Integer turn;
+
+    @Builder
+    public Game(Long id, LocalDateTime created, LocalDateTime updated, Room room, GameStatus status, User whitePlayer,
+                User blackPlayer, Integer turn) {
+        super(id, created, updated);
+        this.room = room;
+        this.status = status;
+        this.whitePlayer = whitePlayer;
+        this.blackPlayer = blackPlayer;
+        this.turn = turn;
+    }
 }
