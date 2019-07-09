@@ -1,14 +1,12 @@
 package com.company.chess_online_bakend_api.data.model;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @EqualsAndHashCode(callSuper = true, exclude = "room")
+@ToString(exclude = "room")
 @Entity
 @Data
 @NoArgsConstructor

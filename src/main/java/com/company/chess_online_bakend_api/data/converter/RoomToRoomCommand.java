@@ -5,6 +5,7 @@ import com.company.chess_online_bakend_api.data.model.Room;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -19,6 +20,7 @@ public class RoomToRoomCommand implements Converter<Room, RoomCommand> {
     }
 
     @Override
+    @Nullable
     public RoomCommand convert(Room room) {
 
         log.debug("Converting Room to RoomCommand");
