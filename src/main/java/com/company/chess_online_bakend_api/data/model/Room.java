@@ -1,6 +1,9 @@
 package com.company.chess_online_bakend_api.data.model;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.CascadeType;
@@ -18,7 +21,6 @@ import java.time.LocalDateTime;
 public class Room extends BaseEntity {
 
     @OneToOne(cascade = CascadeType.ALL)
-    @Setter(AccessLevel.NONE)
     private Game game;
 
     @Column(unique = true)
