@@ -1,6 +1,7 @@
 package com.company.chess_online_bakend_api.data.converter;
 
 import com.company.chess_online_bakend_api.data.command.UserCommand;
+import com.company.chess_online_bakend_api.data.converter.user.UserCommandToUser;
 import com.company.chess_online_bakend_api.data.model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

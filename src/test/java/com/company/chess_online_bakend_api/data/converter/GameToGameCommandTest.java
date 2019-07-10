@@ -2,6 +2,8 @@ package com.company.chess_online_bakend_api.data.converter;
 
 import com.company.chess_online_bakend_api.data.command.GameCommand;
 import com.company.chess_online_bakend_api.data.command.UserCommand;
+import com.company.chess_online_bakend_api.data.converter.game.GameToGameCommand;
+import com.company.chess_online_bakend_api.data.converter.user.UserToUserCommand;
 import com.company.chess_online_bakend_api.data.model.Game;
 import com.company.chess_online_bakend_api.data.model.GameStatus;
 import com.company.chess_online_bakend_api.data.model.Room;

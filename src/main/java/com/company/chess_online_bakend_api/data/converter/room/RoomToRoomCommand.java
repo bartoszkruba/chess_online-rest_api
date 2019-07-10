@@ -1,6 +1,7 @@
-package com.company.chess_online_bakend_api.data.converter;
+package com.company.chess_online_bakend_api.data.converter.room;
 
 import com.company.chess_online_bakend_api.data.command.RoomCommand;
+import com.company.chess_online_bakend_api.data.converter.game.GameToGameCommand;
 import com.company.chess_online_bakend_api.data.model.Room;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
