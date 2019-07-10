@@ -2,6 +2,7 @@ package com.company.chess_online_bakend_api.data.command;
 
 import com.company.chess_online_bakend_api.data.model.PieceColor;
 import com.company.chess_online_bakend_api.data.model.PieceType;
+import com.company.chess_online_bakend_api.data.validation.constraint.ValidPositionConstraint;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
@@ -14,6 +15,8 @@ public class PieceCommand extends BaseEntityCommand {
 
     PieceColor pieceColor;
     PieceType pieceType;
+
+    @ValidPositionConstraint
     String position;
 
     @Builder

@@ -31,11 +31,19 @@ public class PieceCommandToPiece implements Converter<PieceCommand, Piece> {
                 .verticalPosition(getVerticalPosition(pieceCommand)).build();
     }
 
+    @Nullable
     private HorizontalPosition getHorizontalPosition(PieceCommand pieceCommand) {
+        if (pieceCommand.getPosition() == null) {
+            return null;
+        }
         return HorizontalPosition.getPosition(pieceCommand.getPosition().substring(0, 1));
     }
 
+    @Nullable
     private VerticalPosition getVerticalPosition(PieceCommand pieceCommand) {
+        if (pieceCommand.getPosition() == null) {
+            return null;
+        }
         return VerticalPosition.getPosition(pieceCommand.getPosition().substring(1, 2));
     }
 }

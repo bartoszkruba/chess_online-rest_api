@@ -2,7 +2,8 @@ package com.company.chess_online_bakend_api.data.model;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class VerticalPositionTest {
 
@@ -18,7 +19,7 @@ class VerticalPositionTest {
 
     @Test
     void getPositionInvalidValue() {
-        assertNotNull(VerticalPosition.getPosition("-1"));
+        assertNull(VerticalPosition.getPosition("-1"));
     }
 
     @Test
