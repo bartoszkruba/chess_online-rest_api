@@ -15,6 +15,9 @@ public class Game extends BaseEntity {
     @OneToOne
     private Room room;
 
+    @OneToOne(fetch = FetchType.EAGER)
+    private Board board;
+
     @Enumerated(EnumType.STRING)
     private GameStatus status;
 
@@ -28,12 +31,13 @@ public class Game extends BaseEntity {
 
     @Builder
     public Game(Long id, LocalDateTime created, LocalDateTime updated, Room room, GameStatus status, User whitePlayer,
-                User blackPlayer, Integer turn) {
+                User blackPlayer, Integer turn, Board board) {
         super(id, created, updated);
         this.room = room;
         this.status = status;
         this.whitePlayer = whitePlayer;
         this.blackPlayer = blackPlayer;
         this.turn = turn;
+        this.board = board;
     }
 }

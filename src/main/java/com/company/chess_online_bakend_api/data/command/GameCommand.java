@@ -16,15 +16,17 @@ public class GameCommand extends BaseEntityCommand {
     private UserCommand whitePlayer;
     private UserCommand blackPlayer;
     private Integer turn;
+    private BoardCommand board;
 
     @Builder
     public GameCommand(Long id, Long roomId, GameStatus status, UserCommand whitePlayer, UserCommand blackPlayer,
-                       Integer turn) {
+                       Integer turn, BoardCommand boardCommand) {
         super(id);
         this.roomId = roomId;
         this.status = status;
         this.whitePlayer = whitePlayer;
         this.blackPlayer = blackPlayer;
         this.turn = turn;
+        this.board = boardCommand;
     }
 }

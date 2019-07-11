@@ -1,18 +1,20 @@
 package com.company.chess_online_bakend_api.data.converter;
 
+import com.company.chess_online_bakend_api.data.command.BoardCommand;
 import com.company.chess_online_bakend_api.data.command.GameCommand;
+import com.company.chess_online_bakend_api.data.command.PieceCommand;
 import com.company.chess_online_bakend_api.data.command.UserCommand;
+import com.company.chess_online_bakend_api.data.converter.board.BoardToBoardCommand;
 import com.company.chess_online_bakend_api.data.converter.game.GameToGameCommand;
 import com.company.chess_online_bakend_api.data.converter.user.UserToUserCommand;
-import com.company.chess_online_bakend_api.data.model.Game;
-import com.company.chess_online_bakend_api.data.model.GameStatus;
-import com.company.chess_online_bakend_api.data.model.Room;
-import com.company.chess_online_bakend_api.data.model.User;
+import com.company.chess_online_bakend_api.data.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -39,8 +41,16 @@ class GameToGameCommandTest {
             .username("mike69")
             .id(4L).build();
 
+    private final BoardCommand BOARD_COMMAND = BoardCommand.builder()
+            .id(6L)
+            .pieces(Set.of(PieceCommand.builder().id(7L).build(),
+                    PieceCommand.builder().id(8L).build())).build();
+
     @Mock
     UserToUserCommand userToUserCommand;
+
+    @Mock
+    BoardToBoardCommand boardToBoardCommand;
 
     @InjectMocks
     GameToGameCommand gameToGameCommand;
@@ -54,7 +64,8 @@ class GameToGameCommandTest {
     void testConvertNullObject() {
         assertNull(gameToGameCommand.convert(null));
 
-        verify(userToUserCommand, times(0)).convert(any());
+        verifyZeroInteractions(userToUserCommand);
+        verifyZeroInteractions(boardToBoardCommand);
     }
 
     @Test
@@ -68,17 +79,21 @@ class GameToGameCommandTest {
         assertNull(convertedGame.getStatus());
         assertNull(convertedGame.getTurn());
         assertNull(convertedGame.getId());
+        assertNull(convertedGame.getBoard());
 
-        verify(userToUserCommand, times(0)).convert(any());
+        verifyZeroInteractions(userToUserCommand);
+        verifyZeroInteractions(boardToBoardCommand);
     }
 
     @Test
     void testConvert() {
         User whitePlayer = User.builder().id(3L).build();
         User blackPlayer = User.builder().id(4L).build();
+        Board board = Board.builder().id(7L).build();
 
         when(userToUserCommand.convert(whitePlayer)).thenReturn(PLAYER_1_COMMAND);
         when(userToUserCommand.convert(blackPlayer)).thenReturn(PLAYER_2_COMMAND);
+        when(boardToBoardCommand.convert(board)).thenReturn(BOARD_COMMAND);
 
         Game game = Game.builder()
                 .whitePlayer(whitePlayer)
@@ -86,7 +101,8 @@ class GameToGameCommandTest {
                 .room(ROOM)
                 .id(GAME_ID)
                 .status(GameStatus.STARTED)
-                .turn(TURN).build();
+                .turn(TURN)
+                .board(board).build();
 
         GameCommand convertedGame = gameToGameCommand.convert(game);
 
@@ -96,8 +112,10 @@ class GameToGameCommandTest {
         assertEquals(GAME_ID, convertedGame.getId());
         assertEquals(GameStatus.STARTED, convertedGame.getStatus());
         assertEquals(TURN, convertedGame.getTurn());
+        assertEquals(BOARD_COMMAND, convertedGame.getBoard());
 
         verify(userToUserCommand, times(1)).convert(whitePlayer);
         verify(userToUserCommand, times(1)).convert(blackPlayer);
+        verify(boardToBoardCommand, times(1)).convert(board);
     }
 }

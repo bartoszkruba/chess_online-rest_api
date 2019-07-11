@@ -1,6 +1,7 @@
 package com.company.chess_online_bakend_api.data.converter.game;
 
 import com.company.chess_online_bakend_api.data.command.GameCommand;
+import com.company.chess_online_bakend_api.data.converter.board.BoardCommandToBoard;
 import com.company.chess_online_bakend_api.data.converter.user.UserCommandToUser;
 import com.company.chess_online_bakend_api.data.model.Game;
 import lombok.extern.slf4j.Slf4j;
@@ -13,10 +14,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class GameCommandToGame implements Converter<GameCommand, Game> {
 
+    private final BoardCommandToBoard boardCommandToBoard;
     private final UserCommandToUser userCommandToUser;
 
     @Autowired
-    public GameCommandToGame(UserCommandToUser userCommandToUser) {
+    public GameCommandToGame(BoardCommandToBoard boardCommandToBoard, UserCommandToUser userCommandToUser) {
+        this.boardCommandToBoard = boardCommandToBoard;
         this.userCommandToUser = userCommandToUser;
     }
 
@@ -41,6 +44,10 @@ public class GameCommandToGame implements Converter<GameCommand, Game> {
 
         if (gameCommand.getBlackPlayer() != null) {
             game.setBlackPlayer(userCommandToUser.convert(gameCommand.getBlackPlayer()));
+        }
+
+        if (gameCommand.getBoard() != null) {
+            game.setBoard(boardCommandToBoard.convert(gameCommand.getBoard()));
         }
 
         return game;
