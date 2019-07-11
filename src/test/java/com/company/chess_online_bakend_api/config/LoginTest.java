@@ -1,7 +1,11 @@
 package com.company.chess_online_bakend_api.config;
 
 
+import com.company.chess_online_bakend_api.bootstrap.UserBootstrap;
 import com.company.chess_online_bakend_api.controller.AuthenticationController;
+import com.company.chess_online_bakend_api.data.repository.RoleRepository;
+import com.company.chess_online_bakend_api.data.repository.UserRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,15 +30,33 @@ public class LoginTest {
     private MockMvc mockMvc;
 
     @Autowired
+    private UserBootstrap userBootstrap;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private RoleRepository roleRepository;
+
+    @Autowired
     private WebApplicationContext wac;
 
     @BeforeEach
     void setup() {
+        userBootstrap.onApplicationEvent(null);
+
         this.mockMvc = MockMvcBuilders
                 .webAppContextSetup(this.wac)
                 .apply(springSecurity())
                 .build();
     }
+
+    @AfterEach
+    void tearDown() {
+        userRepository.deleteAll();
+        roleRepository.deleteAll();
+    }
+
 
     @Test
     public void adminCanLog() throws Exception {
