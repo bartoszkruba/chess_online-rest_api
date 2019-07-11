@@ -2,7 +2,7 @@ package com.company.chess_online_bakend_api.data.converter.piece;
 
 import com.company.chess_online_bakend_api.data.command.PieceCommand;
 import com.company.chess_online_bakend_api.data.model.Piece;
-import com.company.chess_online_bakend_api.util.PositionUtil;
+import com.company.chess_online_bakend_api.util.PositionUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.lang.Nullable;
@@ -26,7 +26,7 @@ public class PieceToPieceCommand implements Converter<Piece, PieceCommand> {
                 .id(piece.getId())
                 .pieceColor(piece.getPieceColor())
                 .pieceType(piece.getPieceType())
-                .position(PositionUtil.getPositionString(piece.getHorizontalPosition(),
+                .position(PositionUtils.getPositionString(piece.getHorizontalPosition(),
                         piece.getVerticalPosition()))
                 .build();
     }

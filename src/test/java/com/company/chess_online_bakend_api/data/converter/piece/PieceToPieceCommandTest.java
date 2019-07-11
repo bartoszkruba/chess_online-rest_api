@@ -1,7 +1,11 @@
 package com.company.chess_online_bakend_api.data.converter.piece;
 
 import com.company.chess_online_bakend_api.data.command.PieceCommand;
-import com.company.chess_online_bakend_api.data.model.*;
+import com.company.chess_online_bakend_api.data.model.Piece;
+import com.company.chess_online_bakend_api.data.model.enums.HorizontalPosition;
+import com.company.chess_online_bakend_api.data.model.enums.PieceColor;
+import com.company.chess_online_bakend_api.data.model.enums.PieceType;
+import com.company.chess_online_bakend_api.data.model.enums.VerticalPosition;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

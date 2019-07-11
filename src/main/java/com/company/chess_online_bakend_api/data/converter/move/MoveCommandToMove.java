@@ -2,37 +2,35 @@ package com.company.chess_online_bakend_api.data.converter.move;
 
 import com.company.chess_online_bakend_api.data.command.MoveCommand;
 import com.company.chess_online_bakend_api.data.model.Move;
-import com.company.chess_online_bakend_api.util.PositionUtil;
+import com.company.chess_online_bakend_api.util.PositionUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
-@Component
 @Slf4j
-public class MoveCommandToMove implements Converter<Move, MoveCommand> {
+@Component
+public class MoveCommandToMove implements Converter<MoveCommand, Move> {
 
     @Override
     @Nullable
-    public MoveCommand convert(Move move) {
+    public Move convert(MoveCommand moveCommand) {
+        log.debug("Converting MoveCommand to Move");
 
-        log.debug("Converting Move to MoveCommand");
-
-        if (move == null) {
+        if (moveCommand == null) {
             return null;
         }
 
-        return MoveCommand.builder()
-                .id(move.getId())
-                .happenedOn(move.getCreated())
-                .count(move.getMoveCount())
-                .pieceColor(move.getPieceColor())
-                .pieceType(move.getPieceType())
-                .from(PositionUtil.getPositionString(move.getHorizontalStartPosition(),
-                        move.getVerticalStartPosition()))
-                .to(PositionUtil.getPositionString(move.getHorizontalEndPosition(),
-                        move.getVerticalEndPosition()))
+        return Move.builder()
+                .id(moveCommand.getId())
+                .moveCount(moveCommand.getCount())
+                .created(moveCommand.getHappenedOn())
+                .pieceType(moveCommand.getPieceType())
+                .pieceColor(moveCommand.getPieceColor())
+                .horizontalStartPosition(PositionUtils.getHorizontalPosition(moveCommand.getFrom()))
+                .verticalStartPosition(PositionUtils.getVerticalPosition(moveCommand.getFrom()))
+                .horizontalEndPosition(PositionUtils.getHorizontalPosition(moveCommand.getTo()))
+                .verticalEndPosition(PositionUtils.getVerticalPosition(moveCommand.getTo()))
                 .build();
-
     }
 }

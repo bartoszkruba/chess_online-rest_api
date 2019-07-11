@@ -6,14 +6,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.Nullable;
 
 @Slf4j
-public class PositionUtil {
+public class PositionUtils {
 
     // TODO: 2019-07-11 write tests
 
     @Nullable
     public static String getPositionString(HorizontalPosition hPos, VerticalPosition vPos) {
 
-        log.debug("Converting positions into string");
+        log.debug("Converting positions to string");
 
         if (hPos == null || vPos == null) {
             return null;
@@ -26,6 +26,9 @@ public class PositionUtil {
 
     @Nullable
     public static HorizontalPosition getHorizontalPosition(String position) {
+
+        log.debug("Converting position string to HorizontalPosition");
+
         if (position == null || position.length() != 2) {
             return null;
         }
@@ -34,9 +37,13 @@ public class PositionUtil {
 
     @Nullable
     public static VerticalPosition getVerticalPosition(String position) {
+
+        log.debug("Converting position string to VerticalPosition");
+
         if (position == null || position.length() != 2) {
             return null;
         }
+
         return VerticalPosition.getPosition(position.substring(1, 2));
     }
 }

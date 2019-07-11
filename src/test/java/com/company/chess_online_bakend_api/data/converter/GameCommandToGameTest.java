@@ -8,8 +8,8 @@ import com.company.chess_online_bakend_api.data.converter.game.GameCommandToGame
 import com.company.chess_online_bakend_api.data.converter.user.UserCommandToUser;
 import com.company.chess_online_bakend_api.data.model.Board;
 import com.company.chess_online_bakend_api.data.model.Game;
-import com.company.chess_online_bakend_api.data.model.GameStatus;
 import com.company.chess_online_bakend_api.data.model.User;
+import com.company.chess_online_bakend_api.data.model.enums.GameStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

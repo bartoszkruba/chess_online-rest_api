@@ -26,6 +26,8 @@ public class MoveCommand extends BaseEntityCommand {
     private PieceColor pieceColor;
     private PieceType pieceType;
     private Integer count;
+
+    // TODO: 2019-07-11 Consider switching to epoch time
     private LocalDateTime happenedOn;
 
     @Builder

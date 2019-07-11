@@ -1,5 +1,6 @@
 package com.company.chess_online_bakend_api.data.model;
 
+import com.company.chess_online_bakend_api.data.model.enums.GameStatus;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
