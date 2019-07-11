@@ -1,4 +1,4 @@
-package com.company.chess_online_bakend_api.data.model;
+package com.company.chess_online_bakend_api.data.model.enums;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.Nullable;

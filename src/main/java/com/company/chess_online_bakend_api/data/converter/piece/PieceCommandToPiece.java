@@ -1,9 +1,8 @@
 package com.company.chess_online_bakend_api.data.converter.piece;
 
 import com.company.chess_online_bakend_api.data.command.PieceCommand;
-import com.company.chess_online_bakend_api.data.model.HorizontalPosition;
 import com.company.chess_online_bakend_api.data.model.Piece;
-import com.company.chess_online_bakend_api.data.model.VerticalPosition;
+import com.company.chess_online_bakend_api.util.PositionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.lang.Nullable;
@@ -27,23 +26,8 @@ public class PieceCommandToPiece implements Converter<PieceCommand, Piece> {
                 .id(pieceCommand.getId())
                 .pieceColor(pieceCommand.getPieceColor())
                 .pieceType(pieceCommand.getPieceType())
-                .horizontalPosition(getHorizontalPosition(pieceCommand))
-                .verticalPosition(getVerticalPosition(pieceCommand)).build();
-    }
-
-    @Nullable
-    private HorizontalPosition getHorizontalPosition(PieceCommand pieceCommand) {
-        if (pieceCommand.getPosition() == null) {
-            return null;
-        }
-        return HorizontalPosition.getPosition(pieceCommand.getPosition().substring(0, 1));
-    }
-
-    @Nullable
-    private VerticalPosition getVerticalPosition(PieceCommand pieceCommand) {
-        if (pieceCommand.getPosition() == null) {
-            return null;
-        }
-        return VerticalPosition.getPosition(pieceCommand.getPosition().substring(1, 2));
+                .horizontalPosition(PositionUtil.getHorizontalPosition(pieceCommand.getPosition()))
+                .verticalPosition(PositionUtil.getVerticalPosition(pieceCommand.getPosition()))
+                .build();
     }
 }

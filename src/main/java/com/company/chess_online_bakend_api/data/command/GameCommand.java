@@ -1,6 +1,6 @@
 package com.company.chess_online_bakend_api.data.command;
 
-import com.company.chess_online_bakend_api.data.model.GameStatus;
+import com.company.chess_online_bakend_api.data.model.enums.GameStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
