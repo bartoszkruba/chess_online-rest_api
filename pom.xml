@@ -139,6 +139,12 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>${build-plugin.jacoco.version}</version>
+                <configuration>
+                    <excludes>
+                        <exclude>**/*com/company/chess_online_bakend_api/data/model/**</exclude>
+                        <exclude>**/*com/company/chess_online_bakend_api/data/command/**</exclude>
+                    </excludes>
+                </configuration>
                 <executions>
                     <!-- Prepares the property pointing to the JaCoCo
                     runtime agent which is passed as VM argument when Maven the Surefire plugin
