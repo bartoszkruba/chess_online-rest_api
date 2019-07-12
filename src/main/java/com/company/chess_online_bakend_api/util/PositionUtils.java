@@ -8,8 +8,6 @@ import org.springframework.lang.Nullable;
 @Slf4j
 public class PositionUtils {
 
-    // TODO: 2019-07-11 write tests
-
     @Nullable
     public static String getPositionString(HorizontalPosition hPos, VerticalPosition vPos) {
 
@@ -21,8 +19,6 @@ public class PositionUtils {
 
         return hPos.toString() + vPos.toString();
     }
-
-// TODO: 2019-07-11 write tests
 
     @Nullable
     public static HorizontalPosition getHorizontalPosition(String position) {
