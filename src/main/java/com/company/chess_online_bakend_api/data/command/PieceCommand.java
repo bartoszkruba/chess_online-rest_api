@@ -13,6 +13,8 @@ import lombok.*;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PieceCommand extends BaseEntityCommand {
 
+    Integer moves;
+
     PieceColor pieceColor;
     PieceType pieceType;
 
@@ -20,11 +22,12 @@ public class PieceCommand extends BaseEntityCommand {
     String position;
 
     @Builder
-    public PieceCommand(Long id, PieceColor pieceColor, PieceType pieceType, String position) {
+    public PieceCommand(Long id, PieceColor pieceColor, PieceType pieceType, String position, Integer moves) {
         super(id);
         this.pieceColor = pieceColor;
         this.pieceType = pieceType;
         this.position = position;
+        this.moves = moves;
     }
 
 }

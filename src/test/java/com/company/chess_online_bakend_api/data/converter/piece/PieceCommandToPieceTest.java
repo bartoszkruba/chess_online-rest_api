@@ -40,6 +40,7 @@ class PieceCommandToPieceTest {
         assertNull(piece.getPieceType());
         assertNull(piece.getHorizontalPosition());
         assertNull(piece.getVerticalPosition());
+        assertNull(piece.getMoves());
     }
 
 
@@ -50,6 +51,7 @@ class PieceCommandToPieceTest {
                 .pieceColor(PieceColor.WHITE)
                 .pieceType(PieceType.KING)
                 .position("a1")
+                .moves(2)
                 .build();
 
         Piece piece = pieceCommandToPiece.convert(pieceCommand);
@@ -59,5 +61,6 @@ class PieceCommandToPieceTest {
         assertEquals(PieceType.KING, piece.getPieceType());
         assertEquals(HorizontalPosition.A, piece.getHorizontalPosition());
         assertEquals(VerticalPosition.ONE, piece.getVerticalPosition());
+        assertEquals(Integer.valueOf(2), piece.getMoves());
     }
 }

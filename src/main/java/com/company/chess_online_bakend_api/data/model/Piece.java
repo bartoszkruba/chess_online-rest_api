@@ -19,6 +19,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class Piece extends BaseEntity {
 
+    Integer moves;
+
     @Enumerated
     PieceColor pieceColor;
 
@@ -33,11 +35,12 @@ public class Piece extends BaseEntity {
 
     @Builder
     public Piece(Long id, LocalDateTime created, LocalDateTime updated, PieceColor pieceColor, PieceType pieceType,
-                 HorizontalPosition horizontalPosition, VerticalPosition verticalPosition) {
+                 HorizontalPosition horizontalPosition, VerticalPosition verticalPosition, Integer moves) {
         super(id, created, updated);
         this.pieceColor = pieceColor;
         this.pieceType = pieceType;
         this.horizontalPosition = horizontalPosition;
         this.verticalPosition = verticalPosition;
+        this.moves = moves;
     }
 }

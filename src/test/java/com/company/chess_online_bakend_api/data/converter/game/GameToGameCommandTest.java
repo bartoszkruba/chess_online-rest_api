@@ -1,11 +1,10 @@
-package com.company.chess_online_bakend_api.data.converter;
+package com.company.chess_online_bakend_api.data.converter.game;
 
 import com.company.chess_online_bakend_api.data.command.BoardCommand;
 import com.company.chess_online_bakend_api.data.command.GameCommand;
 import com.company.chess_online_bakend_api.data.command.PieceCommand;
 import com.company.chess_online_bakend_api.data.command.UserCommand;
 import com.company.chess_online_bakend_api.data.converter.board.BoardToBoardCommand;
-import com.company.chess_online_bakend_api.data.converter.game.GameToGameCommand;
 import com.company.chess_online_bakend_api.data.converter.user.UserToUserCommand;
 import com.company.chess_online_bakend_api.data.model.Board;
 import com.company.chess_online_bakend_api.data.model.Game;

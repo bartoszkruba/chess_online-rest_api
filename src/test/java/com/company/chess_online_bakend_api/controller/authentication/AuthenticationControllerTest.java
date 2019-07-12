@@ -1,5 +1,8 @@
-package com.company.chess_online_bakend_api.controller;
+package com.company.chess_online_bakend_api.controller.authentication;
 
+import com.company.chess_online_bakend_api.controller.AbstractRestControllerTest;
+import com.company.chess_online_bakend_api.controller.AuthenticationController;
+import com.company.chess_online_bakend_api.controller.ExceptionAdviceController;
 import com.company.chess_online_bakend_api.service.AuthenticationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

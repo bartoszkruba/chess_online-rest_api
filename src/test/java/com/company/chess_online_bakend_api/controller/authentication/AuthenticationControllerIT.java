@@ -1,6 +1,8 @@
-package com.company.chess_online_bakend_api.controller;
+package com.company.chess_online_bakend_api.controller.authentication;
 
 import com.company.chess_online_bakend_api.bootstrap.UserBootstrap;
+import com.company.chess_online_bakend_api.controller.AbstractRestControllerTest;
+import com.company.chess_online_bakend_api.controller.AuthenticationController;
 import com.company.chess_online_bakend_api.data.command.UserCommand;
 import com.company.chess_online_bakend_api.data.repository.RoleRepository;
 import com.company.chess_online_bakend_api.data.repository.UserRepository;

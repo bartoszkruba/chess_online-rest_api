@@ -26,6 +26,7 @@ public class PieceToPieceCommand implements Converter<Piece, PieceCommand> {
                 .id(piece.getId())
                 .pieceColor(piece.getPieceColor())
                 .pieceType(piece.getPieceType())
+                .moves(piece.getMoves())
                 .position(PositionUtils.getPositionString(piece.getHorizontalPosition(),
                         piece.getVerticalPosition()))
                 .build();
