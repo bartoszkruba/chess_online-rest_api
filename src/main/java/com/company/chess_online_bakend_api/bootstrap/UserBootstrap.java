@@ -31,17 +31,21 @@ public class UserBootstrap implements ApplicationListener<ContextRefreshedEvent>
     @Override
     @Transactional
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
-        log.debug("Loading user roles");
         loadRoles();
-        log.debug("Loading users");
+        log.debug("User roles loaded = " + roleRepository.count());
+        log.debug("Users loaded... = " + userRepository.count());
         loadUsers();
     }
 
     private void loadRoles() {
-        Role role1 = Role.builder().description("ROLE_USER").build();
-        roleRepository.save(role1);
-        Role role2 = Role.builder().description("ROLE_ADMIN").build();
-        roleRepository.save(role2);
+        if (roleRepository.findByDescription("ROLE_USER") == null) {
+            Role role1 = Role.builder().description("ROLE_USER").build();
+            roleRepository.save(role1);
+        }
+        if (roleRepository.findByDescription("ROLE_ADMIN") == null) {
+            Role role2 = Role.builder().description("ROLE_ADMIN").build();
+            roleRepository.save(role2);
+        }
     }
 
     private void loadUsers() {
@@ -57,21 +61,26 @@ public class UserBootstrap implements ApplicationListener<ContextRefreshedEvent>
             throw new RuntimeException("ROLE_USER not found");
         }
 
-        User adminUser = User.builder()
-                .firstName("Kirk")
-                .lastName("Kennedy")
-                .username("ken123")
-                .email("ken123@email.com")
-                .password(encoder.encode("devo")).build().addRole(adminRole);
-        userRepository.save(adminUser);
 
-        User normalUser = User.builder()
-                .firstName("Carl")
-                .lastName("Soto")
-                .username("carl69")
-                .email("carl69@email.com")
-                .password(encoder.encode("tyler1")).build().addRole(userRole);
-        userRepository.save(normalUser);
+        if (userRepository.findByUsernameLike("ken123").isEmpty()) {
+            User adminUser = User.builder()
+                    .firstName("Kirk")
+                    .lastName("Kennedy")
+                    .username("ken123")
+                    .email("ken123@email.com")
+                    .password(encoder.encode("devo")).build().addRole(adminRole);
+            userRepository.save(adminUser);
+        }
+
+        if (userRepository.findByUsernameLike("carl69").isEmpty()) {
+            User normalUser = User.builder()
+                    .firstName("Carl")
+                    .lastName("Soto")
+                    .username("carl69")
+                    .email("carl69@email.com")
+                    .password(encoder.encode("tyler1")).build().addRole(userRole);
+            userRepository.save(normalUser);
+        }
     }
 
 }

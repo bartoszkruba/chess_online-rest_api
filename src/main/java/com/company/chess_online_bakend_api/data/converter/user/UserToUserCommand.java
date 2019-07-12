@@ -1,19 +1,21 @@
-package com.company.chess_online_bakend_api.data.converter;
+package com.company.chess_online_bakend_api.data.converter.user;
 
 import com.company.chess_online_bakend_api.data.command.UserCommand;
 import com.company.chess_online_bakend_api.data.model.User;
-import lombok.Synchronized;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 public class UserToUserCommand implements Converter<User, UserCommand> {
 
-    @Synchronized
     @Nullable
     @Override
     public UserCommand convert(User user) {
+
+        log.debug("Converting User to UserCommand");
 
         if (user == null) {
             return null;
