@@ -143,6 +143,7 @@
                     <excludes>
                         <exclude>**/*com/company/chess_online_bakend_api/data/model/**</exclude>
                         <exclude>**/*com/company/chess_online_bakend_api/data/command/**</exclude>
+                        <exclude>**/*com/company/chess_online_bakend_api/validation/constraint/**</exclude>
                     </excludes>
                 </configuration>
                 <executions>
