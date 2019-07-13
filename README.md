@@ -3,4 +3,11 @@
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 
 
-You can find docker image for this project on [DockerHub](https://cloud.docker.com/u/nawajo/repository/docker/nawajo/chess_rest_api)
+You can find docker image for this project on [DockerHub](https://cloud.docker.com/u/nawajo/repository/docker/nawajo/chess_rest_api)  
+  
+Running through docker-compose:  
+```
+$ git pull https://github.com/bartoszkruba/chess_online_docker-compose.git  
+$ cd dev  
+$ docker-compose up
+```
