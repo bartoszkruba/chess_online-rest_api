@@ -9,13 +9,17 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.company</groupId>
-    <artifactId>chess_online_bakend_api</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <name>chess_online_bakend_api</name>
+    <artifactId>chess_online_rest_api</artifactId>
+    <version>0.0.2-SNAPSHOT</version>
+    <name>chess_online_rest_api</name>
     <description>Demo project for Spring Boot</description>
 
     <properties>
         <java.version>11</java.version>
+
+<!--        Fabric8-->
+        <docker.image.prefix>nawajo</docker.image.prefix>
+        <docker.image.name>chess_rest_api</docker.image.name>
 
         <!-- Analysis Tools for CI -->
         <build-plugin.jacoco.version>0.8.4</build-plugin.jacoco.version>
@@ -24,6 +28,8 @@
     </properties>
 
     <dependencies>
+
+<!--        Spring Boot-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -36,36 +42,36 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-
         <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-validator</artifactId>
-            <version>6.0.10.Final</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.springframework.session</groupId>
             <artifactId>spring-session-core</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
             <scope>runtime</scope>
             <optional>true</optional>
         </dependency>
+
+<!--        MYSQL-->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <scope>runtime</scope>
         </dependency>
 
+<!--        Lombok-->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
 
+<!--        Swagger-->
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
@@ -77,6 +83,8 @@
             <version>${swagger.version}</version>
         </dependency>
 
+
+<!--        Tests-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -130,11 +138,14 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+
             </plugin>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.0</version>
             </plugin>
+
+<!--            Test Coverage-->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
@@ -180,6 +191,43 @@
                 </dependencies>
                 <configuration>
                     <repoToken>ARRS1euTkYY5uUyChT7v4I01aRLFD8tU2</repoToken>
+                </configuration>
+            </plugin>
+
+<!--            Fabric8-->
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>0.29.0</version>
+
+                <configuration>
+
+                    <!--<dockerHost>http://127.0.0.1:2375</dockerHost>-->
+                    <dockerHost>unix:///var/run/docker.sock</dockerHost>
+
+                    <verbose>true</verbose>
+                    <images>
+                        <image>
+                            <name>${docker.image.prefix}/${docker.image.name}</name>
+                            <build>
+                                <dockerFileDir>${project.basedir}/src/main/docker/</dockerFileDir>
+
+                                <!--copies artficact to docker build dir in target-->
+                                <assembly>
+                                    <descriptorRef>artifact</descriptorRef>
+                                </assembly>
+                                <tags>
+                                    <tag>latest</tag>
+                                    <tag>${project.version}</tag>
+                                </tags>
+                            </build>
+                            <run>
+                                <ports>
+                                    <port>8080:8080</port>
+                                </ports>
+                            </run>
+                        </image>
+                    </images>
                 </configuration>
             </plugin>
 

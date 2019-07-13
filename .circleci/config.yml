@@ -12,7 +12,7 @@ jobs:
       - image: circleci/mysql:5.7-ram
         environment:
           MYSQL_ROOT_PASSWORD: password
-          MYSQL_DATABASE: chess_online
+          MYSQL_DATABASE: chess_online_dev
           MYSQL_USER: user
           MYSQL_PASSWORD: password
 

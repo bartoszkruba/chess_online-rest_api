@@ -1,6 +1,6 @@
 package com.company.chess_online_bakend_api.data.repository;
 
-import com.company.chess_online_bakend_api.bootstrap.UserBootstrap;
+import com.company.chess_online_bakend_api.bootstrap.dev.UserBootstrap;
 import com.company.chess_online_bakend_api.data.model.Role;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package com.company.chess_online_bakend_api.bootstrap;
+package com.company.chess_online_bakend_api.bootstrap.dev;
 
 import com.company.chess_online_bakend_api.data.model.Role;
 import com.company.chess_online_bakend_api.data.model.User;
@@ -7,6 +7,7 @@ import com.company.chess_online_bakend_api.data.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Component
+@Profile("dev")
 public class UserBootstrap implements ApplicationListener<ContextRefreshedEvent> {
 
     private final UserRepository userRepository;

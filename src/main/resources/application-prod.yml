@@ -1,0 +1,21 @@
+spring:
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+
+  datasource:
+    url: jdbc:mysql://localhost/chess_online_prod?useSSL=false&serverTimezone=Europe/Stockholm
+    username: root
+    password: password
+
+
+logging:
+  level:
+    org:
+      springframework: INFO
+    com:
+      company: INFO
