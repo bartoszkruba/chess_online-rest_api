@@ -2,6 +2,7 @@ package com.company.chess_online_bakend_api.bootstrap.dev;
 
 import com.company.chess_online_bakend_api.data.model.Room;
 import com.company.chess_online_bakend_api.data.repository.RoomRepository;
+import com.company.chess_online_bakend_api.util.GameUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -65,6 +66,8 @@ public class RoomBootstrap implements CommandLineRunner {
     }
 
     private Room newRoom(String name) {
-        return Room.builder().name(name).build();
+        Room room = Room.builder().name(name).build();
+        room.addGame(GameUtil.initNewGame());
+        return room;
     }
 }

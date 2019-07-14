@@ -1,5 +1,6 @@
 package com.company.chess_online_bakend_api.controller.room;
 
+import com.company.chess_online_bakend_api.controller.AbstractRestControllerTest;
 import com.company.chess_online_bakend_api.controller.ExceptionAdviceController;
 import com.company.chess_online_bakend_api.controller.RoomController;
 import com.company.chess_online_bakend_api.data.command.GameCommand;
@@ -23,7 +24,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class RoomControllerTest {
+class RoomControllerTest extends AbstractRestControllerTest {
 
     private final Long GAMECOMMAND1_ID = 1L;
     private final Long GAMECOMMAND2_ID = 2L;
@@ -109,6 +110,4 @@ class RoomControllerTest {
         verify(roomService, times(1)).getRoomCount();
         verifyNoMoreInteractions(roomService);
     }
-
-
 }

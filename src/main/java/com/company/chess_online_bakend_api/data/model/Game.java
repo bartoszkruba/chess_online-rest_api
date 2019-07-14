@@ -16,7 +16,7 @@ public class Game extends BaseEntity {
     @OneToOne
     private Room room;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Board board;
 
     @Enumerated(EnumType.STRING)

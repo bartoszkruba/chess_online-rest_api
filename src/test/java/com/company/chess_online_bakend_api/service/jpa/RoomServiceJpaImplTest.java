@@ -74,6 +74,22 @@ class RoomServiceJpaImplTest {
     }
 
     @Test
+    void createNewRoom() {
+        when(roomRepository.findByNameLike(ROOMCOMMAND1.getName())).thenReturn(Optional.empty());
+        when(roomRepository.save(any())).thenReturn(ROOM1);
+
+        RoomCommand roomCommand = roomService.createNewRoom(ROOMCOMMAND1);
+
+        assertEquals(ROOMCOMMAND1, roomCommand);
+
+        verify(roomRepository, times(1)).save(any());
+        verifyNoMoreInteractions(roomRepository);
+
+        verify(roomToRoomCommand, times(1)).convert(ROOM1);
+        verifyNoMoreInteractions(roomToRoomCommand);
+    }
+
+    @Test
     void getRoomPage() {
 
         List<Room> rooms = Arrays.asList(ROOM1, ROOM2);

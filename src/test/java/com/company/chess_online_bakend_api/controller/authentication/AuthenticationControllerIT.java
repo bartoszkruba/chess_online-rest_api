@@ -6,6 +6,7 @@ import com.company.chess_online_bakend_api.controller.AuthenticationController;
 import com.company.chess_online_bakend_api.data.command.UserCommand;
 import com.company.chess_online_bakend_api.data.repository.RoleRepository;
 import com.company.chess_online_bakend_api.data.repository.UserRepository;
+import com.company.chess_online_bakend_api.data.validation.constraint.UniqueUsernameConstraint;
 import com.company.chess_online_bakend_api.util.StringUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -107,7 +108,7 @@ public class AuthenticationControllerIT extends AbstractRestControllerTest {
                 .content(asJsonString(userCommand)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status", equalTo(400)))
-                .andExpect(jsonPath("$.errors[0]", equalTo("Username already exists")))
+                .andExpect(jsonPath("$.errors[0]", equalTo(UniqueUsernameConstraint.ERROR_MESSAGE)))
                 .andExpect(jsonPath("$.errors", hasSize(1)));
 
     }

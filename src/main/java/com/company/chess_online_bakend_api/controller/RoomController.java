@@ -8,7 +8,10 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @Api
 @Slf4j
@@ -35,12 +38,22 @@ public class RoomController {
         return roomService.findById(id);
     }
 
+    @ApiOperation(value = "Get rooms count")
     @GetMapping("count")
     @ResponseStatus(HttpStatus.OK)
     public RoomCountCommand getRoomCount() {
         log.debug("New request: GET " + BASE_URL + "count");
 
         return RoomCountCommand.builder().count(roomService.getRoomCount()).build();
+    }
+
+    @PostMapping()
+    @ResponseStatus(HttpStatus.CREATED)
+    @Secured({"ROLE_ADMIN"})
+    public RoomCommand createNewRoom(@Valid @RequestBody RoomCommand roomCommand) {
+        log.debug("New request: POST " + BASE_URL);
+
+        return roomService.createNewRoom(roomCommand);
     }
 
 }

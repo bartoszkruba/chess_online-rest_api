@@ -7,6 +7,7 @@ import com.company.chess_online_bakend_api.data.model.Room;
 import com.company.chess_online_bakend_api.data.repository.RoomRepository;
 import com.company.chess_online_bakend_api.exception.RoomNotFoundException;
 import com.company.chess_online_bakend_api.service.RoomService;
+import com.company.chess_online_bakend_api.util.GameUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -46,6 +47,15 @@ public class RoomServiceJpaImpl implements RoomService {
         return roomPage.get()
                 .map(roomToRoomCommand::convert)
                 .collect(Collectors.toSet());
+    }
+
+    @Override
+    public RoomCommand createNewRoom(RoomCommand roomCommand) {
+        Room room = roomCommandToRoom.convert(roomCommand);
+        room.setId(null);
+        room.addGame(GameUtil.initNewGame());
+
+        return roomToRoomCommand.convert(roomRepository.save(room));
     }
 
     @Override

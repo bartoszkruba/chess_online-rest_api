@@ -10,4 +10,5 @@ public interface RoomService extends CrudService<RoomCommand, Long> {
 
     Set<RoomCommand> getRoomPage(int page);
 
+    RoomCommand createNewRoom(RoomCommand roomCommand);
 }
