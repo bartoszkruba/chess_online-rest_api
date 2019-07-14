@@ -44,24 +44,24 @@ public class ExceptionAdviceController extends ResponseEntityExceptionHandler {
 
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(UserNotFoundException.class)
     public Map<String, Object> handleUserNotFoundException(Exception ex) {
 
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("timestamp", new Date());
-        body.put("status", 400);
+        body.put("status", 404);
         body.put("error", ex.getMessage());
 
         return body;
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(RoomNotFoundException.class)
     public Map<String, Object> handleRoomNotFoundException(Exception ex) {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("timestamp", new Date());
-        body.put("status", 400);
+        body.put("status", 404);
         body.put("error", ex.getMessage());
 
         return body;

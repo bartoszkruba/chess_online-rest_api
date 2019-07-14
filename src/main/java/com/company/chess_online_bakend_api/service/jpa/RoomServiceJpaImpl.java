@@ -52,6 +52,10 @@ public class RoomServiceJpaImpl implements RoomService {
     public RoomCommand findById(Long id) {
         Optional<Room> roomOptional = roomRepository.findById(id);
 
+        if (roomOptional.isEmpty()) {
+            throw new RoomNotFoundException("Room with id " + id + " does not exists");
+        }
+
         return roomOptional.map(roomToRoomCommand::convert).orElse(null);
     }
 

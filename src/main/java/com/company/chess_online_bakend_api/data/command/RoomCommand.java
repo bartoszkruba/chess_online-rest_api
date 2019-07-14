@@ -10,9 +10,9 @@ import lombok.*;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class RoomCommand extends BaseEntityCommand {
 
-    GameCommand game;
+    private GameCommand game;
 
-    String name;
+    private String name;
 
     @Builder
     public RoomCommand(Long id, GameCommand game, String name) {

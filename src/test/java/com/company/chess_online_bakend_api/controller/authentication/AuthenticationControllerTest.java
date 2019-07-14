@@ -45,8 +45,6 @@ class AuthenticationControllerTest extends AbstractRestControllerTest {
 
     @BeforeEach
     void setUp() {
-
-
         MockitoAnnotations.initMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(authenticationController)
                 .setControllerAdvice(ExceptionAdviceController.class)
