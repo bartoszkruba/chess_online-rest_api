@@ -29,7 +29,7 @@ public class RoomController {
     }
 
     @ApiOperation(value = "Get room by id",
-            notes = "Will return 404 NOT FOUND if room with given id does not exist")
+            notes = "Returns 404 NOT FOUND if room with given id does not exist")
     @GetMapping("{id}")
     @ResponseStatus(HttpStatus.OK)
     public RoomCommand getRoomById(@PathVariable Long id) {
@@ -47,6 +47,9 @@ public class RoomController {
         return RoomCountCommand.builder().count(roomService.getRoomCount()).build();
     }
 
+    @ApiOperation(value = "Create new room",
+            notes = "Restricted for only admins. \n" +
+                    "Returns 400 BAD REQUEST if room with same name already exists")
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
     @Secured({"ROLE_ADMIN"})
