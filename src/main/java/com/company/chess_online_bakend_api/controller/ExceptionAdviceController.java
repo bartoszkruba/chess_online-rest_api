@@ -1,5 +1,6 @@
 package com.company.chess_online_bakend_api.controller;
 
+import com.company.chess_online_bakend_api.exception.RoomNotFoundException;
 import com.company.chess_online_bakend_api.exception.UserNotFoundException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -47,6 +48,17 @@ public class ExceptionAdviceController extends ResponseEntityExceptionHandler {
     @ExceptionHandler(UserNotFoundException.class)
     public Map<String, Object> handleUserNotFoundException(Exception ex) {
 
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", new Date());
+        body.put("status", 400);
+        body.put("error", ex.getMessage());
+
+        return body;
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(RoomNotFoundException.class)
+    public Map<String, Object> handleRoomNotFoundException(Exception ex) {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("timestamp", new Date());
         body.put("status", 400);
