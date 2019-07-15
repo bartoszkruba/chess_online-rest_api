@@ -14,7 +14,6 @@ import java.util.Set;
 @Slf4j
 public class BoardUtil {
 
-    // TODO: 2019-07-14 write tests
     public static Board initNewBoard() {
         log.debug("Initializing new board");
 
