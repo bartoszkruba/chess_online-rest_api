@@ -8,6 +8,7 @@ import com.company.chess_online_bakend_api.data.repository.RoomRepository;
 import com.company.chess_online_bakend_api.exception.RoomNotFoundException;
 import com.company.chess_online_bakend_api.service.RoomService;
 import com.company.chess_online_bakend_api.util.GameUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +21,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class RoomServiceJpaImpl implements RoomService {
 
@@ -37,11 +39,14 @@ public class RoomServiceJpaImpl implements RoomService {
 
     @Override
     public long getRoomCount() {
+        log.debug("Getting room count");
         return roomRepository.count();
     }
 
     @Override
     public Set<RoomCommand> getRoomPage(int page) {
+        log.debug("Getting room page " + page);
+
         Pageable pageRequest = PageRequest.of(page, 10, Sort.by("name").ascending());
         Page<Room> roomPage = roomRepository.findAll(pageRequest);
         return roomPage.get()
@@ -54,6 +59,8 @@ public class RoomServiceJpaImpl implements RoomService {
 
     @Override
     public RoomCommand createNewRoom(RoomCommand roomCommand) {
+        log.debug("Creating new room");
+
         Room room = roomCommandToRoom.convert(roomCommand);
         room.setId(null);
         room.addGame(GameUtil.initNewGame());
@@ -62,6 +69,8 @@ public class RoomServiceJpaImpl implements RoomService {
 
     @Override
     public RoomCommand findById(Long id) {
+        log.debug("Finding room by id " + id);
+
         Optional<Room> roomOptional = roomRepository.findById(id);
 
         if (roomOptional.isEmpty()) {
@@ -71,28 +80,41 @@ public class RoomServiceJpaImpl implements RoomService {
         return roomOptional.map(roomToRoomCommand::convert).orElse(null);
     }
 
+    // TODO: 2019-07-15 implement REST path for admins only
+
     @Override
     public RoomCommand save(RoomCommand roomCommand) {
+        log.debug("Saving room");
+
         Room room = roomCommandToRoom.convert(roomCommand);
 
         return roomToRoomCommand.convert(roomRepository.save(room));
     }
 
+    // TODO: 2019-07-15 implement REST path for admins only
+
     @Override
     public Set findAll() {
+        log.debug("Finding all rooms");
         Set<RoomCommand> roomCommands = new HashSet<>();
         roomRepository.findAll().forEach(room -> roomCommands.add(roomToRoomCommand.convert(room)));
 
         return roomCommands;
     }
 
+    // TODO: 2019-07-15 implement REST path for admins only
+
     @Override
     public void delete(RoomCommand roomCommand) {
+        log.debug("Deleting room");
         deleteById(roomCommand.getId());
     }
 
+    // TODO: 2019-07-15 implement Rest path for admins only
+
     @Override
     public void deleteById(Long id) {
+        log.debug("Deleting room with id " + id);
         Optional<Room> roomOptional = roomRepository.findById(id);
 
         if (roomOptional.isEmpty()) {

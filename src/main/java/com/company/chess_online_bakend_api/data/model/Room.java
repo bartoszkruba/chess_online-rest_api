@@ -21,9 +21,10 @@ public class Room extends BaseEntity {
     private String name;
 
     @Builder
-    public Room(Long id, LocalDateTime created, LocalDateTime updated, String name) {
+    public Room(Long id, LocalDateTime created, LocalDateTime updated, String name, Game game) {
         super(id, created, updated);
         this.name = name;
+        this.game = game;
     }
 
     public void addGame(Game game) {
