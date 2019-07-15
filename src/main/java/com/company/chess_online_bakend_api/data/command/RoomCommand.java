@@ -1,5 +1,6 @@
 package com.company.chess_online_bakend_api.data.command;
 
+import com.company.chess_online_bakend_api.data.model.enums.GameStatus;
 import com.company.chess_online_bakend_api.data.validation.constraint.UniqueRoomNameConstraint;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
@@ -9,6 +10,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
 @EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -26,10 +28,13 @@ public class RoomCommand extends BaseEntityCommand {
     @ApiModelProperty(required = true)
     private String name;
 
+    private GameStatus gameStatus;
+
     @Builder
-    public RoomCommand(Long id, GameCommand game, String name) {
+    public RoomCommand(Long id, GameCommand game, String name, GameStatus gameStatus) {
         super(id);
         this.game = game;
         this.name = name;
+        this.gameStatus = gameStatus;
     }
 }

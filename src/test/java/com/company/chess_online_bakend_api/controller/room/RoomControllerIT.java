@@ -121,4 +121,7 @@ public class RoomControllerIT extends AbstractRestControllerTest {
                 .andExpect(jsonPath("$.name", equalTo(ROOMCOMMAND1_NAME)))
                 .andExpect(jsonPath("$.id", not(ROOMCOMMAND1_ID)));
     }
+
+
+
 }

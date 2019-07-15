@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -45,6 +46,11 @@ class RoomControllerTest extends AbstractRestControllerTest {
             .name(ROOMCOMMAND2_NAME)
             .game(GAMECOMMAND2).build();
 
+    private final RoomCommand ROOMCOMMAND1_WITHOUT_GAME = RoomCommand.builder().id(ROOMCOMMAND1_ID)
+            .name(ROOMCOMMAND1_NAME).build();
+    private final RoomCommand ROOMCOMMAND2_WITHOUT_GAME = RoomCommand.builder().id(ROOMCOMMAND2_ID)
+            .name(ROOMCOMMAND2_NAME).build();
+
     private final int ROOM_COUNT = 2;
     private final int ROOM_PAGE = 0;
 
@@ -69,7 +75,8 @@ class RoomControllerTest extends AbstractRestControllerTest {
 
         when(roomService.getRoomCount()).thenReturn((long) ROOM_COUNT);
 
-        when(roomService.getRoomPage(ROOM_PAGE)).thenReturn(Set.of(ROOMCOMMAND1, ROOMCOMMAND2));
+        when(roomService.getRoomPage(ROOM_PAGE))
+                .thenReturn(Set.of(ROOMCOMMAND1_WITHOUT_GAME, ROOMCOMMAND2_WITHOUT_GAME));
 
     }
 
@@ -108,6 +115,19 @@ class RoomControllerTest extends AbstractRestControllerTest {
                 .andExpect(jsonPath("$.count", equalTo(ROOM_COUNT)));
 
         verify(roomService, times(1)).getRoomCount();
+        verifyNoMoreInteractions(roomService);
+    }
+
+    @Test
+    void getRoomPage() throws Exception {
+        mockMvc.perform(get(RoomController.BASE_URL + "page/" + ROOM_PAGE)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0].game").doesNotExist())
+                .andExpect(jsonPath("$[1].game").doesNotExist());;
+
+        verify(roomService, times(1)).getRoomPage(ROOM_PAGE);
         verifyNoMoreInteractions(roomService);
     }
 }

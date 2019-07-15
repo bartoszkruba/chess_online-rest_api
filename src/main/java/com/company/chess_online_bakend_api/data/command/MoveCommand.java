@@ -10,6 +10,7 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

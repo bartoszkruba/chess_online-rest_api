@@ -4,16 +4,14 @@ import com.company.chess_online_bakend_api.data.model.enums.HorizontalPosition;
 import com.company.chess_online_bakend_api.data.model.enums.PieceColor;
 import com.company.chess_online_bakend_api.data.model.enums.PieceType;
 import com.company.chess_online_bakend_api.data.model.enums.VerticalPosition;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;
 import java.time.LocalDateTime;
 
 @EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 @Entity
 @Data
 @NoArgsConstructor

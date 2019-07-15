@@ -1,9 +1,6 @@
 package com.company.chess_online_bakend_api.data.model;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.CascadeType;
@@ -15,6 +12,7 @@ import java.util.Set;
 
 @Slf4j
 @EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 @Entity
 @Data
 @NoArgsConstructor

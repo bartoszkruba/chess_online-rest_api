@@ -12,6 +12,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Set;
 
 @Api
 @Slf4j
@@ -59,4 +60,13 @@ public class RoomController {
         return roomService.createNewRoom(roomCommand);
     }
 
+    @ApiOperation(value = "Get rooms page",
+            notes = "Ten rooms per page")
+    @GetMapping("page/{page}")
+    @ResponseStatus(HttpStatus.OK)
+    public Set<RoomCommand> getRoomPage(@PathVariable int page) {
+        log.debug("New request: GET " + BASE_URL + "page/" + page);
+
+        return roomService.getRoomPage(page);
+    }
 }

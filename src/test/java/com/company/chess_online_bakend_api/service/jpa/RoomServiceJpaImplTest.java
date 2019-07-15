@@ -4,6 +4,7 @@ import com.company.chess_online_bakend_api.data.command.RoomCommand;
 import com.company.chess_online_bakend_api.data.converter.room.RoomCommandToRoom;
 import com.company.chess_online_bakend_api.data.converter.room.RoomToRoomCommand;
 import com.company.chess_online_bakend_api.data.model.Room;
+import com.company.chess_online_bakend_api.data.model.enums.GameStatus;
 import com.company.chess_online_bakend_api.data.repository.RoomRepository;
 import com.company.chess_online_bakend_api.exception.RoomNotFoundException;
 import org.junit.jupiter.api.Assertions;
@@ -28,8 +29,19 @@ class RoomServiceJpaImplTest {
     private final Long COUNT = 10L;
     private final Room ROOM1 = Room.builder().name("Alpha").id(1L).build();
     private final Room ROOM2 = Room.builder().name("Beta").id(2L).build();
+
     private final RoomCommand ROOMCOMMAND1 = RoomCommand.builder().name("Alpha").id(1L).build();
-    private final RoomCommand ROOMCOMMAND2 = RoomCommand.builder().name("BETA").id(2L).build();
+    private final RoomCommand ROOMCOMMAND2 = RoomCommand.builder().name("Beta").id(2L).build();
+
+    private final RoomCommand ROOMCOMMAND1_WITHOUT_GAME = RoomCommand.builder()
+            .name("Alpha")
+            .gameStatus(GameStatus.WAITNG_TO_START)
+            .id(1L).build();
+
+    private final RoomCommand ROOMCOMMAND2_WITHOUT_GAME = RoomCommand.builder()
+            .name("Beta")
+            .gameStatus(GameStatus.WAITNG_TO_START)
+            .id(1L).build();
 
     @Mock
     RoomRepository roomRepository;
@@ -48,6 +60,9 @@ class RoomServiceJpaImplTest {
         MockitoAnnotations.initMocks(this);
         when(roomToRoomCommand.convert(ROOM1)).thenReturn(ROOMCOMMAND1);
         when(roomToRoomCommand.convert(ROOM2)).thenReturn(ROOMCOMMAND2);
+
+        when(roomToRoomCommand.convertWithoutGame(ROOM1)).thenReturn(ROOMCOMMAND1_WITHOUT_GAME);
+        when(roomToRoomCommand.convertWithoutGame(ROOM2)).thenReturn(ROOMCOMMAND2_WITHOUT_GAME);
 
         when(roomCommandToRoom.convert(ROOMCOMMAND1)).thenReturn(ROOM1);
         when(roomCommandToRoom.convert(ROOMCOMMAND2)).thenReturn(ROOM2);
@@ -101,8 +116,8 @@ class RoomServiceJpaImplTest {
         Set<RoomCommand> roomList = roomService.getRoomPage(0);
 
         assertEquals(2, roomList.size());
-        assertTrue(roomList.contains(ROOMCOMMAND1));
-        assertTrue(roomList.contains(ROOMCOMMAND2));
+        assertTrue(roomList.contains(ROOMCOMMAND1_WITHOUT_GAME));
+        assertTrue(roomList.contains(ROOMCOMMAND2_WITHOUT_GAME));
 
         verify(roomRepository, times(1)).findAll(pageRequest);
         verifyNoMoreInteractions(roomRepository);

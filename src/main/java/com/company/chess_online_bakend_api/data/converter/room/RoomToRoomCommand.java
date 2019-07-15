@@ -41,4 +41,19 @@ public class RoomToRoomCommand implements Converter<Room, RoomCommand> {
 
         return roomCommand;
     }
+
+    public RoomCommand convertWithoutGame(Room room) {
+
+        log.debug("Converting Room to RoomCommand without Game");
+
+        if (room == null) {
+            return null;
+        }
+
+        return RoomCommand.builder()
+                .id(room.getId())
+                .name(room.getName())
+                .gameStatus(room.getGame().getStatus())
+                .build();
+    }
 }

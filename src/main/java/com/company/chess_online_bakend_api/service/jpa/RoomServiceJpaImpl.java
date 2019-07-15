@@ -45,7 +45,10 @@ public class RoomServiceJpaImpl implements RoomService {
         Pageable pageRequest = PageRequest.of(page, 10, Sort.by("name").ascending());
         Page<Room> roomPage = roomRepository.findAll(pageRequest);
         return roomPage.get()
-                .map(roomToRoomCommand::convert)
+                // Don't want to send room with game and board
+                // and all pieces etc if we just gonna send list with rooms.
+                .map(roomToRoomCommand::convertWithoutGame)
+                .peek(System.out::println)
                 .collect(Collectors.toSet());
     }
 
@@ -54,7 +57,6 @@ public class RoomServiceJpaImpl implements RoomService {
         Room room = roomCommandToRoom.convert(roomCommand);
         room.setId(null);
         room.addGame(GameUtil.initNewGame());
-
         return roomToRoomCommand.convert(roomRepository.save(room));
     }
 

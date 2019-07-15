@@ -1,9 +1,6 @@
 package com.company.chess_online_bakend_api.data.model;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -13,6 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 @Entity
 @Data
 @NoArgsConstructor
