@@ -79,14 +79,14 @@ public class AuthenticationControllerIT extends AbstractRestControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "carl69", password = "tyler1", authorities = "ROLE_USER")
+    @WithMockUser(authorities = UserBootstrap.ROLE_USER)
     void rolesLoggedInAsUser() throws Exception {
         mockMvc.perform(get(AuthenticationController.BASE_URL + "role"))
                 .andExpect(status().isOk());
     }
 
     @Test
-    @WithMockUser(username = "ken123", password = "devo", authorities = "ROLE_ADMIN")
+    @WithMockUser(authorities = UserBootstrap.ROLE_ADMIN)
     void rolesLoggedInAsAdmin() throws Exception {
         mockMvc.perform(get(AuthenticationController.BASE_URL + "role"))
                 .andExpect(status().isOk());
@@ -96,7 +96,7 @@ public class AuthenticationControllerIT extends AbstractRestControllerTest {
     @Test
     void registerNewUserUsernameAlreadyExists() throws Exception {
         UserCommand userCommand = UserCommand.builder()
-                .username("ken123")
+                .username(UserBootstrap.USER_USERNAME)
                 .password(PASSWORD)
                 .email(EMAIL)
                 .firstName(FIRST_NAME)

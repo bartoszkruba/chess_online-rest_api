@@ -91,7 +91,7 @@ public class RoomControllerIT extends AbstractRestControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "carl69", password = "tyler1", authorities = "ROLE_USER")
+    @WithMockUser(authorities = UserBootstrap.ROLE_USER)
     void createNewRoomLoggedInAsUser() throws Exception {
         mockMvc.perform(post(RoomController.BASE_URL)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -100,7 +100,7 @@ public class RoomControllerIT extends AbstractRestControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "ken123", password = "devo", authorities = "ROLE_ADMIN")
+    @WithMockUser(authorities = UserBootstrap.ROLE_USER)
     void createNewRoomNameAlreadyExists() throws Exception {
         mockMvc.perform(post(RoomController.BASE_URL)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -112,7 +112,7 @@ public class RoomControllerIT extends AbstractRestControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "ken123", password = "devo", authorities = "ROLE_ADMIN")
+    @WithMockUser(authorities = UserBootstrap.ROLE_ADMIN)
     void createNewRoom() throws Exception {
         mockMvc.perform(post(RoomController.BASE_URL)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -121,7 +121,6 @@ public class RoomControllerIT extends AbstractRestControllerTest {
                 .andExpect(jsonPath("$.name", equalTo(ROOMCOMMAND1_NAME)))
                 .andExpect(jsonPath("$.id", not(ROOMCOMMAND1_ID)));
     }
-
 
 
 }
