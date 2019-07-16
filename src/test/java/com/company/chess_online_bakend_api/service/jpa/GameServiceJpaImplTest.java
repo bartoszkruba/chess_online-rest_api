@@ -11,10 +11,14 @@ import com.company.chess_online_bakend_api.data.model.User;
 import com.company.chess_online_bakend_api.data.model.enums.GameStatus;
 import com.company.chess_online_bakend_api.data.repository.GameRepository;
 import com.company.chess_online_bakend_api.data.repository.RoomRepository;
+import com.company.chess_online_bakend_api.exception.GameNotFoundException;
+import com.company.chess_online_bakend_api.exception.RoomNotFoundException;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.util.Optional;
 import java.util.Set;
@@ -62,7 +66,7 @@ class GameServiceJpaImplTest {
             .whitePlayer(USERCOMMAND2).build();
 
     private GameCommand GAMECOMMAND2 = GameCommand.builder()
-            .id(1L)
+            .id(2L)
             .status(GameStatus.STARTED)
             .turn(2)
             .roomId(ROOMCOMMAND.getId())
@@ -86,6 +90,8 @@ class GameServiceJpaImplTest {
 
     @BeforeEach
     void setUp() {
+        MockitoAnnotations.initMocks(this);
+
         when(gameToGameCommand.convert(GAME_1)).thenReturn(GAMECOMMAND1);
         when(gameToGameCommand.convert(GAME_2)).thenReturn(GAMECOMMAND2);
 
@@ -109,6 +115,19 @@ class GameServiceJpaImplTest {
     }
 
     @Test
+    void getByRoomIdNotFound() {
+        when(gameRepository.findGameByRoom(ROOM)).thenReturn(Optional.empty());
+
+        Assertions.assertThrows(RoomNotFoundException.class, () -> gameService.getByRoomId(ROOM.getId()));
+
+        verify(gameRepository, times(1)).findGameByRoom(ROOM);
+        verifyNoMoreInteractions(gameRepository);
+
+        verifyZeroInteractions(gameCommandToGame);
+        verifyZeroInteractions(gameToGameCommand);
+    }
+
+    @Test
     void findById() {
         when(gameRepository.findById(GAME_1.getId())).thenReturn(Optional.of(GAME_1));
 
@@ -124,19 +143,35 @@ class GameServiceJpaImplTest {
     }
 
     @Test
+    void findByIdNotFound() {
+        when(gameRepository.findById(GAME_1.getId())).thenThrow(GameNotFoundException.class);
+
+        Assertions.assertThrows(GameNotFoundException.class, () -> gameService.findById(GAME_1.getId()));
+
+        verifyZeroInteractions(gameCommandToGame);
+        verifyZeroInteractions(gameToGameCommand);
+
+        verify(gameRepository, times(1)).findById(GAME_1.getId());
+        verifyNoMoreInteractions(gameRepository);
+    }
+
+    @Test
     void save() {
         when(gameRepository.save(GAME_1)).thenReturn(GAME_1);
 
         GameCommand gameCommand = gameService.save(GAMECOMMAND1);
 
-        assertEquals(GAMECOMMAND1, gameCommand);
         verify(gameCommandToGame, times(1)).convert(GAMECOMMAND1);
         verifyNoMoreInteractions(gameCommandToGame);
-        verify(gameToGameCommand, times(1)).convert(GAME_1);
-        verifyNoMoreInteractions(gameToGameCommand);
 
         verify(gameRepository, times(1)).save(GAME_1);
         verifyNoMoreInteractions(gameRepository);
+
+        verify(gameToGameCommand, times(1)).convert(GAME_1);
+        verifyNoMoreInteractions(gameToGameCommand);
+
+        assertEquals(GAMECOMMAND1, gameCommand);
+
     }
 
     @Test
