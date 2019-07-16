@@ -141,7 +141,7 @@ public class RoomControllerIT extends AbstractRestControllerTest {
     @Test
     @WithMockUser(authorities = UserBootstrap.ROLE_ADMIN)
     void deleteRoomLoggedInAsAdmin() throws Exception {
-        mockMvc.perform(delete(RoomController.BASE_URL + ROOMCOMMAND1_ID)
+        mockMvc.perform(delete(RoomController.BASE_URL + roomRepository.findByNameLike("Alpha").get().getId())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
