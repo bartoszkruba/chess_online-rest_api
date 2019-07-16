@@ -4,6 +4,7 @@ import com.company.chess_online_bakend_api.data.command.GameCommand;
 import com.company.chess_online_bakend_api.data.converter.game.GameCommandToGame;
 import com.company.chess_online_bakend_api.data.converter.game.GameToGameCommand;
 import com.company.chess_online_bakend_api.data.model.Room;
+import com.company.chess_online_bakend_api.data.model.enums.PieceColor;
 import com.company.chess_online_bakend_api.data.repository.GameRepository;
 import com.company.chess_online_bakend_api.data.repository.RoomRepository;
 import com.company.chess_online_bakend_api.exception.GameNotFoundException;
@@ -39,6 +40,11 @@ public class GameServiceJpaImpl implements GameService {
                 .findGameByRoom(Room.builder().id(id).build())
                 .map(gameToGameCommand::convert)
                 .orElseThrow(() -> new RoomNotFoundException("Room with id " + id + "does not exist"));
+    }
+
+    @Override
+    public GameCommand joinGame(PieceColor color, String username) {
+        return null;
     }
 
     @Override

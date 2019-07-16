@@ -31,6 +31,7 @@ class GameControllerTest {
 
     private final Long GAMECOMMAND1_ID = 1L;
     private final Long GAMECOMMAND2_ID = 2L;
+    private final Long GAMECOMMAND3_ID = 3L;
 
     private final GameCommand GAMECOMMAND1 = GameCommand.builder()
             .id(GAMECOMMAND1_ID)
@@ -40,7 +41,12 @@ class GameControllerTest {
     private final GameCommand GAMECOMMAND2 = GameCommand.builder()
             .id(GAMECOMMAND2_ID)
             .whitePlayer(USER_COMMAND2)
-            .blackPlayer(USER_COMMAND1).build();
+            .build();
+
+    private final GameCommand GAMECOMMAND3 = GameCommand.builder()
+            .id(GAMECOMMAND3_ID)
+            .blackPlayer(USER_COMMAND2)
+            .build();
 
     @Mock
     GameService gameService;
