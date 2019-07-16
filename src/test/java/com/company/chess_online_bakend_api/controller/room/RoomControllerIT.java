@@ -28,6 +28,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -122,5 +123,26 @@ public class RoomControllerIT extends AbstractRestControllerTest {
                 .andExpect(jsonPath("$.id", not(ROOMCOMMAND1_ID)));
     }
 
+    @Test
+    void deleteRoomNotLoggedIn() throws Exception {
+        mockMvc.perform(delete(RoomController.BASE_URL + ROOMCOMMAND1_ID)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
+    }
 
+    @Test
+    @WithMockUser(authorities = UserBootstrap.ROLE_USER)
+    void deleteRoomLoggedInAsUser() throws Exception {
+        mockMvc.perform(delete(RoomController.BASE_URL + ROOMCOMMAND1_ID)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(authorities = UserBootstrap.ROLE_ADMIN)
+    void deleteRoomLoggedInAsAdmin() throws Exception {
+        mockMvc.perform(delete(RoomController.BASE_URL + ROOMCOMMAND1_ID)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
 }

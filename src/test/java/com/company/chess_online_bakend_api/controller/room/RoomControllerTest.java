@@ -1,11 +1,13 @@
 package com.company.chess_online_bakend_api.controller.room;
 
+import com.company.chess_online_bakend_api.bootstrap.dev.UserBootstrap;
 import com.company.chess_online_bakend_api.controller.AbstractRestControllerTest;
 import com.company.chess_online_bakend_api.controller.ExceptionAdviceController;
 import com.company.chess_online_bakend_api.controller.RoomController;
 import com.company.chess_online_bakend_api.data.command.GameCommand;
 import com.company.chess_online_bakend_api.data.command.RoomCommand;
 import com.company.chess_online_bakend_api.exception.RoomNotFoundException;
+import com.company.chess_online_bakend_api.service.GameService;
 import com.company.chess_online_bakend_api.service.RoomService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -21,6 +24,7 @@ import java.util.Set;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -56,6 +60,9 @@ class RoomControllerTest extends AbstractRestControllerTest {
 
     @Mock
     private RoomService roomService;
+
+    @Mock
+    private GameService gameService;
 
     @InjectMocks
     private RoomController roomController;
@@ -125,9 +132,45 @@ class RoomControllerTest extends AbstractRestControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].game").doesNotExist())
-                .andExpect(jsonPath("$[1].game").doesNotExist());;
+                .andExpect(jsonPath("$[1].game").doesNotExist());
+        ;
 
         verify(roomService, times(1)).getRoomPage(ROOM_PAGE);
+        verifyNoMoreInteractions(roomService);
+    }
+
+    @Test
+    void getRoomGame() throws Exception {
+        when(gameService.getByRoomId(ROOMCOMMAND1_ID)).thenReturn(GAMECOMMAND1);
+
+        mockMvc.perform(get(RoomController.BASE_URL + ROOMCOMMAND1_ID + "/game")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", equalTo(GAMECOMMAND1_ID.intValue())));
+
+        verify(gameService, times(1)).getByRoomId(ROOMCOMMAND1_ID);
+        verifyNoMoreInteractions(gameService);
+    }
+
+    @Test
+    void getRoomGameNotFound() throws Exception {
+        when(gameService.getByRoomId(ROOMCOMMAND1_ID)).thenThrow(RoomNotFoundException.class);
+
+        mockMvc.perform(get(RoomController.BASE_URL + ROOMCOMMAND1_ID + "/game")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+
+        verify(gameService, times(1)).getByRoomId(ROOMCOMMAND1_ID);
+        verifyNoMoreInteractions(gameService);
+    }
+
+    @Test
+    @WithMockUser(authorities = UserBootstrap.ROLE_ADMIN)
+    void deleteRoom() throws Exception {
+        mockMvc.perform(delete(RoomController.BASE_URL + ROOMCOMMAND1_ID)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+        verify(roomService, times(1)).deleteById(ROOMCOMMAND1_ID);
         verifyNoMoreInteractions(roomService);
     }
 }
