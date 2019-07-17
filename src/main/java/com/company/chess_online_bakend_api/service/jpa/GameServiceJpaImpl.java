@@ -67,15 +67,22 @@ public class GameServiceJpaImpl implements GameService {
         }
 
         User player;
+        User oppositePlayer;
 
         if (color == PieceColor.BLACK) {
             player = game.getBlackPlayer();
+            oppositePlayer = game.getWhitePlayer();
         } else {
             player = game.getWhitePlayer();
+            oppositePlayer = game.getBlackPlayer();
         }
 
         if (player != null) {
             throw new PlaceAlreadyTakenException("Place " + color + " in game with id " + gameId + " is already taken");
+        }
+        if (oppositePlayer != null &&
+                oppositePlayer.getId() != null && oppositePlayer.getId().equals(user.getId())) {
+            throw new AlreadyJoinedException("You already joined game with id " + gameId);
         }
 
         if (color == PieceColor.WHITE) {

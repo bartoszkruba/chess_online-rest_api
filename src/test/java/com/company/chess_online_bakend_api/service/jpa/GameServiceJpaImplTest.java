@@ -422,4 +422,31 @@ class GameServiceJpaImplTest {
         verifyZeroInteractions(gameToGameCommand);
         verifyZeroInteractions(gameCommandToGame);
     }
+
+    @Test
+    void joinGameAlreadyJoined() {
+        String username = "username";
+
+        User user = User.builder().id(1L).username(username).build();
+        Game joinedGame = Game.builder()
+                .id(1L)
+                .blackPlayer(user)
+                .status(GameStatus.WAITNG_TO_START).build();
+
+        when(userRepository.findByUsernameLike(username)).thenReturn(Optional.of(user));
+        when(gameRepository.findById(1L)).thenReturn(Optional.of(joinedGame));
+
+        Assertions.assertThrows(AlreadyJoinedException.class, () -> {
+            gameService.joinGame(PieceColor.WHITE, username, 1L);
+        });
+
+        verify(userRepository, times(1)).findByUsernameLike(username);
+        verifyNoMoreInteractions(userRepository);
+
+        verify(gameRepository, times(1)).findById(1L);
+        verifyNoMoreInteractions(gameRepository);
+
+        verifyZeroInteractions(gameToGameCommand);
+        verifyZeroInteractions(gameCommandToGame);
+    }
 }

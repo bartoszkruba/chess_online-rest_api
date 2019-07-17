@@ -53,7 +53,8 @@ public class ExceptionAdviceController extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.NOT_FOUND, request);
     }
 
-    @ExceptionHandler({PlaceAlreadyTakenException.class, GameAlreadyStartedException.class})
+    @ExceptionHandler({PlaceAlreadyTakenException.class, GameAlreadyStartedException.class,
+            AlreadyJoinedException.class})
     public ResponseEntity<Object> handleBadRequestException(Exception ex, WebRequest request) {
 
         Map<String, Object> body = new LinkedHashMap<>();

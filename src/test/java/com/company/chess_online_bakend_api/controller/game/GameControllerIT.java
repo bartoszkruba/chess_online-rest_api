@@ -119,4 +119,18 @@ public class GameControllerIT {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    @WithMockUser(username = "invalid username", authorities = UserBootstrap.ROLE_USER)
+    void joinGameUsernameNotFound() throws Exception {
+        Long userId = userRepository.findByUsernameLike(UserBootstrap.USER_USERNAME).get().getId();
+        Long gameId = roomRepository.findByNameLike("Alpha").get().getGame().getId();
+
+        String url = GameController.BASE_URL + gameId + "/join/BLACK";
+
+        mockMvc.perform(put(url)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status", equalTo(404)));
+    }
 }

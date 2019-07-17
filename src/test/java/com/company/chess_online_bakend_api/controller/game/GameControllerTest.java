@@ -6,6 +6,8 @@ import com.company.chess_online_bakend_api.controller.propertyEditor.PieceColorP
 import com.company.chess_online_bakend_api.data.command.GameCommand;
 import com.company.chess_online_bakend_api.data.command.UserCommand;
 import com.company.chess_online_bakend_api.exception.GameNotFoundException;
+import com.company.chess_online_bakend_api.exception.PlaceAlreadyTakenException;
+import com.company.chess_online_bakend_api.exception.UserNotFoundException;
 import com.company.chess_online_bakend_api.service.GameService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,6 +23,7 @@ import java.security.Principal;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -99,6 +102,64 @@ class GameControllerTest {
                 .andExpect(status().isNotFound());
 
         verify(gameService, times(1)).findById(GAMECOMMAND1_ID);
+        verifyNoMoreInteractions(gameService);
+    }
+
+    @Test
+    void joinGameUsernameNotFound() throws Exception {
+
+        String username = "username";
+
+        String url = GameController.BASE_URL + 1 + "/join/BLACK";
+
+        when(principal.getName()).thenReturn(username);
+        when(gameService.joinGame(any(), any(), anyLong())).thenThrow(UserNotFoundException.class);
+
+        mockMvc.perform(put(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .principal(principal))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status", equalTo(404)));
+
+        verify(gameService, times(1)).joinGame(any(), any(), anyLong());
+        verifyNoMoreInteractions(gameService);
+    }
+
+    @Test
+    void joinGameGameNotFound() throws Exception {
+        String username = "username";
+
+        String url = GameController.BASE_URL + 1 + "/join/BLACK";
+
+        when(principal.getName()).thenReturn(username);
+        when(gameService.joinGame(any(), any(), anyLong())).thenThrow(GameNotFoundException.class);
+
+        mockMvc.perform(put(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .principal(principal))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status", equalTo(404)));
+
+        verify(gameService, times(1)).joinGame(any(), any(), anyLong());
+        verifyNoMoreInteractions(gameService);
+    }
+
+    @Test
+    void joinGamePlaceAlreadyTaken() throws Exception {
+        String username = "username";
+
+        String url = GameController.BASE_URL + 1 + "/join/BLACK";
+
+        when(principal.getName()).thenReturn(username);
+        when(gameService.joinGame(any(), any(), anyLong())).thenThrow(PlaceAlreadyTakenException.class);
+
+        mockMvc.perform(put(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .principal(principal))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status", equalTo(400)));
+
+        verify(gameService, times(1)).joinGame(any(), any(), anyLong());
         verifyNoMoreInteractions(gameService);
     }
 }

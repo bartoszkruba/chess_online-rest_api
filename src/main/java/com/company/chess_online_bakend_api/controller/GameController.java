@@ -55,8 +55,6 @@ public class GameController {
     public GameCommand joinGame(@PathVariable Long id, @PathVariable PieceColor color, Principal principal) {
         log.debug("New request: PUT " + BASE_URL + id + "/join/" + color);
 
-
-        // TODO: 2019-07-17 handle case when player already joined game
         return gameService.joinGame(color, principal.getName(), id);
     }
 }
