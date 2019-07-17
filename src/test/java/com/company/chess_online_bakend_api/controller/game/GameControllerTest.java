@@ -2,6 +2,7 @@ package com.company.chess_online_bakend_api.controller.game;
 
 import com.company.chess_online_bakend_api.controller.ExceptionAdviceController;
 import com.company.chess_online_bakend_api.controller.GameController;
+import com.company.chess_online_bakend_api.controller.propertyEditor.PieceColorPropertyEditor;
 import com.company.chess_online_bakend_api.data.command.GameCommand;
 import com.company.chess_online_bakend_api.data.command.UserCommand;
 import com.company.chess_online_bakend_api.exception.GameNotFoundException;
@@ -14,6 +15,8 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import java.security.Principal;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.*;
@@ -47,6 +50,12 @@ class GameControllerTest {
             .id(GAMECOMMAND3_ID)
             .blackPlayer(USER_COMMAND2)
             .build();
+
+    @Mock
+    PieceColorPropertyEditor pieceColorPropertyEditor;
+
+    @Mock
+    Principal principal;
 
     @Mock
     GameService gameService;

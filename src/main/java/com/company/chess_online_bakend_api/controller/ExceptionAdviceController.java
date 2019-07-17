@@ -1,8 +1,6 @@
 package com.company.chess_online_bakend_api.controller;
 
-import com.company.chess_online_bakend_api.exception.GameNotFoundException;
-import com.company.chess_online_bakend_api.exception.RoomNotFoundException;
-import com.company.chess_online_bakend_api.exception.UserNotFoundException;
+import com.company.chess_online_bakend_api.exception.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,15 +43,51 @@ public class ExceptionAdviceController extends ResponseEntityExceptionHandler {
 
     }
 
-    @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler({UserNotFoundException.class, RoomNotFoundException.class, GameNotFoundException.class})
-    public Map<String, Object> handleNotFoundException(Exception ex) {
+    public ResponseEntity<Object> handleNotFoundException(Exception ex, WebRequest request) {
 
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("timestamp", new Date());
         body.put("status", 404);
         body.put("error", ex.getMessage());
 
-        return body;
+        return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+    }
+
+    @ExceptionHandler(PlaceAlreadyTakenException.class)
+    public ResponseEntity<Object> handlePlaceAlreadyTakenException(Exception ex, WebRequest request) {
+
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", new Date());
+        body.put("status", 400);
+        body.put("error", ex.getMessage());
+
+        return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+    }
+
+    @ExceptionHandler(GameAlreadyStartedException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<Object> handleGameAlreadyStartedException(Exception ex, WebRequest request) {
+        logger.debug("Handling GameAlreadyStartedException");
+
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", new Date());
+        body.put("status", 400);
+        body.put("error", ex.getMessage());
+
+        return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+    }
+
+    // TODO: 2019-07-17 fix
+    @ExceptionHandler(InvalidPieceColorException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<Object> handleInvalidPieceColor(Exception ex, WebRequest request) {
+
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", new Date());
+        body.put("status", 400);
+        body.put("error", ex.getMessage());
+
+        return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 }
