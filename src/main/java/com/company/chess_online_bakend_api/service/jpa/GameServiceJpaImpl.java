@@ -3,14 +3,18 @@ package com.company.chess_online_bakend_api.service.jpa;
 import com.company.chess_online_bakend_api.data.command.GameCommand;
 import com.company.chess_online_bakend_api.data.converter.game.GameCommandToGame;
 import com.company.chess_online_bakend_api.data.converter.game.GameToGameCommand;
+import com.company.chess_online_bakend_api.data.model.Game;
 import com.company.chess_online_bakend_api.data.model.Room;
+import com.company.chess_online_bakend_api.data.model.User;
+import com.company.chess_online_bakend_api.data.model.enums.GameStatus;
 import com.company.chess_online_bakend_api.data.model.enums.PieceColor;
 import com.company.chess_online_bakend_api.data.repository.GameRepository;
 import com.company.chess_online_bakend_api.data.repository.RoomRepository;
-import com.company.chess_online_bakend_api.exception.GameNotFoundException;
-import com.company.chess_online_bakend_api.exception.RoomNotFoundException;
+import com.company.chess_online_bakend_api.data.repository.UserRepository;
+import com.company.chess_online_bakend_api.exception.*;
 import com.company.chess_online_bakend_api.service.GameService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -22,20 +26,26 @@ public class GameServiceJpaImpl implements GameService {
 
     private final GameRepository gameRepository;
     private final RoomRepository roomRepository;
+    private final UserRepository userRepository;
 
     private final GameToGameCommand gameToGameCommand;
     private final GameCommandToGame gameCommandToGame;
 
+    @Autowired
     public GameServiceJpaImpl(GameRepository gameRepository, RoomRepository roomRepository,
+                              UserRepository userRepository,
                               GameToGameCommand gameToGameCommand, GameCommandToGame gameCommandToGame) {
         this.gameRepository = gameRepository;
         this.roomRepository = roomRepository;
+        this.userRepository = userRepository;
         this.gameToGameCommand = gameToGameCommand;
         this.gameCommandToGame = gameCommandToGame;
     }
 
     @Override
     public GameCommand getByRoomId(Long id) {
+        log.debug("Getting room by id " + id);
+
         return gameRepository
                 .findGameByRoom(Room.builder().id(id).build())
                 .map(gameToGameCommand::convert)
@@ -43,8 +53,37 @@ public class GameServiceJpaImpl implements GameService {
     }
 
     @Override
-    public GameCommand joinGame(PieceColor color, String username) {
-        return null;
+    public GameCommand joinGame(PieceColor color, String username, Long gameId) {
+        log.debug(username + " joining game with id " + gameId + ", place " + color);
+
+        User user = userRepository.findByUsernameLike(username)
+                .orElseThrow(() -> new UserNotFoundException("User with username " + username + " does not exist"));
+
+        Game game = gameRepository.findById(gameId)
+                .orElseThrow(() -> new GameNotFoundException("Game with id " + gameId + " does not exist"));
+
+        if (game.getStatus() != GameStatus.WAITNG_TO_START) {
+            throw new GameAlreadyStartedException("Game with id " + gameId + " already started");
+        }
+
+        User player;
+
+        if (color == PieceColor.BLACK) {
+            player = game.getBlackPlayer();
+        } else {
+            player = game.getWhitePlayer();
+        }
+
+        if (player != null) {
+            throw new PlaceAlreadyTakenException("Place " + color + " in game with id " + gameId + " is already taken");
+        }
+
+        if (color == PieceColor.WHITE) {
+            game.setWhitePlayer(user);
+        } else {
+            game.setBlackPlayer(user);
+        }
+        return gameToGameCommand.convert(gameRepository.save(game));
     }
 
     @Override

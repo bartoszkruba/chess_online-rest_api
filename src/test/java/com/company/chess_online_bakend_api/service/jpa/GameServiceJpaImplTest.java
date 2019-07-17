@@ -13,10 +13,7 @@ import com.company.chess_online_bakend_api.data.model.enums.PieceColor;
 import com.company.chess_online_bakend_api.data.repository.GameRepository;
 import com.company.chess_online_bakend_api.data.repository.RoomRepository;
 import com.company.chess_online_bakend_api.data.repository.UserRepository;
-import com.company.chess_online_bakend_api.exception.GameNotFoundException;
-import com.company.chess_online_bakend_api.exception.PlaceAlreadyTakenException;
-import com.company.chess_online_bakend_api.exception.RoomNotFoundException;
-import com.company.chess_online_bakend_api.exception.UserNotFoundException;
+import com.company.chess_online_bakend_api.exception.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,8 +28,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
-
-// TODO: 2019-07-15 Write tests for GameNotFoundException
 class GameServiceJpaImplTest {
 
     private User USER_1 = User.builder().id(1L).build();
@@ -91,8 +86,6 @@ class GameServiceJpaImplTest {
 
     @Mock
     private GameCommandToGame gameCommandToGame;
-
-    @Mock
 
     @InjectMocks
     private GameServiceJpaImpl gameService;
@@ -225,6 +218,7 @@ class GameServiceJpaImplTest {
         verifyNoMoreInteractions(gameRepository);
     }
 
+
     @Test
     void joinGameWhite() {
 
@@ -232,15 +226,27 @@ class GameServiceJpaImplTest {
 
         User user = User.builder().id(1L).username(username).build();
         UserCommand userCommand = UserCommand.builder().id(1L).build();
-        Game game = Game.builder().id(1L).build();
-        Game gameWithUser = Game.builder().id(1L).whitePlayer(user).build();
-        GameCommand gameCommandWithUser = GameCommand.builder().id(1L).whitePlayer(userCommand).build();
+
+        Game game = Game.builder()
+                .id(1L)
+                .status(GameStatus.WAITNG_TO_START).build();
+
+        Game gameWithUser = Game.builder()
+                .id(1L)
+                .whitePlayer(user)
+                .status(GameStatus.WAITNG_TO_START).build();
+
+        GameCommand gameCommandWithUser = GameCommand.builder()
+                .id(1L)
+                .whitePlayer(userCommand)
+                .status(GameStatus.WAITNG_TO_START).build();
 
         when(userRepository.findByUsernameLike(username)).thenReturn(Optional.of(user));
         when(gameRepository.findById(1L)).thenReturn(Optional.of(game));
+        when(gameRepository.save(gameWithUser)).thenReturn(gameWithUser);
         when(gameToGameCommand.convert(gameWithUser)).thenReturn(gameCommandWithUser);
 
-        GameCommand gameCommand = gameService.joinGame(PieceColor.WHITE, username);
+        GameCommand gameCommand = gameService.joinGame(PieceColor.WHITE, username, 1L);
 
         assertEquals(gameCommandWithUser, gameCommand);
 
@@ -248,6 +254,7 @@ class GameServiceJpaImplTest {
         verifyNoMoreInteractions(userRepository);
 
         verify(gameRepository, times(1)).findById(1L);
+        verify(gameRepository, times(1)).save(gameWithUser);
         verifyNoMoreInteractions(gameRepository);
 
         verify(gameToGameCommand, times(1)).convert(gameWithUser);
@@ -262,15 +269,26 @@ class GameServiceJpaImplTest {
 
         User user = User.builder().id(1L).username(username).build();
         UserCommand userCommand = UserCommand.builder().id(1L).build();
-        Game game = Game.builder().id(1L).build();
-        Game gameWithUser = Game.builder().id(1L).blackPlayer(user).build();
-        GameCommand gameCommandWithUser = GameCommand.builder().id(1L).whitePlayer(userCommand).build();
+
+        Game game = Game.builder()
+                .id(1L)
+                .status(GameStatus.WAITNG_TO_START).build();
+
+        Game gameWithUser = Game.builder()
+                .id(1L)
+                .blackPlayer(user)
+                .status(GameStatus.WAITNG_TO_START).build();
+
+        GameCommand gameCommandWithUser = GameCommand.builder()
+                .id(1L).whitePlayer(userCommand)
+                .status(GameStatus.WAITNG_TO_START).build();
 
         when(userRepository.findByUsernameLike(username)).thenReturn(Optional.of(user));
         when(gameRepository.findById(1L)).thenReturn(Optional.of(game));
+        when(gameRepository.save(gameWithUser)).thenReturn(gameWithUser);
         when(gameToGameCommand.convert(gameWithUser)).thenReturn(gameCommandWithUser);
 
-        GameCommand gameCommand = gameService.joinGame(PieceColor.BLACK, username);
+        GameCommand gameCommand = gameService.joinGame(PieceColor.BLACK, username, 1L);
 
         assertEquals(gameCommandWithUser, gameCommand);
 
@@ -278,6 +296,7 @@ class GameServiceJpaImplTest {
         verifyNoMoreInteractions(userRepository);
 
         verify(gameRepository, times(1)).findById(1L);
+        verify(gameRepository, times(1)).save(gameWithUser);
         verifyNoMoreInteractions(gameRepository);
 
         verify(gameToGameCommand, times(1)).convert(gameWithUser);
@@ -291,13 +310,16 @@ class GameServiceJpaImplTest {
         String username = "username";
 
         User user = User.builder().id(1L).username(username).build();
-        Game gameWithUser = Game.builder().id(1L).whitePlayer(User.builder().id(2L).build()).build();
+        Game gameWithUser = Game.builder()
+                .id(1L)
+                .whitePlayer(User.builder().id(2L).build())
+                .status(GameStatus.WAITNG_TO_START).build();
 
         when(userRepository.findByUsernameLike(username)).thenReturn(Optional.of(user));
         when(gameRepository.findById(1L)).thenReturn(Optional.of(gameWithUser));
 
         Assertions.assertThrows(PlaceAlreadyTakenException.class, () -> {
-            gameService.joinGame(PieceColor.WHITE, username);
+            gameService.joinGame(PieceColor.WHITE, username, 1L);
         });
 
         verify(userRepository, times(1)).findByUsernameLike(username);
@@ -315,13 +337,16 @@ class GameServiceJpaImplTest {
         String username = "username";
 
         User user = User.builder().id(1L).username(username).build();
-        Game gameWithUser = Game.builder().id(1L).blackPlayer(User.builder().id(2L).build()).build();
+        Game gameWithUser = Game.builder()
+                .id(1L)
+                .blackPlayer(User.builder().id(2L).build())
+                .status(GameStatus.WAITNG_TO_START).build();
 
         when(userRepository.findByUsernameLike(username)).thenReturn(Optional.of(user));
         when(gameRepository.findById(1L)).thenReturn(Optional.of(gameWithUser));
 
         Assertions.assertThrows(PlaceAlreadyTakenException.class, () -> {
-            gameService.joinGame(PieceColor.BLACK, username);
+            gameService.joinGame(PieceColor.BLACK, username, 1L);
         });
 
         verify(userRepository, times(1)).findByUsernameLike(username);
@@ -344,7 +369,7 @@ class GameServiceJpaImplTest {
         when(gameRepository.findById(1L)).thenReturn(Optional.empty());
 
         Assertions.assertThrows(GameNotFoundException.class, () -> {
-            gameService.joinGame(PieceColor.BLACK, username);
+            gameService.joinGame(PieceColor.BLACK, username, 1L);
         });
 
         verify(userRepository, times(1)).findByUsernameLike(username);
@@ -364,10 +389,36 @@ class GameServiceJpaImplTest {
         when(userRepository.findByUsernameLike(username)).thenReturn(Optional.empty());
 
         Assertions.assertThrows(UserNotFoundException.class, () -> {
-            gameService.joinGame(PieceColor.BLACK, username);
+            gameService.joinGame(PieceColor.BLACK, username, 1L);
         });
 
         verifyZeroInteractions(gameRepository);
+        verifyZeroInteractions(gameToGameCommand);
+        verifyZeroInteractions(gameCommandToGame);
+    }
+
+    @Test
+    void joinGameAlreadyStarted() {
+        String username = "username";
+
+        User user = User.builder().id(1L).username(username).build();
+        Game startedGame = Game.builder()
+                .id(1L)
+                .status(GameStatus.STARTED).build();
+
+        when(userRepository.findByUsernameLike(username)).thenReturn(Optional.of(user));
+        when(gameRepository.findById(1L)).thenReturn(Optional.of(startedGame));
+
+        Assertions.assertThrows(GameAlreadyStartedException.class, () -> {
+            gameService.joinGame(PieceColor.WHITE, username, 1L);
+        });
+
+        verify(userRepository, times(1)).findByUsernameLike(username);
+        verifyNoMoreInteractions(userRepository);
+
+        verify(gameRepository, times(1)).findById(1L);
+        verifyNoMoreInteractions(gameRepository);
+
         verifyZeroInteractions(gameToGameCommand);
         verifyZeroInteractions(gameCommandToGame);
     }
