@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
@@ -51,24 +50,11 @@ public class ExceptionAdviceController extends ResponseEntityExceptionHandler {
         body.put("status", 404);
         body.put("error", ex.getMessage());
 
-        return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+        return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.NOT_FOUND, request);
     }
 
-    @ExceptionHandler(PlaceAlreadyTakenException.class)
-    public ResponseEntity<Object> handlePlaceAlreadyTakenException(Exception ex, WebRequest request) {
-
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put("timestamp", new Date());
-        body.put("status", 400);
-        body.put("error", ex.getMessage());
-
-        return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
-    }
-
-    @ExceptionHandler(GameAlreadyStartedException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<Object> handleGameAlreadyStartedException(Exception ex, WebRequest request) {
-        logger.debug("Handling GameAlreadyStartedException");
+    @ExceptionHandler({PlaceAlreadyTakenException.class, GameAlreadyStartedException.class})
+    public ResponseEntity<Object> handleBadRequestException(Exception ex, WebRequest request) {
 
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("timestamp", new Date());
@@ -80,7 +66,6 @@ public class ExceptionAdviceController extends ResponseEntityExceptionHandler {
 
     // TODO: 2019-07-17 fix
     @ExceptionHandler(InvalidPieceColorException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<Object> handleInvalidPieceColor(Exception ex, WebRequest request) {
 
         Map<String, Object> body = new LinkedHashMap<>();
