@@ -449,4 +449,153 @@ class GameServiceJpaImplTest {
         verifyZeroInteractions(gameToGameCommand);
         verifyZeroInteractions(gameCommandToGame);
     }
+
+    @Test
+    void leaveGameWhite() {
+        String username = "username";
+
+        User user = User.builder().id(1L).username(username).build();
+
+        Game joinedGame = Game.builder()
+                .id(1L)
+                .whitePlayer(user)
+                .status(GameStatus.WAITNG_TO_START).build();
+
+        Game gameToSave = Game.builder()
+                .id(1L)
+                .status(GameStatus.WAITNG_TO_START).build();
+
+        GameCommand gameWithoutPlayer = GameCommand.builder()
+                .id(1L)
+                .status(GameStatus.WAITNG_TO_START).build();
+
+        when(userRepository.findByUsernameLike(username)).thenReturn(Optional.of(user));
+        when(gameRepository.findById(1L)).thenReturn(Optional.of(joinedGame));
+        when(gameRepository.save(gameToSave)).thenReturn(gameToSave);
+        when(gameToGameCommand.convert(gameToSave)).thenReturn(gameWithoutPlayer);
+
+        GameCommand gameCommand = gameService.leaveGame(username, 1L);
+
+        assertEquals(gameWithoutPlayer, gameCommand);
+
+        verify(userRepository, times(1)).findByUsernameLike(username);
+        verifyNoMoreInteractions(userRepository);
+
+        verify(gameRepository, times(1)).findById(1L);
+        verify(gameRepository, times(1)).save(gameToSave);
+        verifyNoMoreInteractions(gameRepository);
+
+        verify(gameToGameCommand, times(1)).convert(gameToSave);
+        verifyNoMoreInteractions(gameToGameCommand);
+
+        verifyZeroInteractions(gameCommandToGame);
+    }
+
+    @Test
+    void leaveGameBlack() {
+        String username = "username";
+
+        User user = User.builder().id(1L).username(username).build();
+
+        Game joinedGame = Game.builder()
+                .id(1L)
+                .blackPlayer(user)
+                .status(GameStatus.WAITNG_TO_START).build();
+
+        Game gameToSave = Game.builder()
+                .id(1L)
+                .status(GameStatus.WAITNG_TO_START).build();
+
+        GameCommand gameWithoutPlayer = GameCommand.builder()
+                .id(1L)
+                .status(GameStatus.WAITNG_TO_START).build();
+
+        when(userRepository.findByUsernameLike(username)).thenReturn(Optional.of(user));
+        when(gameRepository.findById(1L)).thenReturn(Optional.of(joinedGame));
+        when(gameRepository.save(gameToSave)).thenReturn(gameToSave);
+        when(gameToGameCommand.convert(gameToSave)).thenReturn(gameWithoutPlayer);
+
+        GameCommand gameCommand = gameService.leaveGame(username, 1L);
+
+        assertEquals(gameWithoutPlayer, gameCommand);
+
+        verify(userRepository, times(1)).findByUsernameLike(username);
+        verifyNoMoreInteractions(userRepository);
+
+        verify(gameRepository, times(1)).findById(1L);
+        verify(gameRepository, times(1)).save(gameToSave);
+        verifyNoMoreInteractions(gameRepository);
+
+        verify(gameToGameCommand, times(1)).convert(gameToSave);
+        verifyNoMoreInteractions(gameToGameCommand);
+
+        verifyZeroInteractions(gameCommandToGame);
+    }
+
+    @Test
+    void leaveGameUsernameNotFound() {
+        String username = "username";
+
+        when(userRepository.findByUsernameLike(username)).thenReturn(Optional.empty());
+
+        Assertions.assertThrows(UserNotFoundException.class, () -> {
+            gameService.leaveGame(username, 1L);
+        });
+
+        verify(userRepository, times(1)).findByUsernameLike(username);
+        verifyNoMoreInteractions(userRepository);
+
+        verifyZeroInteractions(gameRepository);
+        verifyZeroInteractions(gameToGameCommand);
+        verifyZeroInteractions(gameCommandToGame);
+    }
+
+    @Test
+    void leaveGameGameNotFound() {
+        String username = "username";
+
+        User user = User.builder().id(1L).username(username).build();
+
+        when(userRepository.findByUsernameLike(username)).thenReturn(Optional.of(user));
+        when(gameRepository.findById(1L)).thenReturn(Optional.empty());
+
+        Assertions.assertThrows(GameNotFoundException.class, () -> {
+            gameService.leaveGame(username, 1L);
+        });
+
+        verify(userRepository, times(1)).findByUsernameLike(username);
+        verifyNoMoreInteractions(userRepository);
+
+        verify(gameRepository, times(1)).findById(1L);
+        verifyNoMoreInteractions(gameRepository);
+
+        verifyZeroInteractions(gameToGameCommand);
+        verifyZeroInteractions(gameCommandToGame);
+    }
+
+    @Test
+    void leaveGameHasNotJoined() {
+        String username = "username";
+
+        User user = User.builder().id(1L).username(username).build();
+
+        Game gameWithoutPlayer = Game.builder()
+                .id(1L)
+                .status(GameStatus.WAITNG_TO_START).build();
+
+        when(userRepository.findByUsernameLike(username)).thenReturn(Optional.of(user));
+        when(gameRepository.findById(1L)).thenReturn(Optional.of(gameWithoutPlayer));
+
+        Assertions.assertThrows(UserNotFoundException.class, () -> gameService.leaveGame(username, 1L));
+
+        verify(userRepository, times(1)).findByUsernameLike(username);
+        verifyNoMoreInteractions(userRepository);
+
+        verify(gameRepository, times(1)).findById(1L);
+        verifyNoMoreInteractions(gameRepository);
+
+        verifyZeroInteractions(gameToGameCommand);
+
+        verifyZeroInteractions(gameCommandToGame);
+    }
 }

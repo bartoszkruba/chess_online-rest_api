@@ -94,6 +94,29 @@ public class GameServiceJpaImpl implements GameService {
     }
 
     @Override
+    public GameCommand leaveGame(String username, Long gameId) {
+        log.debug(username + " leaving game with id " + gameId);
+
+        User user = userRepository.findByUsernameLike(username)
+                .orElseThrow(() -> new UserNotFoundException("User with username " + username + " does not exist"));
+
+        Game game = gameRepository.findById(gameId)
+                .orElseThrow(() -> new GameNotFoundException("Game with id " + gameId + " does not exist"));
+
+        if (game.getWhitePlayer() != null && game.getWhitePlayer().getId() != null &&
+                game.getWhitePlayer().getId().equals(user.getId())) {
+            game.setWhitePlayer(null);
+        } else if (game.getBlackPlayer() != null && game.getBlackPlayer().getId() != null &&
+                game.getBlackPlayer().getId().equals(user.getId())) {
+            game.setBlackPlayer(null);
+        } else {
+            throw new UserNotFoundException("You have not joined game with id " + gameId);
+        }
+
+        return gameToGameCommand.convert(gameRepository.save(game));
+    }
+
+    @Override
     public GameCommand findById(Long id) {
         return gameRepository
                 .findById(id)
