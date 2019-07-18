@@ -3,6 +3,10 @@ package com.company.chess_online_bakend_api.controller.game;
 import com.company.chess_online_bakend_api.bootstrap.dev.RoomBootstrap;
 import com.company.chess_online_bakend_api.bootstrap.dev.UserBootstrap;
 import com.company.chess_online_bakend_api.controller.GameController;
+import com.company.chess_online_bakend_api.data.model.Game;
+import com.company.chess_online_bakend_api.data.model.Room;
+import com.company.chess_online_bakend_api.data.model.User;
+import com.company.chess_online_bakend_api.data.repository.GameRepository;
 import com.company.chess_online_bakend_api.data.repository.RoleRepository;
 import com.company.chess_online_bakend_api.data.repository.RoomRepository;
 import com.company.chess_online_bakend_api.data.repository.UserRepository;
@@ -18,6 +22,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -32,6 +37,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class GameControllerIT {
 
     MockMvc mockMvc;
+
+    @Autowired
+    private GameRepository gameRepository;
 
     @Autowired
     private UserBootstrap userBootstrap;
@@ -129,6 +137,68 @@ public class GameControllerIT {
         String url = GameController.BASE_URL + gameId + "/join/BLACK";
 
         mockMvc.perform(put(url)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status", equalTo(404)));
+    }
+
+    @Test
+    void leaveGameNotLogged() throws Exception {
+        mockMvc.perform(put(GameController.BASE_URL + 12 + "/leave")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @Transactional
+    @WithMockUser(username = UserBootstrap.USER_USERNAME, authorities = UserBootstrap.ROLE_USER)
+    void leaveGameLoggedAsUser() throws Exception {
+
+        User user = userRepository.findByUsernameLike(UserBootstrap.USER_USERNAME).get();
+        Room room = roomRepository.findByNameLike("Alpha").get();
+        Game game = room.getGame();
+        Long gameId = game.getId();
+
+        game.setWhitePlayer(user);
+
+        gameRepository.save(game);
+
+        String url = GameController.BASE_URL + gameId + "/leave";
+
+        mockMvc.perform(put(url)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", equalTo(gameId.intValue())))
+                .andExpect(jsonPath("$.whitePlayer").doesNotExist());
+    }
+
+    @Test
+    @Transactional
+    @WithMockUser(username = UserBootstrap.ADMIN_USERNAME, authorities = UserBootstrap.ROLE_ADMIN)
+    void leaveGameLoggedAsAdmin() throws Exception {
+        User user = userRepository.findByUsernameLike(UserBootstrap.ADMIN_USERNAME).get();
+        Room room = roomRepository.findByNameLike("Alpha").get();
+        Game game = room.getGame();
+        Long gameId = game.getId();
+
+        game.setWhitePlayer(user);
+
+
+        gameRepository.save(game);
+
+        String url = GameController.BASE_URL + gameId + "/leave";
+
+        mockMvc.perform(put(url)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", equalTo(gameId.intValue())))
+                .andExpect(jsonPath("$.whitePlayer").doesNotExist());
+    }
+
+    @Test
+    @WithMockUser(username = "Invalid username", authorities = UserBootstrap.ROLE_ADMIN)
+    void leaveGameUsernameNotFound() throws Exception {
+        mockMvc.perform(put(GameController.BASE_URL + 24390 + "/leave")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status", equalTo(404)));

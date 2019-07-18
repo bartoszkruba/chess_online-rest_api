@@ -45,10 +45,10 @@ public class GameController {
     }
 
     @ApiOperation(value = "Join game",
-            notes = "Can choose between white and black place \n" +
-                    "Returns 404 NOT FOUND if game with given id does not exist \n" +
-                    "Returns 400 BAD REQUEST if place is already taken or game already stared \n" +
-                    "Restricted to logged users")
+            notes = "Can choose between white and black place. \n" +
+                    "Returns 404 NOT FOUND if game with given id does not exist. \n" +
+                    "Returns 400 BAD REQUEST if place is already taken or game already stared. \n" +
+                    "Restricted to logged users.")
     @PutMapping({"{id}/join/{color}", "{id}/join/{color}/"})
     @ResponseStatus(HttpStatus.OK)
     @Secured({"ROLE_USER", "ROLE_ADMIN"})
@@ -56,5 +56,18 @@ public class GameController {
         log.debug("New request: PUT " + BASE_URL + id + "/join/" + color);
 
         return gameService.joinGame(color, principal.getName(), id);
+    }
+
+    @ApiOperation(value = "Leave game",
+            notes = "Return 404 NOT FOUNd if game with given id does not exist or you have not joined game. \n" +
+                    "If game already started status will be changed to STOPPED and you will lose. \n " +
+                    "Restricted to logged users")
+    @PutMapping({"{id}/leave", "{id}/leave/"})
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"ROLE_USER", "ROLE_ADMIN"})
+    public GameCommand leaveGame(@PathVariable Long id, Principal principal) {
+        log.debug("New request: PUT " + BASE_URL + id + "/leave");
+
+        return gameService.leaveGame(principal.getName(), id);
     }
 }

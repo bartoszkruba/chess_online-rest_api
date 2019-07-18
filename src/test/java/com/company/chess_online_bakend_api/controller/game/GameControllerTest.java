@@ -162,4 +162,42 @@ class GameControllerTest {
         verify(gameService, times(1)).joinGame(any(), any(), anyLong());
         verifyNoMoreInteractions(gameService);
     }
+
+    @Test
+    void leaveGameUsernameNotFound() throws Exception {
+        String username = "username";
+
+        String url = GameController.BASE_URL + 1 + "/leave";
+
+        when(principal.getName()).thenReturn(username);
+        when(gameService.leaveGame(username, 1L)).thenThrow(UserNotFoundException.class);
+
+        mockMvc.perform(put(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .principal(principal))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status", equalTo(404)));
+
+        verify(gameService, times(1)).leaveGame(username, 1L);
+        verifyNoMoreInteractions(gameService);
+    }
+
+    @Test
+    void leaveGameGameNotFound() throws Exception {
+        String username = "username";
+
+        String url = GameController.BASE_URL + 1 + "/leave";
+
+        when(principal.getName()).thenReturn(username);
+        when(gameService.leaveGame(username, 1L)).thenThrow(GameNotFoundException.class);
+
+        mockMvc.perform(put(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .principal(principal))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status", equalTo(404)));
+
+        verify(gameService, times(1)).leaveGame(username, 1L);
+        verifyNoMoreInteractions(gameService);
+    }
 }

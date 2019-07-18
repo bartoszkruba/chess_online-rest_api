@@ -598,4 +598,45 @@ class GameServiceJpaImplTest {
 
         verifyZeroInteractions(gameCommandToGame);
     }
+
+    @Test
+    void leaveGameAlreadyBegin() {
+        String username = "username";
+
+        User user = User.builder().id(1L).username(username).build();
+
+        Game joinedGame = Game.builder()
+                .id(1L)
+                .blackPlayer(user)
+                .status(GameStatus.STARTED).build();
+
+        Game gameToSave = Game.builder()
+                .id(1L)
+                .status(GameStatus.STOPPED).build();
+
+        GameCommand gameWithoutPlayer = GameCommand.builder()
+                .id(1L)
+                .status(GameStatus.STOPPED).build();
+
+        when(userRepository.findByUsernameLike(username)).thenReturn(Optional.of(user));
+        when(gameRepository.findById(1L)).thenReturn(Optional.of(joinedGame));
+        when(gameRepository.save(gameToSave)).thenReturn(gameToSave);
+        when(gameToGameCommand.convert(gameToSave)).thenReturn(gameWithoutPlayer);
+
+        GameCommand gameCommand = gameService.leaveGame(username, 1L);
+
+        assertEquals(gameWithoutPlayer, gameCommand);
+
+        verify(userRepository, times(1)).findByUsernameLike(username);
+        verifyNoMoreInteractions(userRepository);
+
+        verify(gameRepository, times(1)).findById(1L);
+        verify(gameRepository, times(1)).save(gameToSave);
+        verifyNoMoreInteractions(gameRepository);
+
+        verify(gameToGameCommand, times(1)).convert(gameToSave);
+        verifyNoMoreInteractions(gameToGameCommand);
+
+        verifyZeroInteractions(gameCommandToGame);
+    }
 }

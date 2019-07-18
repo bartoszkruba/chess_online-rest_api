@@ -113,6 +113,12 @@ public class GameServiceJpaImpl implements GameService {
             throw new UserNotFoundException("You have not joined game with id " + gameId);
         }
 
+        if (game.getStatus() != GameStatus.WAITNG_TO_START) {
+            game.setStatus(GameStatus.STOPPED);
+        }
+
+        System.out.println(game);
+
         return gameToGameCommand.convert(gameRepository.save(game));
     }
 
