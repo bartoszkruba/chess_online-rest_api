@@ -1,6 +1,7 @@
 package com.company.chess_online_bakend_api.data.repository;
 
 import com.company.chess_online_bakend_api.bootstrap.dev.RoomBootstrap;
+import com.company.chess_online_bakend_api.data.model.Game;
 import com.company.chess_online_bakend_api.data.model.Room;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,31 +17,27 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-class RoomRepositoryTest {
+public class GameRepositoryIT {
+
+    private final Long ROOM_ID = 1L;
 
     @Autowired
     RoomRepository roomRepository;
 
+    @Autowired
+    GameRepository gameRepository;
+
     @BeforeEach
     void setUp() throws Exception {
-
-        roomRepository.deleteAll();
-
         RoomBootstrap roomBootstrap = new RoomBootstrap(roomRepository);
         roomBootstrap.run();
     }
 
     @Test
-    void findByName() {
-        Optional<Room> roomOptional = roomRepository.findByNameLike("Alpha");
+    void findByRoom() {
+        Optional<Game> optionalGame = gameRepository.findGameByRoom(Room.builder().id(ROOM_ID).build());
 
-        assertEquals("Alpha", roomOptional.get().getName());
-    }
-
-    @Test
-    void findByNameNoMatch() {
-        Optional<Room> roomOptional = roomRepository.findByNameLike("Does not exists");
-
-        assertTrue(roomOptional.isEmpty());
+        assertTrue(optionalGame.isPresent());
+        assertEquals(ROOM_ID, optionalGame.get().getRoom().getId());
     }
 }

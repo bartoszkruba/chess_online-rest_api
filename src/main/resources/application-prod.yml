@@ -19,3 +19,6 @@ logging:
       springframework: INFO
     com:
       company: INFO
+server:
+  error:
+    include-stacktrace: never

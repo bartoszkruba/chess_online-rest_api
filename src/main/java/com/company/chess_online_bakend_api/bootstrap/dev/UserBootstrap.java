@@ -30,6 +30,17 @@ public class UserBootstrap implements ApplicationListener<ContextRefreshedEvent>
         this.encoder = bCryptPasswordEncoder;
     }
 
+    public static final String ROLE_ADMIN = "ROLE_ADMIN";
+    public static final String ROLE_USER = "ROLE_USER";
+
+    public static final String ADMIN_USERNAME = "admin";
+    public static final String ADMIN_PASSWORD = "password";
+    public static final String ADMIN_EMAIL = "admin@email.com";
+
+    public static final String USER_USERNAME = "user";
+    public static final String USER_PASSWORD = "password";
+    public static final String USER_EMAIL = "user@email.com";
+
     @Override
     @Transactional
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
@@ -40,47 +51,47 @@ public class UserBootstrap implements ApplicationListener<ContextRefreshedEvent>
     }
 
     private void loadRoles() {
-        if (roleRepository.findByDescription("ROLE_USER") == null) {
-            Role role1 = Role.builder().description("ROLE_USER").build();
+        if (roleRepository.findByDescription(ROLE_USER) == null) {
+            Role role1 = Role.builder().description(ROLE_USER).build();
             roleRepository.save(role1);
         }
-        if (roleRepository.findByDescription("ROLE_ADMIN") == null) {
-            Role role2 = Role.builder().description("ROLE_ADMIN").build();
+        if (roleRepository.findByDescription(ROLE_ADMIN) == null) {
+            Role role2 = Role.builder().description(ROLE_ADMIN).build();
             roleRepository.save(role2);
         }
     }
 
     private void loadUsers() {
-        Role adminRole = roleRepository.findByDescription("ROLE_ADMIN");
+        Role adminRole = roleRepository.findByDescription(ROLE_ADMIN);
         if (adminRole == null) {
-            log.error("ROLE_ADMIN not found");
+            log.error(ROLE_ADMIN + " not found");
             throw new RuntimeException("ROLE_ADMIN not found");
         }
 
-        Role userRole = roleRepository.findByDescription("ROLE_USER");
+        Role userRole = roleRepository.findByDescription(ROLE_USER);
         if (userRole == null) {
-            log.error("ROLE_USER not found");
+            log.error(ROLE_USER + " not found");
             throw new RuntimeException("ROLE_USER not found");
         }
 
 
-        if (userRepository.findByUsernameLike("ken123").isEmpty()) {
+        if (userRepository.findByUsernameLike(ADMIN_USERNAME).isEmpty()) {
             User adminUser = User.builder()
                     .firstName("Kirk")
                     .lastName("Kennedy")
-                    .username("ken123")
-                    .email("ken123@email.com")
-                    .password(encoder.encode("devo")).build().addRole(adminRole);
+                    .username(ADMIN_USERNAME)
+                    .email(ADMIN_EMAIL)
+                    .password(encoder.encode(ADMIN_PASSWORD)).build().addRole(adminRole);
             userRepository.save(adminUser);
         }
 
-        if (userRepository.findByUsernameLike("carl69").isEmpty()) {
+        if (userRepository.findByUsernameLike(USER_USERNAME).isEmpty()) {
             User normalUser = User.builder()
                     .firstName("Carl")
                     .lastName("Soto")
-                    .username("carl69")
-                    .email("carl69@email.com")
-                    .password(encoder.encode("tyler1")).build().addRole(userRole);
+                    .username(USER_USERNAME)
+                    .email(USER_EMAIL)
+                    .password(encoder.encode(USER_PASSWORD)).build().addRole(userRole);
             userRepository.save(normalUser);
         }
     }

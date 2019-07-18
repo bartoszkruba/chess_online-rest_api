@@ -38,6 +38,7 @@ public class AuthenticationControllerValidationIT extends AbstractRestController
     @Autowired
     private WebApplicationContext wac;
 
+
     @BeforeEach
     void setUp() {
         this.mockMvc = MockMvcBuilders

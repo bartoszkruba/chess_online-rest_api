@@ -6,6 +6,7 @@ import com.company.chess_online_bakend_api.controller.AuthenticationController;
 import com.company.chess_online_bakend_api.data.command.UserCommand;
 import com.company.chess_online_bakend_api.data.repository.RoleRepository;
 import com.company.chess_online_bakend_api.data.repository.UserRepository;
+import com.company.chess_online_bakend_api.data.validation.constraint.UniqueUsernameConstraint;
 import com.company.chess_online_bakend_api.util.StringUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -78,14 +79,14 @@ public class AuthenticationControllerIT extends AbstractRestControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "carl69", password = "tyler1", authorities = "ROLE_USER")
+    @WithMockUser(authorities = UserBootstrap.ROLE_USER)
     void rolesLoggedInAsUser() throws Exception {
         mockMvc.perform(get(AuthenticationController.BASE_URL + "role"))
                 .andExpect(status().isOk());
     }
 
     @Test
-    @WithMockUser(username = "ken123", password = "devo", authorities = "ROLE_ADMIN")
+    @WithMockUser(authorities = UserBootstrap.ROLE_ADMIN)
     void rolesLoggedInAsAdmin() throws Exception {
         mockMvc.perform(get(AuthenticationController.BASE_URL + "role"))
                 .andExpect(status().isOk());
@@ -95,7 +96,7 @@ public class AuthenticationControllerIT extends AbstractRestControllerTest {
     @Test
     void registerNewUserUsernameAlreadyExists() throws Exception {
         UserCommand userCommand = UserCommand.builder()
-                .username("ken123")
+                .username(UserBootstrap.USER_USERNAME)
                 .password(PASSWORD)
                 .email(EMAIL)
                 .firstName(FIRST_NAME)
@@ -107,7 +108,7 @@ public class AuthenticationControllerIT extends AbstractRestControllerTest {
                 .content(asJsonString(userCommand)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status", equalTo(400)))
-                .andExpect(jsonPath("$.errors[0]", equalTo("Username already exists")))
+                .andExpect(jsonPath("$.errors[0]", equalTo(UniqueUsernameConstraint.ERROR_MESSAGE)))
                 .andExpect(jsonPath("$.errors", hasSize(1)));
 
     }

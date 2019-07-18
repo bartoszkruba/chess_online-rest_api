@@ -37,6 +37,7 @@ public class AuthenticationController {
     @ResponseStatus(HttpStatus.OK)
     @Secured({"ROLE_ADMIN", "ROLE_USER"})
     public Collection<String> getRoles(Principal principal) {
+        log.debug("New request: GET " + BASE_URL + "role");
 
         return authenticationService.getRolesForUser(principal.getName());
     }
@@ -48,6 +49,8 @@ public class AuthenticationController {
     @PostMapping("register")
     @ResponseStatus(HttpStatus.CREATED)
     public UserCommand registerNewUser(@Valid @RequestBody UserCommand userCommand) {
+        log.debug("New request: POST " + BASE_URL + "register");
+
         return authenticationService.registerNewUser(userCommand);
     }
 

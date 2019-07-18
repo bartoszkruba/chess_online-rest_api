@@ -85,4 +85,28 @@ class RoomToRoomCommandTest {
 
         verify(gameToGameCommand, times(1)).convert(game);
     }
+
+    @Test
+    void testConvertWithoutGame() {
+        Game game = Game.builder().id(4L).status(GameStatus.STARTED).build();
+
+        when(gameToGameCommand.convert(game)).thenReturn(GAME_COMMAND);
+
+        Room room = Room.builder()
+                .id(ROOM_ID)
+                .name(ROOM_NAME).build();
+
+        room.setGame(game);
+
+        RoomCommand roomCommand = roomToRoomCommand.convertWithoutGame(room);
+
+        System.out.println(roomCommand);
+
+        assertEquals(ROOM_ID, roomCommand.getId());
+        assertEquals(ROOM_NAME, roomCommand.getName());
+        assertEquals(GameStatus.STARTED, roomCommand.getGameStatus());
+        assertNull(roomCommand.getGame());
+
+        verifyZeroInteractions(gameToGameCommand);
+    }
 }

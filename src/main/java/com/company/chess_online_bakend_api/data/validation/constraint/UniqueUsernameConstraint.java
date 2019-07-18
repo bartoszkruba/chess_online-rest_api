@@ -11,7 +11,10 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface UniqueUsernameConstraint {
-    String message() default "Username already exists";
+
+    String ERROR_MESSAGE = "Username already exists";
+
+    String message() default ERROR_MESSAGE;
 
     Class<?>[] groups() default {};
 

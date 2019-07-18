@@ -7,7 +7,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @EqualsAndHashCode(callSuper = true, exclude = "room")
-@ToString(exclude = "room")
+@ToString(exclude = "room", callSuper = true)
 @Entity
 @Data
 @NoArgsConstructor
@@ -16,7 +16,7 @@ public class Game extends BaseEntity {
     @OneToOne
     private Room room;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Board board;
 
     @Enumerated(EnumType.STRING)
