@@ -2,8 +2,11 @@ package com.company.chess_online_bakend_api.controller;
 
 import com.company.chess_online_bakend_api.controller.propertyEditor.PieceColorPropertyEditor;
 import com.company.chess_online_bakend_api.data.command.GameCommand;
+import com.company.chess_online_bakend_api.data.command.MoveCommand;
 import com.company.chess_online_bakend_api.data.model.enums.PieceColor;
 import com.company.chess_online_bakend_api.service.GameService;
+import com.company.chess_online_bakend_api.service.MoveService;
+import com.github.bhlangonijr.chesslib.move.MoveGeneratorException;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.Set;
 
 @Slf4j
 @RestController
@@ -20,11 +24,14 @@ import java.security.Principal;
 public class GameController {
     public static final String BASE_URL = "/game/";
 
+    private final MoveService moveService;
     private final GameService gameService;
     private final PieceColorPropertyEditor pieceColorPropertyEditor;
 
     @Autowired
-    public GameController(GameService gameService, PieceColorPropertyEditor pieceColorPropertyEditor) {
+    public GameController(MoveService moveService, GameService gameService,
+                          PieceColorPropertyEditor pieceColorPropertyEditor) {
+        this.moveService = moveService;
         this.gameService = gameService;
         this.pieceColorPropertyEditor = pieceColorPropertyEditor;
     }
@@ -69,5 +76,11 @@ public class GameController {
         log.debug("New request: PUT " + BASE_URL + id + "/leave");
 
         return gameService.leaveGame(principal.getName(), id);
+    }
+
+    @GetMapping({"{id}/possibleMoves", "{id}/possibleMoves/"})
+    public Set<MoveCommand> getPossibleMoves(@PathVariable Long id, @RequestBody MoveCommand moveCommand)
+            throws MoveGeneratorException {
+        return moveService.getPossibleMoves(moveCommand.getFrom(), id);
     }
 }
