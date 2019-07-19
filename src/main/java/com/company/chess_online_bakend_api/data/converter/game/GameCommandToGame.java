@@ -36,6 +36,7 @@ public class GameCommandToGame implements Converter<GameCommand, Game> {
         Game game = Game.builder()
                 .id(gameCommand.getId())
                 .turn(gameCommand.getTurn())
+                .fenNotation(gameCommand.getFenNotation())
                 .status(gameCommand.getStatus()).build();
 
         if (gameCommand.getWhitePlayer() != null) {

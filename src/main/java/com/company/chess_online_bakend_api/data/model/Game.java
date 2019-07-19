@@ -30,9 +30,11 @@ public class Game extends BaseEntity {
 
     private Integer turn;
 
+    private String fenNotation;
+
     @Builder
     public Game(Long id, LocalDateTime created, LocalDateTime updated, Room room, GameStatus status, User whitePlayer,
-                User blackPlayer, Integer turn, Board board) {
+                User blackPlayer, Integer turn, Board board, String fenNotation) {
         super(id, created, updated);
         this.room = room;
         this.status = status;
@@ -40,5 +42,6 @@ public class Game extends BaseEntity {
         this.blackPlayer = blackPlayer;
         this.turn = turn;
         this.board = board;
+        this.fenNotation = fenNotation;
     }
 }
