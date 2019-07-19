@@ -3,6 +3,10 @@ package com.company.chess_online_bakend_api.data.model.enums;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.Nullable;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.ListIterator;
+
 @Slf4j
 public enum HorizontalPosition {
     A("A"),
@@ -15,6 +19,7 @@ public enum HorizontalPosition {
     H("H");
 
     private String positionString;
+    private static List<HorizontalPosition> positionList = Arrays.asList(A, B, C, D, E, F, G, H);
 
     HorizontalPosition(String position) {
         this.positionString = position;
@@ -54,5 +59,32 @@ public enum HorizontalPosition {
             default:
                 return null;
         }
+    }
+
+    public static ListIterator<HorizontalPosition> getPositionIterator(HorizontalPosition startValue) {
+
+        List<HorizontalPosition> positionList = Arrays.asList(A, B, C, D, E, F, G, H);
+        var positionIterator = positionList.listIterator();
+
+        if (startValue == null) {
+            return positionIterator;
+        }
+
+        for (int i = 0; i < countNeededIteratorMoves(startValue); i++) {
+            positionIterator.next();
+        }
+
+        return positionIterator;
+    }
+
+    private static int countNeededIteratorMoves(HorizontalPosition position) {
+        int movesNeeded = 0;
+        for (HorizontalPosition listPosition : positionList) {
+            if (listPosition == position) {
+                return movesNeeded;
+            }
+            movesNeeded++;
+        }
+        return 0;
     }
 }

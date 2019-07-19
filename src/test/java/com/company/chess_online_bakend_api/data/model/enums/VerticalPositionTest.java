@@ -1,6 +1,5 @@
-package com.company.chess_online_bakend_api.data.model;
+package com.company.chess_online_bakend_api.data.model.enums;
 
-import com.company.chess_online_bakend_api.data.model.enums.VerticalPosition;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -26,5 +25,19 @@ class VerticalPositionTest {
     @Test
     void getPositionNullValue() {
         assertNull(VerticalPosition.getPosition(null));
+    }
+
+    @Test
+    void getPositionIterator() {
+        var iterator = VerticalPosition.getPositionIterator(VerticalPosition.EIGHT);
+
+        assertEquals(VerticalPosition.EIGHT, iterator.next());
+        assertEquals(VerticalPosition.EIGHT, iterator.previous());
+    }
+
+    @Test
+    void getPositionNullStartValue() {
+        var iterator = VerticalPosition.getPositionIterator(null);
+        assertEquals(VerticalPosition.ONE, iterator.next());
     }
 }

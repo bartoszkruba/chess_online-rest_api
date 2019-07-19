@@ -1,6 +1,5 @@
-package com.company.chess_online_bakend_api.data.model;
+package com.company.chess_online_bakend_api.data.model.enums;
 
-import com.company.chess_online_bakend_api.data.model.enums.HorizontalPosition;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -26,5 +25,20 @@ class HorizontalPositionTest {
     @Test
     void getPositionNullValue() {
         assertNull(HorizontalPosition.getPosition(null));
+    }
+
+    @Test
+    void getPositionIterator() {
+        var iterator = HorizontalPosition.getPositionIterator(HorizontalPosition.B);
+        assertEquals(HorizontalPosition.B, iterator.next());
+
+        iterator = HorizontalPosition.getPositionIterator(HorizontalPosition.B);
+        assertEquals(HorizontalPosition.A, iterator.previous());
+    }
+
+    @Test
+    void getPositionIteratorNullStartValue() {
+        var iterator = HorizontalPosition.getPositionIterator(null);
+        assertEquals(HorizontalPosition.A, iterator.next());
     }
 }
