@@ -16,7 +16,7 @@ $ cd dev
 $ docker-compose up
 ```
 
-###Documentation:
+### Documentation:
 Swagger documentation for REST API can be accessed through following endpoint:
 
 ```
