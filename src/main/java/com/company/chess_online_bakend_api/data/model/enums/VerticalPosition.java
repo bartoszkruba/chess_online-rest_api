@@ -4,7 +4,6 @@ import org.springframework.lang.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.ListIterator;
 
 public enum VerticalPosition {
     ONE("1"),
@@ -59,30 +58,5 @@ public enum VerticalPosition {
             default:
                 return null;
         }
-    }
-
-    public static ListIterator<VerticalPosition> getPositionIterator(VerticalPosition startValue) {
-        var positionIterator = positionList.listIterator();
-
-        if (startValue == null) {
-            return positionIterator;
-        }
-
-        for (int i = 0; i < countNeededIteratorMoves(startValue); i++) {
-            positionIterator.next();
-        }
-
-        return positionIterator;
-    }
-
-    private static int countNeededIteratorMoves(VerticalPosition position) {
-        int movesNeeded = 0;
-        for (VerticalPosition listPosition : positionList) {
-            if (listPosition == position) {
-                return movesNeeded;
-            }
-            movesNeeded++;
-        }
-        return 0;
     }
 }

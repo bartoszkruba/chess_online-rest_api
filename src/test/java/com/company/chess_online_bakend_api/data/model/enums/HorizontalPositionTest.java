@@ -26,19 +26,4 @@ class HorizontalPositionTest {
     void getPositionNullValue() {
         assertNull(HorizontalPosition.getPosition(null));
     }
-
-    @Test
-    void getPositionIterator() {
-        var iterator = HorizontalPosition.getPositionIterator(HorizontalPosition.B);
-        assertEquals(HorizontalPosition.B, iterator.next());
-
-        iterator = HorizontalPosition.getPositionIterator(HorizontalPosition.B);
-        assertEquals(HorizontalPosition.A, iterator.previous());
-    }
-
-    @Test
-    void getPositionIteratorNullStartValue() {
-        var iterator = HorizontalPosition.getPositionIterator(null);
-        assertEquals(HorizontalPosition.A, iterator.next());
-    }
 }
