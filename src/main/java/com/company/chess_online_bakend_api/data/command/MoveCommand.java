@@ -3,6 +3,8 @@ package com.company.chess_online_bakend_api.data.command;
 import com.company.chess_online_bakend_api.data.model.enums.PieceColor;
 import com.company.chess_online_bakend_api.data.model.enums.PieceType;
 import com.company.chess_online_bakend_api.data.validation.constraint.ValidPositionConstraint;
+import com.company.chess_online_bakend_api.data.validation.group.OnCreateNewMove;
+import com.company.chess_online_bakend_api.data.validation.group.OnGetPossibleMoves;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
@@ -17,12 +19,12 @@ import java.time.LocalDateTime;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class MoveCommand extends BaseEntityCommand {
 
-    @NotNull
-    @ValidPositionConstraint
+    @NotNull(groups = OnCreateNewMove.class)
+    @ValidPositionConstraint(groups = OnCreateNewMove.class)
     private String from;
 
-    @NotNull
-    @ValidPositionConstraint
+    @NotNull(groups = OnCreateNewMove.class)
+    @ValidPositionConstraint(groups = {OnCreateNewMove.class, OnGetPossibleMoves.class})
     private String to;
     private PieceColor pieceColor;
     private PieceType pieceType;
