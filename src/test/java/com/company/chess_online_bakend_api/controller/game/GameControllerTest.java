@@ -1,14 +1,17 @@
 package com.company.chess_online_bakend_api.controller.game;
 
+import com.company.chess_online_bakend_api.controller.AbstractRestControllerTest;
 import com.company.chess_online_bakend_api.controller.ExceptionAdviceController;
 import com.company.chess_online_bakend_api.controller.GameController;
 import com.company.chess_online_bakend_api.controller.propertyEditor.PieceColorPropertyEditor;
 import com.company.chess_online_bakend_api.data.command.GameCommand;
+import com.company.chess_online_bakend_api.data.command.MoveCommand;
 import com.company.chess_online_bakend_api.data.command.UserCommand;
 import com.company.chess_online_bakend_api.exception.GameNotFoundException;
 import com.company.chess_online_bakend_api.exception.PlaceAlreadyTakenException;
 import com.company.chess_online_bakend_api.exception.UserNotFoundException;
 import com.company.chess_online_bakend_api.service.GameService;
+import com.company.chess_online_bakend_api.service.MoveService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -19,15 +22,17 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.security.Principal;
+import java.util.Set;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class GameControllerTest {
+class GameControllerTest extends AbstractRestControllerTest {
 
     private final Long USER_COMMAND1_ID = 1L;
     private final Long USER_COMMAND2_ID = 2L;
@@ -62,6 +67,9 @@ class GameControllerTest {
 
     @Mock
     GameService gameService;
+
+    @Mock
+    MoveService moveService;
 
     @InjectMocks
     GameController gameController;
@@ -199,5 +207,22 @@ class GameControllerTest {
 
         verify(gameService, times(1)).leaveGame(username, 1L);
         verifyNoMoreInteractions(gameService);
+    }
+
+    @Test
+    void getValidMoves() throws Exception {
+        MoveCommand moveCommand1 = MoveCommand.builder().from("A2").to("A3").build();
+        MoveCommand moveCommand2 = MoveCommand.builder().from("A2").to("A4").build();
+
+        MoveCommand request = MoveCommand.builder().from("A2").build();
+
+        when(moveService.getPossibleMoves("A2", 1L)).thenReturn(Set.of(moveCommand1, moveCommand2));
+
+        mockMvc.perform(get(GameController.BASE_URL + 1 + "/possibleMoves")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)));
+
     }
 }

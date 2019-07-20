@@ -2,7 +2,9 @@ package com.company.chess_online_bakend_api.controller.game;
 
 import com.company.chess_online_bakend_api.bootstrap.dev.RoomBootstrap;
 import com.company.chess_online_bakend_api.bootstrap.dev.UserBootstrap;
+import com.company.chess_online_bakend_api.controller.AbstractRestControllerTest;
 import com.company.chess_online_bakend_api.controller.GameController;
+import com.company.chess_online_bakend_api.data.command.MoveCommand;
 import com.company.chess_online_bakend_api.data.model.Game;
 import com.company.chess_online_bakend_api.data.model.Room;
 import com.company.chess_online_bakend_api.data.model.User;
@@ -26,7 +28,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -34,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("dev")
-public class GameControllerIT {
+public class GameControllerIT extends AbstractRestControllerTest {
 
     MockMvc mockMvc;
 
@@ -202,5 +206,18 @@ public class GameControllerIT {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status", equalTo(404)));
+    }
+
+    @Test
+    void getPossibleMovesInvalidPosition() throws Exception {
+        MoveCommand moveCommand = MoveCommand.builder().from("L").build();
+
+        mockMvc.perform(get(GameController.BASE_URL + 13 + "/possibleMoves")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(moveCommand)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors", hasSize(1)))
+                .andExpect(jsonPath("$.errors[0]", equalTo(MoveCommand.MESSAGE_FROM_INVALID)))
+                .andExpect(jsonPath("$.status", equalTo(400)));
     }
 }

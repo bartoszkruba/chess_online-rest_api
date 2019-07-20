@@ -19,12 +19,18 @@ import java.time.LocalDateTime;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class MoveCommand extends BaseEntityCommand {
 
-    @NotNull(groups = OnCreateNewMove.class)
-    @ValidPositionConstraint(groups = OnCreateNewMove.class)
+    public static final String MESSAGE_FROM_NULL = "Start position cannot be null";
+    public static final String MESSAGE_FROM_INVALID = "Invalid start position";
+
+    public static final String MESSAGE_TO_NULL = "New position cannot be null";
+    public static final String MESSAGE_TO_INVALID = "Invalid new position";
+
+    @NotNull(groups = OnCreateNewMove.class, message = MESSAGE_FROM_NULL)
+    @ValidPositionConstraint(groups = {OnCreateNewMove.class, OnGetPossibleMoves.class}, message = MESSAGE_FROM_INVALID)
     private String from;
 
-    @NotNull(groups = OnCreateNewMove.class)
-    @ValidPositionConstraint(groups = {OnCreateNewMove.class, OnGetPossibleMoves.class})
+    @NotNull(groups = OnCreateNewMove.class, message = MESSAGE_TO_NULL)
+    @ValidPositionConstraint(groups = OnCreateNewMove.class, message = MESSAGE_TO_INVALID)
     private String to;
     private PieceColor pieceColor;
     private PieceType pieceType;

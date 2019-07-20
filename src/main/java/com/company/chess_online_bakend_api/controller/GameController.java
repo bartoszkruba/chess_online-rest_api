@@ -4,6 +4,7 @@ import com.company.chess_online_bakend_api.controller.propertyEditor.PieceColorP
 import com.company.chess_online_bakend_api.data.command.GameCommand;
 import com.company.chess_online_bakend_api.data.command.MoveCommand;
 import com.company.chess_online_bakend_api.data.model.enums.PieceColor;
+import com.company.chess_online_bakend_api.data.validation.group.OnGetPossibleMoves;
 import com.company.chess_online_bakend_api.service.GameService;
 import com.company.chess_online_bakend_api.service.MoveService;
 import com.github.bhlangonijr.chesslib.move.MoveGeneratorException;
@@ -12,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
@@ -66,7 +68,7 @@ public class GameController {
     }
 
     @ApiOperation(value = "Leave game",
-            notes = "Return 404 NOT FOUNd if game with given id does not exist or you have not joined game. \n" +
+            notes = "Returns 404 NOT FOUNd if game with given id does not exist or you have not joined game. \n" +
                     "If game already started status will be changed to STOPPED and you will lose. \n " +
                     "Restricted to logged users")
     @PutMapping({"{id}/leave", "{id}/leave/"})
@@ -78,9 +80,16 @@ public class GameController {
         return gameService.leaveGame(principal.getName(), id);
     }
 
+    @ApiOperation(value = "Get possible moves from certain position",
+            notes = "Returns 404 NOT FOUND if game with given id does not exist. \n" +
+                    "Return all possible moves if there is no start position specified.")
     @GetMapping({"{id}/possibleMoves", "{id}/possibleMoves/"})
-    public Set<MoveCommand> getPossibleMoves(@PathVariable Long id, @RequestBody MoveCommand moveCommand)
+    @ResponseStatus(HttpStatus.OK)
+    public Set<MoveCommand> getPossibleMoves(@PathVariable Long id,
+                                             @Validated(OnGetPossibleMoves.class) @RequestBody MoveCommand moveCommand)
             throws MoveGeneratorException {
+        log.debug("New request: GET " + BASE_URL + id + "/possibleMoves");
+
         return moveService.getPossibleMoves(moveCommand.getFrom(), id);
     }
 }
