@@ -9,6 +9,7 @@ import com.company.chess_online_bakend_api.data.model.enums.VerticalPosition;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 @Slf4j
@@ -158,5 +159,20 @@ public class BoardUtil {
                 .verticalPosition(VerticalPosition.EIGHT)
                 .horizontalPosition(HorizontalPosition.D)
                 .build());
+    }
+
+    public static void movePiece(Piece piece, Board board, String to) {
+
+        Optional<Piece> pieceOptional = board.getPieces()
+                .stream()
+                .filter(p -> p.getHorizontalPosition() == PositionUtils.getHorizontalPosition(to))
+                .filter(p -> p.getVerticalPosition() == PositionUtils.getVerticalPosition(to))
+                .findFirst();
+
+        pieceOptional.ifPresent(p -> board.getPieces().remove(p));
+
+        piece.setHorizontalPosition(PositionUtils.getHorizontalPosition(to));
+        piece.setVerticalPosition(PositionUtils.getVerticalPosition(to));
+        piece.increaseMoveCount();
     }
 }

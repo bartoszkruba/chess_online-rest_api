@@ -41,4 +41,12 @@ public class Piece extends BaseEntity {
         this.verticalPosition = verticalPosition;
         this.moves = moves;
     }
+
+    // TODO: 2019-07-20 write tests
+    public void increaseMoveCount() {
+        if (moves == null) {
+            moves = 0;
+        }
+        moves++;
+    }
 }

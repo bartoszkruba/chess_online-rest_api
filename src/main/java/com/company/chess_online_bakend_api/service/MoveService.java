@@ -10,5 +10,5 @@ public interface MoveService extends CrudService<Move, Long> {
 
     Set<MoveCommand> getPossibleMoves(String from, Long gameId) throws MoveGeneratorException;
 
-    MoveCommand move(String username, Long gameId, String from, String to);
+    MoveCommand move(String username, Long gameId, String from, String to) throws MoveGeneratorException;
 }
