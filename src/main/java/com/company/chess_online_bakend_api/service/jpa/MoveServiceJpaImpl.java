@@ -91,8 +91,8 @@ public class MoveServiceJpaImpl implements MoveService {
     // Game finished
     // Invalid move
     @Override
-    public MoveCommand move(String username, Long gameId, String from, String to) throws MoveGeneratorException {
-        log.debug("Doing move for game with id " + gameId + ", from position: " + from + " to: " + to);
+    public MoveCommand performMove(String username, Long gameId, String from, String to) throws MoveGeneratorException {
+        log.debug("Performing move for game with id " + gameId + ", from position: " + from + " to: " + to);
 
         // Checking if game exist
         Game game = gameRepository.findById(gameId)

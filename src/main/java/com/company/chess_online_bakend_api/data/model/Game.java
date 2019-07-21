@@ -51,8 +51,11 @@ public class Game extends BaseEntity {
         this.moves = moves;
     }
 
-    // TODO: 2019-07-20 write tests
     public void addMove(Move move) {
+
+        if (move == null) {
+            throw new RuntimeException("Null value passed");
+        }
 
         if (this.moves == null) {
             moves = new ArrayList<>();
@@ -61,7 +64,6 @@ public class Game extends BaseEntity {
         moves.add(move);
     }
 
-    // TODO: 2019-07-20 write tests
     public void increaseTurnCount() {
         if (turn == null) {
             turn = 1;

@@ -8,6 +8,7 @@ import com.company.chess_online_bakend_api.data.model.enums.PieceType;
 import com.company.chess_online_bakend_api.data.model.enums.VerticalPosition;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -161,7 +162,12 @@ public class BoardUtil {
                 .build());
     }
 
+    @NotNull
     public static void movePiece(Piece piece, Board board, String to) {
+
+        if (piece == null || board == null || to == null) {
+            throw new RuntimeException("Null value passed");
+        }
 
         Optional<Piece> pieceOptional = board.getPieces()
                 .stream()
