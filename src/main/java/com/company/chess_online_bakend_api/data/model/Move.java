@@ -35,12 +35,19 @@ public class Move extends BaseEntity {
     @Enumerated
     private PieceType pieceType;
 
+    private Boolean isKingSideCastle;
+    private Boolean isQueenSideCastle;
+    private Boolean isKingAttacked;
+    private Boolean isCheckmate;
+    private Boolean isDraw;
     private Integer moveCount;
 
     @Builder
     public Move(Long id, LocalDateTime created, LocalDateTime updated, HorizontalPosition horizontalStartPosition,
                 VerticalPosition verticalStartPosition, HorizontalPosition horizontalEndPosition,
-                VerticalPosition verticalEndPosition, PieceColor pieceColor, PieceType pieceType, Integer moveCount) {
+                VerticalPosition verticalEndPosition, PieceColor pieceColor, PieceType pieceType, Integer moveCount,
+                Boolean isKingSideCastle, Boolean isQueenSideCastle, Boolean isKingAttacked, Boolean isCheckmate,
+                Boolean isDraw) {
 
         super(id, created, updated);
         this.horizontalStartPosition = horizontalStartPosition;
@@ -50,5 +57,10 @@ public class Move extends BaseEntity {
         this.pieceColor = pieceColor;
         this.pieceType = pieceType;
         this.moveCount = moveCount;
+        this.isKingSideCastle = isKingSideCastle;
+        this.isQueenSideCastle = isQueenSideCastle;
+        this.isKingAttacked = isKingAttacked;
+        this.isCheckmate = isCheckmate;
+        this.isDraw = isDraw;
     }
 }

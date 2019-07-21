@@ -34,6 +34,12 @@ public class MoveCommand extends BaseEntityCommand {
     private String to;
     private PieceColor pieceColor;
     private PieceType pieceType;
+
+    private Boolean isKingSideCastle;
+    private Boolean isQueenSideCastle;
+    private Boolean isKingAttacked;
+    private Boolean isCheckmate;
+    private Boolean isDraw;
     private Integer count;
 
     // TODO: 2019-07-11 Consider switching to epoch time
@@ -41,7 +47,8 @@ public class MoveCommand extends BaseEntityCommand {
 
     @Builder
     public MoveCommand(Long id, String from, String to, PieceColor pieceColor, PieceType pieceType, Integer count,
-                       LocalDateTime happenedOn) {
+                       LocalDateTime happenedOn, Boolean isKingSideCastle, Boolean isQueenSideCastle,
+                       Boolean isKingAttacked, Boolean isCheckmate, Boolean isDraw) {
         super(id);
         this.from = from;
         this.to = to;
@@ -49,5 +56,10 @@ public class MoveCommand extends BaseEntityCommand {
         this.pieceType = pieceType;
         this.count = count;
         this.happenedOn = happenedOn;
+        this.isKingSideCastle = isKingSideCastle;
+        this.isQueenSideCastle = isQueenSideCastle;
+        this.isKingAttacked = isKingAttacked;
+        this.isCheckmate = isCheckmate;
+        this.isDraw = isDraw;
     }
 }

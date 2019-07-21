@@ -32,6 +32,11 @@ public class MoveToMoveCommand implements Converter<Move, MoveCommand> {
                         move.getVerticalStartPosition()))
                 .to(PositionUtils.getPositionString(move.getHorizontalEndPosition(),
                         move.getVerticalEndPosition()))
+                .isKingSideCastle(move.getIsKingSideCastle())
+                .isQueenSideCastle(move.getIsQueenSideCastle())
+                .isKingAttacked(move.getIsKingAttacked())
+                .isCheckmate(move.getIsCheckmate())
+                .isDraw(move.getIsDraw())
                 .build();
 
     }
