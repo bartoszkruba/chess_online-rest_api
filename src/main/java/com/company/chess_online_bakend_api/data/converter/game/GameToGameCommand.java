@@ -37,6 +37,9 @@ public class GameToGameCommand implements Converter<Game, GameCommand> {
                 .status(game.getStatus())
                 .turn(game.getTurn())
                 .fenNotation(game.getFenNotation())
+                .isKingAttacked(game.getIsKingAttacked())
+                .isCheckmate(game.getIsCheckmate())
+                .isDraw(game.getIsDraw())
                 .id(game.getId()).build();
 
         if (game.getRoom() != null) {

@@ -83,6 +83,9 @@ class GameToGameCommandTest {
         assertNull(convertedGame.getTurn());
         assertNull(convertedGame.getId());
         assertNull(convertedGame.getBoard());
+        assertNull(convertedGame.getIsKingAttacked());
+        assertNull(convertedGame.getIsCheckmate());
+        assertNull(convertedGame.getIsDraw());
 
         verifyZeroInteractions(userToUserCommand);
         verifyZeroInteractions(boardToBoardCommand);
@@ -105,6 +108,9 @@ class GameToGameCommandTest {
                 .id(GAME_ID)
                 .status(GameStatus.STARTED)
                 .turn(TURN)
+                .isKingAttacked(true)
+                .isCheckmate(true)
+                .isDraw(true)
                 .board(board).build();
 
         GameCommand convertedGame = gameToGameCommand.convert(game);
@@ -116,6 +122,9 @@ class GameToGameCommandTest {
         assertEquals(GameStatus.STARTED, convertedGame.getStatus());
         assertEquals(TURN, convertedGame.getTurn());
         assertEquals(BOARD_COMMAND, convertedGame.getBoard());
+        assertEquals(true, convertedGame.getIsKingAttacked());
+        assertEquals(true, convertedGame.getIsCheckmate());
+        assertEquals(true, convertedGame.getIsDraw());
 
         verify(userToUserCommand, times(1)).convert(whitePlayer);
         verify(userToUserCommand, times(1)).convert(blackPlayer);

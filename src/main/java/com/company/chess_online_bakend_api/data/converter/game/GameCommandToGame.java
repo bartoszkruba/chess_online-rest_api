@@ -37,6 +37,9 @@ public class GameCommandToGame implements Converter<GameCommand, Game> {
                 .id(gameCommand.getId())
                 .turn(gameCommand.getTurn())
                 .fenNotation(gameCommand.getFenNotation())
+                .isKingAttacked(gameCommand.getIsKingAttacked())
+                .isCheckmate(gameCommand.getIsCheckmate())
+                .isDraw(gameCommand.getIsDraw())
                 .status(gameCommand.getStatus()).build();
 
         if (gameCommand.getWhitePlayer() != null) {
