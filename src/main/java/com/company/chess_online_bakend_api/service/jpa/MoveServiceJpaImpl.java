@@ -179,6 +179,7 @@ public class MoveServiceJpaImpl implements MoveService {
 
         // Moving piece on Board Model
         board.doMove(new com.github.bhlangonijr.chesslib.move.Move(Square.fromValue(from), Square.fromValue(to)));
+
         // Moving piece on Database model
         BoardUtil.movePiece(piece, game.getBoard(), to);
 
@@ -196,10 +197,7 @@ public class MoveServiceJpaImpl implements MoveService {
 
         game.addMove(move);
 
-        if (board.isKingAttacked()) {
-            game.setIsKingAttacked(true);
-            move.setIsKingAttacked(true);
-        } else if (board.isMated()) {
+        if (board.isMated()) {
             Room room = roomRepository.findRoomByGame(game)
                     .orElseThrow(() -> new RuntimeException("Something went wrong with game logic"));
             room.setGame(GameUtil.initNewGameBetweenPlayers(game.getWhitePlayer(), game.getBlackPlayer()));
@@ -236,6 +234,9 @@ public class MoveServiceJpaImpl implements MoveService {
             return moveToMoveCommand.convert(game.getMoves()
                     .stream().max(Comparator.comparing(BaseEntity::getCreated))
                     .orElseThrow(() -> new RuntimeException("Something went really wrong with game and move logic")));
+        } else if (board.isKingAttacked()) {
+            game.setIsKingAttacked(true);
+            move.setIsKingAttacked(true);
         }
 
         gameRepository.save(game);

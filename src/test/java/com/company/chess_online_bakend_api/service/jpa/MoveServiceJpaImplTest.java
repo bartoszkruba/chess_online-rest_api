@@ -4,6 +4,7 @@ import com.company.chess_online_bakend_api.data.command.MoveCommand;
 import com.company.chess_online_bakend_api.data.converter.move.MoveToMoveCommand;
 import com.company.chess_online_bakend_api.data.model.Game;
 import com.company.chess_online_bakend_api.data.model.Move;
+import com.company.chess_online_bakend_api.data.model.Room;
 import com.company.chess_online_bakend_api.data.model.User;
 import com.company.chess_online_bakend_api.data.model.enums.*;
 import com.company.chess_online_bakend_api.data.repository.GameRepository;
@@ -577,6 +578,77 @@ class MoveServiceJpaImplTest {
         verifyNoMoreInteractions(moveToMoveCommand);
     }
 
+    @Test
+    void performCheckmateMove() throws MoveGeneratorException {
+        String username = "username";
+
+        User user1 = User.builder().id(1L).username("user1").build();
+        User user2 = User.builder().id(2L).username(username).build();
+
+        Game game = generateCheckMatePossibleBoard(user1, user2);
+        game.setId(3L);
+
+        when(gameRepository.findById(3L)).thenReturn(Optional.of(game));
+        when(userRepository.findByUsernameLike(username)).thenReturn(Optional.of(user2));
+        when(roomRepository.findRoomByGame(any())).thenReturn(Optional.of(Room.builder().id(1L).build()));
+
+        Game gameAfterMove = generateCheckMatePossibleBoard(user1, user2);
+        gameAfterMove.setId(3L);
+        gameAfterMove.getBoard().getPieces()
+                .stream()
+                .filter(piece -> piece.getHorizontalPosition() == HorizontalPosition.D)
+                .filter(piece -> piece.getVerticalPosition() == VerticalPosition.EIGHT)
+                .forEach(piece -> {
+                    piece.setHorizontalPosition(HorizontalPosition.H);
+                    piece.setVerticalPosition(VerticalPosition.FOUR);
+                    piece.increaseMoveCount();
+                });
+
+        Board board = new Board();
+        board.doMove(new com.github.bhlangonijr.chesslib.move.Move(Square.F2, Square.F3));
+        board.doMove(new com.github.bhlangonijr.chesslib.move.Move(Square.E7, Square.E5));
+        board.doMove(new com.github.bhlangonijr.chesslib.move.Move(Square.G2, Square.G4));
+        board.doMove(new com.github.bhlangonijr.chesslib.move.Move(Square.D8, Square.H4));
+
+        gameAfterMove.setFenNotation(board.getFen());
+        gameAfterMove.increaseTurnCount();
+        gameAfterMove.setIsCheckmate(true);
+        Move generatedMove = Move.builder()
+                .isCheckmate(true)
+                .moveCount(4)
+                .pieceColor(PieceColor.BLACK)
+                .pieceType(PieceType.QUEEN)
+                .horizontalStartPosition(HorizontalPosition.D)
+                .verticalStartPosition(VerticalPosition.EIGHT)
+                .horizontalEndPosition(HorizontalPosition.H)
+                .verticalEndPosition(VerticalPosition.FOUR).build();
+        gameAfterMove.addMove(generatedMove);
+
+        when(gameRepository.save(gameAfterMove)).thenReturn(gameAfterMove);
+
+        MoveCommand returnedMove = MoveCommand.builder().id(1L).isKingAttacked(true).build();
+
+        when(moveToMoveCommand.convert(gameAfterMove.getMoves().get(0))).thenReturn(returnedMove);
+
+        MoveCommand moveCommand = moveService.performMove(username, 3L, "D8", "H4");
+
+        assertEquals(returnedMove, moveCommand);
+
+        verify(gameRepository, times(1)).findById(3L);
+        verify(gameRepository, times(1)).save(any());
+        verifyNoMoreInteractions(gameRepository);
+
+        verify(userRepository, times(1)).findByUsernameLike(username);
+        verifyNoMoreInteractions(userRepository);
+
+        verify(roomRepository, times(1)).findRoomByGame(any());
+        verify(roomRepository, times(1)).save(any());
+        verifyNoMoreInteractions(roomRepository);
+
+        verify(moveToMoveCommand, times(1)).convert(gameAfterMove.getMoves().get(0));
+        verifyNoMoreInteractions(moveToMoveCommand);
+    }
+
     private Game generateCheckPossibleBoard(User white, User black) {
         Game game = GameUtil.initNewGameBetweenPlayers(white, black);
         game.setTurn(3);
@@ -590,6 +662,25 @@ class MoveServiceJpaImplTest {
 
         movePiece(game, HorizontalPosition.C, VerticalPosition.TWO, HorizontalPosition.C, VerticalPosition.THREE);
         movePiece(game, HorizontalPosition.D, VerticalPosition.SEVEN, HorizontalPosition.D, VerticalPosition.SIX);
+
+        return game;
+    }
+
+    private Game generateCheckMatePossibleBoard(User white, User black) {
+        Game game = GameUtil.initNewGameBetweenPlayers(white, black);
+        game.setTurn(4);
+        game.setStatus(GameStatus.STARTED);
+
+        Board board = new Board();
+        board.doMove(new com.github.bhlangonijr.chesslib.move.Move(Square.F2, Square.F3));
+        board.doMove(new com.github.bhlangonijr.chesslib.move.Move(Square.E7, Square.E5));
+        board.doMove(new com.github.bhlangonijr.chesslib.move.Move(Square.G2, Square.G4));
+
+        game.setFenNotation(board.getFen());
+
+        movePiece(game, HorizontalPosition.F, VerticalPosition.TWO, HorizontalPosition.F, VerticalPosition.THREE);
+        movePiece(game, HorizontalPosition.E, VerticalPosition.SEVEN, HorizontalPosition.D, VerticalPosition.FIVE);
+        movePiece(game, HorizontalPosition.G, VerticalPosition.TWO, HorizontalPosition.G, VerticalPosition.FOUR);
 
         return game;
     }
