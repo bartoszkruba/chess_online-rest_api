@@ -22,3 +22,7 @@ Swagger documentation for REST API can be accessed through following endpoint:
 ```
 http://localhost:8080/swagger-ui.html
 ```
+
+
+###Used Libraries:
+[Chesslib](https://github.com/bhlangonijr/chesslib) - Java chess library for generating legal chess moves given a chessboard position, parse a chess game stored in PGN or FEN format and many other things.
