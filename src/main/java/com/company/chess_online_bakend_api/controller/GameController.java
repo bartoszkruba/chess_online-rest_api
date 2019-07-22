@@ -4,6 +4,7 @@ import com.company.chess_online_bakend_api.controller.propertyEditor.PieceColorP
 import com.company.chess_online_bakend_api.data.command.GameCommand;
 import com.company.chess_online_bakend_api.data.command.MoveCommand;
 import com.company.chess_online_bakend_api.data.model.enums.PieceColor;
+import com.company.chess_online_bakend_api.data.validation.group.OnCreateNewMove;
 import com.company.chess_online_bakend_api.data.validation.group.OnGetPossibleMoves;
 import com.company.chess_online_bakend_api.service.GameService;
 import com.company.chess_online_bakend_api.service.MoveService;
@@ -82,7 +83,7 @@ public class GameController {
 
     @ApiOperation(value = "Get possible moves from certain position",
             notes = "Returns 404 NOT FOUND if game with given id does not exist. \n" +
-                    "Return all possible moves if there is no start position specified.")
+                    "Returns all possible moves if there is no start position specified.")
     @GetMapping({"{id}/possibleMoves", "{id}/possibleMoves/"})
     @ResponseStatus(HttpStatus.OK)
     public Set<MoveCommand> getPossibleMoves(@PathVariable Long id,
@@ -91,5 +92,20 @@ public class GameController {
         log.debug("New request: GET " + BASE_URL + id + "/possibleMoves");
 
         return moveService.getPossibleMoves(moveCommand.getFrom(), id);
+    }
+
+    @ApiOperation(value = "Perform move on board",
+            notes = "Returns 404 NOT FOUND if game with given id does noe exist\n " +
+                    "Returns 401 UNAUTHORIZED if player is not part of the game\n " +
+                    "Returns 400 BAD REQUEST if the move is invalid or it is not players turn or game is finished")
+    @PostMapping({"{id}/move", "{id}/move/"})
+    @ResponseStatus(HttpStatus.CREATED)
+    @Secured({"ROLE_USER", "ROLE_ADMIN"})
+    public MoveCommand performMove(@PathVariable Long id, Principal principal,
+                                   @Validated(OnCreateNewMove.class) @RequestBody MoveCommand moveCommand)
+            throws MoveGeneratorException {
+        log.debug("New Request: POST " + BASE_URL + id + "/move");
+
+        return moveService.performMove(principal.getName(), id, moveCommand.getFrom(), moveCommand.getTo());
     }
 }

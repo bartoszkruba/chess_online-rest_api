@@ -54,7 +54,7 @@ public class ExceptionAdviceController extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler({PlaceAlreadyTakenException.class, GameAlreadyStartedException.class,
-            AlreadyJoinedException.class})
+            AlreadyJoinedException.class, InvalidMoveException.class})
     public ResponseEntity<Object> handleBadRequestException(Exception ex, WebRequest request) {
 
         Map<String, Object> body = new LinkedHashMap<>();
@@ -63,6 +63,17 @@ public class ExceptionAdviceController extends ResponseEntityExceptionHandler {
         body.put("error", ex.getMessage());
 
         return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+    }
+
+    @ExceptionHandler({UnauthorizedException.class})
+    public ResponseEntity<Object> handleUnauthorizedException(Exception ex, WebRequest request) {
+
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", new Date());
+        body.put("status", 401);
+        body.put("error", ex.getMessage());
+
+        return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.UNAUTHORIZED, request);
     }
 
     // TODO: 2019-07-17 fix
