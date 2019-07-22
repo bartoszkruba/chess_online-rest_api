@@ -9,6 +9,7 @@ import com.company.chess_online_bakend_api.data.model.enums.GameStatus;
 import com.company.chess_online_bakend_api.data.model.enums.HorizontalPosition;
 import com.company.chess_online_bakend_api.data.model.enums.VerticalPosition;
 import com.company.chess_online_bakend_api.data.repository.GameRepository;
+import com.company.chess_online_bakend_api.data.repository.RoomRepository;
 import com.company.chess_online_bakend_api.data.repository.UserRepository;
 import com.company.chess_online_bakend_api.exception.GameNotFoundException;
 import com.company.chess_online_bakend_api.exception.InvalidMoveException;
@@ -16,6 +17,7 @@ import com.company.chess_online_bakend_api.exception.UnauthorizedException;
 import com.company.chess_online_bakend_api.exception.UserNotFoundException;
 import com.company.chess_online_bakend_api.service.MoveService;
 import com.company.chess_online_bakend_api.util.BoardUtil;
+import com.company.chess_online_bakend_api.util.GameUtil;
 import com.company.chess_online_bakend_api.util.PositionUtils;
 import com.github.bhlangonijr.chesslib.Board;
 import com.github.bhlangonijr.chesslib.Square;
@@ -25,6 +27,7 @@ import com.github.bhlangonijr.chesslib.move.MoveList;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -38,6 +41,7 @@ public class MoveServiceJpaImpl implements MoveService {
 
     private final GameRepository gameRepository;
     private final UserRepository userRepository;
+    private final RoomRepository roomRepository;
 
     private final GameToGameCommand gameToGameCommand;
     private final GameCommandToGame gameCommandToGame;
@@ -46,10 +50,11 @@ public class MoveServiceJpaImpl implements MoveService {
 
     @Autowired
     public MoveServiceJpaImpl(GameRepository gameRepository, UserRepository userRepository,
-                              GameToGameCommand gameToGameCommand, GameCommandToGame gameCommandToGame,
-                              MoveToMoveCommand moveToMoveCommand) {
+                              RoomRepository roomRepository, GameToGameCommand gameToGameCommand,
+                              GameCommandToGame gameCommandToGame, MoveToMoveCommand moveToMoveCommand) {
         this.gameRepository = gameRepository;
         this.userRepository = userRepository;
+        this.roomRepository = roomRepository;
         this.gameToGameCommand = gameToGameCommand;
         this.gameCommandToGame = gameCommandToGame;
         this.moveToMoveCommand = moveToMoveCommand;
@@ -83,14 +88,10 @@ public class MoveServiceJpaImpl implements MoveService {
 
     // TODO: 2019-07-20 write tests
     // Test cases:
-    // No Game
-    // No Username
-    // Not Players Turn
-    // Player not part of the Game
-    // Only one Player
-    // Game finished
-    // Invalid move
+    // Checkmate
+    // King attacked
     @Override
+    @Transactional
     public MoveCommand performMove(String username, Long gameId, String from, String to) throws MoveGeneratorException {
         log.debug("Performing move for game with id " + gameId + ", from position: " + from + " to: " + to);
 
@@ -98,14 +99,14 @@ public class MoveServiceJpaImpl implements MoveService {
         Game game = gameRepository.findById(gameId)
                 .orElseThrow(() -> new GameNotFoundException("Game with id " + gameId + " does not exist"));
 
-        Piece foundPiece = validateMoveAction(game, username, from, to);
+        Board board = validateMoveAction(game, username, from, to);
 
-        MoveCommand moveCommand = updateGameWithMove(game, foundPiece, from, to);
+        MoveCommand moveCommand = updateGameWithMove(game, from, to, board);
 
         return moveCommand;
     }
 
-    private Piece validateMoveAction(Game game, String username, String from, String to) throws MoveGeneratorException {
+    private Board validateMoveAction(Game game, String username, String from, String to) throws MoveGeneratorException {
         log.debug("Validating move");
 
         // Checking if user exist
@@ -115,39 +116,36 @@ public class MoveServiceJpaImpl implements MoveService {
         User whitePlayer = game.getWhitePlayer();
         User blackPlayer = game.getBlackPlayer();
 
+        // Checking if both players have joined
+        if (whitePlayer == null || blackPlayer == null) {
+            throw new InvalidMoveException("There is no other player");
+        }
+
         // Checking if player is part of the game
-        if (whitePlayer != null && whitePlayer.getUsername() != null && !whitePlayer.getUsername().equals(username)
-                && blackPlayer != null && blackPlayer.getUsername() != null &&
-                !blackPlayer.getUsername().equals(username)) {
+        if (!whitePlayer.getUsername().equals(username) && !blackPlayer.getUsername().equals(username)) {
             throw new UnauthorizedException("You are not authorized to make moves");
         }
 
-        // Changing game status to STARTED if there are two players joined
-        if (game.getStatus() == GameStatus.WAITNG_TO_START && whitePlayer != null & blackPlayer != null) {
+        // Changing game status to STARTED if game not started yet and user is white
+        if (game.getStatus() == GameStatus.WAITNG_TO_START && whitePlayer.getUsername().equals(username)) {
             game.setStatus(GameStatus.STARTED);
+        } else if (game.getStatus() == GameStatus.WAITNG_TO_START && !whitePlayer.getUsername().equals(username)) {
+            throw new InvalidMoveException("It is not your turn");
         }
 
-        // Checking if game not finished or there is just one player
+        // Checking if game already finished
         if (game.getStatus() != GameStatus.STARTED) {
-            throw new InvalidMoveException("Game not started yet or already finished");
+            throw new InvalidMoveException("Game already finished");
         }
 
-        HorizontalPosition hPos = PositionUtils.getHorizontalPosition(from);
-        VerticalPosition vPos = PositionUtils.getVerticalPosition(from);
-
-        Piece foundPiece = game.getBoard().getPieces()
-                .stream()
-                .filter(piece -> piece.getHorizontalPosition() == hPos)
-                .filter(piece -> piece.getVerticalPosition() == vPos)
-                .findFirst()
-                .orElseThrow(() -> new InvalidMoveException("Start position is empty"));
+        if (game.getTurn() == 0) {
+            game.setTurn(1);
+        }
 
         // Checking if it is players turn
-        if (game.getTurn() % 2 == 0 && blackPlayer != null && blackPlayer.getUsername() != null
-                && !blackPlayer.getUsername().equals(username)) {
+        if (game.getTurn() % 2 == 0 && !blackPlayer.getUsername().equals(username)) {
             throw new InvalidMoveException("It is not your turn");
-        } else if (whitePlayer != null && whitePlayer.getUsername() != null &&
-                !whitePlayer.getUsername().equals(username)) {
+        } else if (game.getTurn() % 2 != 0 && !whitePlayer.getUsername().equals(username)) {
             throw new InvalidMoveException("It is not your turn");
         }
 
@@ -157,31 +155,35 @@ public class MoveServiceJpaImpl implements MoveService {
 
         // Checking if move is valid
         MoveList validMoves = MoveGenerator.generateLegalMoves(board);
-        if (!validMoves.toString().contains(from + to)) {
+
+        if (!validMoves.toString().contains((from + to).toLowerCase())) {
             throw new InvalidMoveException("Invalid move: " + from + " to: " + to);
         }
 
-        return foundPiece;
+        return board;
     }
 
-    private MoveCommand updateGameWithMove(Game game, Piece piece, String from, String to) {
-        Board board = new Board();
-        board.loadFromFen(game.getFenNotation());
+    private MoveCommand updateGameWithMove(Game game, String from, String to, Board board) {
+
+        HorizontalPosition hPos = PositionUtils.getHorizontalPosition(from);
+        VerticalPosition vPos = PositionUtils.getVerticalPosition(from);
+
+        Piece piece = game.getBoard().getPieces()
+                .stream()
+                .filter(p -> p.getHorizontalPosition() == hPos)
+                .filter(p -> p.getVerticalPosition() == vPos)
+                .findFirst()
+                .orElseThrow(() -> new InvalidMoveException("Start position is empty"));
+
+        log.debug("Updating game with new move and status");
 
         // Moving piece on Board Model
         board.doMove(new com.github.bhlangonijr.chesslib.move.Move(Square.fromValue(from), Square.fromValue(to)));
         // Moving piece on Database model
         BoardUtil.movePiece(piece, game.getBoard(), to);
 
-        // TODO: 2019-07-20 check if draw or checkmate or king is attacked
-
         game.setFenNotation(board.getFen());
-
-        if (game.getTurn() == null || game.getTurn() == 0) {
-            game.setTurn(2);
-        } else {
-            game.increaseTurnCount();
-        }
+        game.increaseTurnCount();
 
         Move move = Move.builder()
                 .pieceType(piece.getPieceType())
@@ -191,7 +193,50 @@ public class MoveServiceJpaImpl implements MoveService {
                 .horizontalEndPosition(PositionUtils.getHorizontalPosition(to))
                 .verticalEndPosition(PositionUtils.getVerticalPosition(to))
                 .moveCount(game.getTurn() - 1).build();
+
         game.addMove(move);
+
+        if (board.isKingAttacked()) {
+            game.setIsKingAttacked(true);
+            move.setIsKingAttacked(true);
+        } else if (board.isMated()) {
+            Room room = roomRepository.findRoomByGame(game)
+                    .orElseThrow(() -> new RuntimeException("Something went wrong with game logic"));
+            room.setGame(GameUtil.initNewGameBetweenPlayers(game.getWhitePlayer(), game.getBlackPlayer()));
+
+            // TODO: 2019-07-21 Archive old game
+            game.setIsCheckmate(true);
+            move.setIsCheckmate(true);
+            gameRepository.save(game);
+
+            // Getting moves from database before they are deleted by saving room (Lazy initiation)
+            game.getMoves();
+
+            roomRepository.save(room);
+
+            return moveToMoveCommand.convert(game.getMoves()
+                    .stream().max(Comparator.comparing(BaseEntity::getCreated))
+                    .orElseThrow(() -> new RuntimeException("Something went really wrong with game and move logic")));
+
+        } else if (board.isDraw()) {
+            Room room = roomRepository.findRoomByGame(game)
+                    .orElseThrow(() -> new RuntimeException("Something went wrong with game logic"));
+            room.setGame(GameUtil.initNewGameBetweenPlayers(game.getWhitePlayer(), game.getBlackPlayer()));
+
+            // TODO: 2019-07-21 Archive old game
+            game.setIsDraw(true);
+            move.setIsDraw(true);
+            gameRepository.save(game);
+
+            // Getting moves from database before they are deleted by saving room (Lazy initiation)
+            game.getMoves();
+
+            roomRepository.save(room);
+
+            return moveToMoveCommand.convert(game.getMoves()
+                    .stream().max(Comparator.comparing(BaseEntity::getCreated))
+                    .orElseThrow(() -> new RuntimeException("Something went really wrong with game and move logic")));
+        }
 
         gameRepository.save(game);
 

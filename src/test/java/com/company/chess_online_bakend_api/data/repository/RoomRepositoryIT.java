@@ -1,6 +1,7 @@
 package com.company.chess_online_bakend_api.data.repository;
 
 import com.company.chess_online_bakend_api.bootstrap.dev.RoomBootstrap;
+import com.company.chess_online_bakend_api.data.model.Game;
 import com.company.chess_online_bakend_api.data.model.Room;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -45,6 +47,16 @@ class RoomRepositoryIT {
         Optional<Room> roomOptional = roomRepository.findByNameLike("Alpha");
 
         assertEquals("Alpha", roomOptional.get().getName());
+    }
+
+    @Test
+    @Transactional
+    void findByGame() {
+        Room room = roomRepository.findByNameLike("Alpha").get();
+
+        Room foundRoom = roomRepository.findRoomByGame(Game.builder().id(room.getGame().getId()).build()).get();
+
+        assertEquals(room, foundRoom);
     }
 
     @Test

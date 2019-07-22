@@ -71,7 +71,7 @@ public class Game extends BaseEntity {
     }
 
     public void increaseTurnCount() {
-        if (turn == null) {
+        if (turn == null || turn == 0) {
             turn = 1;
         }
         turn++;
