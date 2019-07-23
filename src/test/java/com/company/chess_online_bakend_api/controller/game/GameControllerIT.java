@@ -273,7 +273,7 @@ public class GameControllerIT extends AbstractRestControllerTest {
     @Test
     @WithMockUser(username = UserBootstrap.USER_USERNAME)
     void performMoveAsUser() throws Exception {
-        Long gameId = 1L;
+        Long gameId = roomRepository.findByNameLike("Alpha").get().getGame().getId();
 
         String from = "d2";
         String to = "d3";
@@ -282,7 +282,7 @@ public class GameControllerIT extends AbstractRestControllerTest {
         User user = userRepository.findByUsernameLike(UserBootstrap.USER_USERNAME).get();
         User admin = userRepository.findByUsernameLike(UserBootstrap.ADMIN_USERNAME).get();
 
-        Game game = gameRepository.findById(1L).get();
+        Game game = gameRepository.findById(gameId).get();
 
         game.setWhitePlayer(user);
         game.setBlackPlayer(admin);
@@ -302,7 +302,7 @@ public class GameControllerIT extends AbstractRestControllerTest {
     @Test
     @WithMockUser(username = UserBootstrap.ADMIN_USERNAME)
     void performMoveAsAdmin() throws Exception {
-        Long gameId = 1L;
+        Long gameId = roomRepository.findByNameLike("Alpha").get().getGame().getId();
 
         String from = "d2";
         String to = "d3";
@@ -311,7 +311,7 @@ public class GameControllerIT extends AbstractRestControllerTest {
         User user = userRepository.findByUsernameLike(UserBootstrap.USER_USERNAME).get();
         User admin = userRepository.findByUsernameLike(UserBootstrap.ADMIN_USERNAME).get();
 
-        Game game = gameRepository.findById(1L).get();
+        Game game = gameRepository.findById(gameId).get();
 
         game.setWhitePlayer(admin);
         game.setBlackPlayer(user);
