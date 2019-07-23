@@ -3,6 +3,7 @@ package com.company.chess_online_bakend_api.util;
 import com.company.chess_online_bakend_api.data.model.Game;
 import com.company.chess_online_bakend_api.data.model.User;
 import com.company.chess_online_bakend_api.data.model.enums.GameStatus;
+import com.github.bhlangonijr.chesslib.Board;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.validation.constraints.NotNull;
@@ -13,12 +14,12 @@ public class GameUtil {
     public static Game initNewGame() {
         log.debug("Initializing new game");
 
-        Game game = Game.builder()
+        return Game.builder()
                 .status(GameStatus.WAITNG_TO_START)
                 .turn(0)
+                .fenNotation(new Board().getFen())
                 .board(BoardUtil.initNewBoard())
                 .build();
-        return game;
     }
 
     public static Game initNewGameBetweenPlayers(@NotNull User whitePlayer, @NotNull User blackPlayer) {

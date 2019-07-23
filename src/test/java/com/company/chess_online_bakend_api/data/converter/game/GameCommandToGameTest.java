@@ -75,6 +75,10 @@ class GameCommandToGameTest {
         assertNull(convertedGame.getTurn());
         assertNull(convertedGame.getId());
         assertNull(convertedGame.getBoard());
+        assertNull(convertedGame.getFenNotation());
+        assertNull(convertedGame.getIsKingAttacked());
+        assertNull(convertedGame.getIsCheckmate());
+        assertNull(convertedGame.getIsDraw());
 
         verifyZeroInteractions(userCommandToUser);
         verifyZeroInteractions(boardCommandToBoard);
@@ -94,7 +98,11 @@ class GameCommandToGameTest {
         GameCommand game = GameCommand.builder().id(GAME_ID)
                 .whitePlayer(whitePlayer)
                 .blackPlayer(blackPlayer)
+                .fenNotation("AAA")
                 .status(GameStatus.STARTED)
+                .isKingAttacked(true)
+                .isCheckmate(true)
+                .isDraw(true)
                 .turn(TURN).build();
 
         game.setBoard(boardCommand);
@@ -108,6 +116,10 @@ class GameCommandToGameTest {
         assertEquals(GameStatus.STARTED, convertedGame.getStatus());
         assertEquals(TURN, convertedGame.getTurn());
         assertEquals(BOARD, convertedGame.getBoard());
+        assertEquals("AAA", convertedGame.getFenNotation());
+        assertEquals(true, convertedGame.getIsKingAttacked());
+        assertEquals(true, convertedGame.getIsCheckmate());
+        assertEquals(true, convertedGame.getIsDraw());
 
         verify(userCommandToUser, times(1)).convert(whitePlayer);
         verify(userCommandToUser, times(1)).convert(blackPlayer);

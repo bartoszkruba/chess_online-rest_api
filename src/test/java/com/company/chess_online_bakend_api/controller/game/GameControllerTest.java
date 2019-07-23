@@ -1,14 +1,18 @@
 package com.company.chess_online_bakend_api.controller.game;
 
+import com.company.chess_online_bakend_api.controller.AbstractRestControllerTest;
 import com.company.chess_online_bakend_api.controller.ExceptionAdviceController;
 import com.company.chess_online_bakend_api.controller.GameController;
 import com.company.chess_online_bakend_api.controller.propertyEditor.PieceColorPropertyEditor;
 import com.company.chess_online_bakend_api.data.command.GameCommand;
+import com.company.chess_online_bakend_api.data.command.MoveCommand;
 import com.company.chess_online_bakend_api.data.command.UserCommand;
-import com.company.chess_online_bakend_api.exception.GameNotFoundException;
-import com.company.chess_online_bakend_api.exception.PlaceAlreadyTakenException;
-import com.company.chess_online_bakend_api.exception.UserNotFoundException;
+import com.company.chess_online_bakend_api.data.model.enums.PieceColor;
+import com.company.chess_online_bakend_api.data.model.enums.PieceType;
+import com.company.chess_online_bakend_api.exception.*;
 import com.company.chess_online_bakend_api.service.GameService;
+import com.company.chess_online_bakend_api.service.MoveService;
+import com.github.bhlangonijr.chesslib.move.MoveGeneratorException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -19,15 +23,19 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.security.Principal;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class GameControllerTest {
+class GameControllerTest extends AbstractRestControllerTest {
 
     private final Long USER_COMMAND1_ID = 1L;
     private final Long USER_COMMAND2_ID = 2L;
@@ -62,6 +70,10 @@ class GameControllerTest {
 
     @Mock
     GameService gameService;
+
+    @Mock
+    MoveService moveService;
+
 
     @InjectMocks
     GameController gameController;
@@ -199,5 +211,236 @@ class GameControllerTest {
 
         verify(gameService, times(1)).leaveGame(username, 1L);
         verifyNoMoreInteractions(gameService);
+    }
+
+    @Test
+    void getValidMoves() throws Exception {
+        MoveCommand moveCommand1 = MoveCommand.builder().from("A2").to("A3").build();
+        MoveCommand moveCommand2 = MoveCommand.builder().from("A2").to("A4").build();
+
+        MoveCommand request = MoveCommand.builder().from("A2").build();
+
+        when(moveService.getPossibleMoves("A2", 1L)).thenReturn(Set.of(moveCommand1, moveCommand2));
+
+        mockMvc.perform(get(GameController.BASE_URL + 1 + "/possibleMoves")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)));
+
+    }
+
+    @Test
+    void performMove() throws Exception {
+        String username = "username";
+        Long gameId = 1L;
+        String from = "D2";
+        String to = "D3";
+
+        LocalDateTime now = LocalDateTime.now();
+
+        MoveCommand response = MoveCommand.builder()
+                .from(from)
+                .to(to)
+                .count(1)
+                .isKingAttacked(true)
+                .happenedOn(now)
+                .isCheckmate(true)
+                .isDraw(true)
+                .isKingSideCastle(true)
+                .isQueenSideCastle(true)
+                .pieceColor(PieceColor.WHITE)
+                .pieceType(PieceType.PAWN)
+                .build();
+
+        MoveCommand requestBody = MoveCommand.builder().from(from).to(to).build();
+
+        when(principal.getName()).thenReturn(username);
+        when(moveService.performMove(username, 1L, from, to)).thenReturn(response);
+
+        mockMvc.perform(post(GameController.BASE_URL + gameId + "/move")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(requestBody))
+                .principal(principal))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.from", equalTo(from)))
+                .andExpect(jsonPath("$.to", equalTo(to)))
+                .andExpect(jsonPath("$.count", equalTo(1)))
+                .andExpect(jsonPath("$.isKingAttacked", equalTo(true)))
+                .andExpect(jsonPath("$.isCheckmate", equalTo(true)))
+                .andExpect(jsonPath("$.isDraw", equalTo(true)))
+                .andExpect(jsonPath("$.isKingSideCastle", equalTo(true)))
+                .andExpect(jsonPath("$.isQueenSideCastle", equalTo(true)))
+                .andExpect(jsonPath("$.pieceColor", equalTo("WHITE")))
+                .andExpect(jsonPath("$.pieceType", equalTo("PAWN")));
+
+        verify(moveService, times(1)).performMove(username, gameId, from, to);
+        verifyNoMoreInteractions(moveService);
+
+        verifyZeroInteractions(gameService);
+    }
+
+    @Test
+    void performInvalidMove() throws Exception {
+        String username = "username";
+        Long gameId = 1L;
+        String from = "D2";
+        String to = "D7";
+
+        when(principal.getName()).thenReturn(username);
+        when(moveService.performMove(username, 1L, from, to)).thenThrow(InvalidMoveException.class);
+
+        MoveCommand requestBody = MoveCommand.builder().from(from).to(to).build();
+
+        mockMvc.perform(post(GameController.BASE_URL + gameId + "/move")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(requestBody))
+                .principal(principal))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status", equalTo(400)));
+
+        verify(moveService, times(1)).performMove(username, gameId, from, to);
+        verifyNoMoreInteractions(moveService);
+
+        verifyZeroInteractions(gameService);
+    }
+
+    @Test
+    void performMoveGameNotFound() throws Exception {
+        String username = "username";
+        Long gameId = 1L;
+        String from = "D2";
+        String to = "D7";
+
+        when(principal.getName()).thenReturn(username);
+        when(moveService.performMove(username, 1L, from, to)).thenThrow(GameNotFoundException.class);
+
+        MoveCommand requestBody = MoveCommand.builder().from(from).to(to).build();
+
+        mockMvc.perform(post(GameController.BASE_URL + gameId + "/move")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(requestBody))
+                .principal(principal))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status", equalTo(404)));
+
+        verify(moveService, times(1)).performMove(username, gameId, from, to);
+        verifyNoMoreInteractions(moveService);
+
+        verifyZeroInteractions(gameService);
+    }
+
+    @Test
+    void performMoveUsernameNotFound() throws Exception {
+        String username = "username";
+        Long gameId = 1L;
+        String from = "D2";
+        String to = "D7";
+
+        when(principal.getName()).thenReturn(username);
+        when(moveService.performMove(username, 1L, from, to)).thenThrow(UserNotFoundException.class);
+
+        MoveCommand requestBody = MoveCommand.builder().from(from).to(to).build();
+
+        mockMvc.perform(post(GameController.BASE_URL + gameId + "/move")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(requestBody))
+                .principal(principal))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status", equalTo(404)));
+
+        verify(moveService, times(1)).performMove(username, gameId, from, to);
+        verifyNoMoreInteractions(moveService);
+
+        verifyZeroInteractions(gameService);
+    }
+
+    @Test
+    void performForbiddenMove() throws Exception {
+        String username = "username";
+        Long gameId = 1L;
+        String from = "D2";
+        String to = "D7";
+
+        when(principal.getName()).thenReturn(username);
+        when(moveService.performMove(username, 1L, from, to)).thenThrow(ForbiddenException.class);
+
+        MoveCommand requestBody = MoveCommand.builder().from(from).to(to).build();
+
+        mockMvc.perform(post(GameController.BASE_URL + gameId + "/move")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(requestBody))
+                .principal(principal))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.status", equalTo(403)));
+
+        verify(moveService, times(1)).performMove(username, gameId, from, to);
+        verifyNoMoreInteractions(moveService);
+
+        verifyZeroInteractions(gameService);
+    }
+
+    @Test
+    void PerformMoveBrokenGameLogic() throws Exception {
+        String username = "username";
+        Long gameId = 1L;
+        String from = "D2";
+        String to = "D7";
+
+        when(principal.getName()).thenReturn(username);
+        when(moveService.performMove(username, 1L, from, to)).thenThrow(MoveGeneratorException.class);
+
+        MoveCommand requestBody = MoveCommand.builder().from(from).to(to).build();
+
+        mockMvc.perform(post(GameController.BASE_URL + gameId + "/move")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(requestBody))
+                .principal(principal))
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.status", equalTo(500)));
+
+        verify(moveService, times(1)).performMove(username, gameId, from, to);
+        verifyNoMoreInteractions(moveService);
+
+        verifyZeroInteractions(gameService);
+    }
+
+    @Test
+    void getGameMovesInvalidId() throws Exception {
+        Long gameId = 1L;
+
+        when(moveService.getGameMoves(gameId)).thenThrow(GameNotFoundException.class);
+
+        mockMvc.perform(get(GameController.BASE_URL + gameId + "/moves")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status", equalTo(404)));
+
+        verify(moveService, times(1)).getGameMoves(gameId);
+        verifyNoMoreInteractions(moveService);
+
+        verifyZeroInteractions(gameService);
+    }
+
+    @Test
+    void getGameMoves() throws Exception {
+        Long gameId = 1L;
+
+        MoveCommand moveCommand1 = MoveCommand.builder().id(1L).build();
+        MoveCommand moveCommand2 = MoveCommand.builder().id(2L).build();
+
+        List<MoveCommand> moveCommands = Arrays.asList(moveCommand1, moveCommand2);
+        when(moveService.getGameMoves(gameId)).thenReturn(moveCommands);
+
+        mockMvc.perform(get(GameController.BASE_URL + gameId + "/moves")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id", equalTo(1)))
+                .andExpect(jsonPath("$[1].id", equalTo(2)));
+
+        verify(moveService, times(1)).getGameMoves(gameId);
+        verifyNoMoreInteractions(moveService);
+
+        verifyZeroInteractions(gameService);
     }
 }

@@ -48,6 +48,11 @@ class MoveCommandToMoveTest {
         assertNull(move.getHorizontalEndPosition());
         assertNull(move.getVerticalStartPosition());
         assertNull(move.getVerticalEndPosition());
+        assertNull(move.getIsKingSideCastle());
+        assertNull(move.getIsQueenSideCastle());
+        assertNull(move.getIsKingAttacked());
+        assertNull(move.getIsCheckmate());
+        assertNull(move.getIsDraw());
     }
 
     @Test
@@ -58,6 +63,11 @@ class MoveCommandToMoveTest {
                 .happenedOn(CREATION_TIME)
                 .pieceColor(PieceColor.BLACK)
                 .pieceType(PieceType.BISHOP)
+                .isKingSideCastle(true)
+                .isQueenSideCastle(true)
+                .isKingAttacked(true)
+                .isCheckmate(true)
+                .isDraw(true)
                 .from("A1")
                 .to("B2").build();
 
@@ -72,5 +82,10 @@ class MoveCommandToMoveTest {
         assertEquals(VerticalPosition.ONE, move.getVerticalStartPosition());
         assertEquals(HorizontalPosition.B, move.getHorizontalEndPosition());
         assertEquals(VerticalPosition.TWO, move.getVerticalEndPosition());
+        assertEquals(true, move.getIsKingSideCastle());
+        assertEquals(true, move.getIsQueenSideCastle());
+        assertEquals(true, move.getIsKingAttacked());
+        assertEquals(true, move.getIsCheckmate());
+        assertEquals(true, move.getIsDraw());
     }
 }

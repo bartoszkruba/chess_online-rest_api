@@ -12,16 +12,21 @@ import lombok.*;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GameCommand extends BaseEntityCommand {
 
+    private BoardCommand board;
     private Long roomId;
     private GameStatus status;
     private UserCommand whitePlayer;
     private UserCommand blackPlayer;
+    private Boolean isKingAttacked;
+    private Boolean isCheckmate;
+    private Boolean isDraw;
     private Integer turn;
-    private BoardCommand board;
+    private String fenNotation;
 
     @Builder
     public GameCommand(Long id, Long roomId, GameStatus status, UserCommand whitePlayer, UserCommand blackPlayer,
-                       Integer turn, BoardCommand boardCommand) {
+                       Integer turn, BoardCommand boardCommand, String fenNotation,
+                       Boolean isKingAttacked, Boolean isCheckmate, Boolean isDraw) {
         super(id);
         this.roomId = roomId;
         this.status = status;
@@ -29,5 +34,9 @@ public class GameCommand extends BaseEntityCommand {
         this.blackPlayer = blackPlayer;
         this.turn = turn;
         this.board = boardCommand;
+        this.fenNotation = fenNotation;
+        this.isKingAttacked = isKingAttacked;
+        this.isCheckmate = isCheckmate;
+        this.isDraw = isDraw;
     }
 }

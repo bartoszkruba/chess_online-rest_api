@@ -1,6 +1,7 @@
 package com.company.chess_online_bakend_api.controller;
 
 import com.company.chess_online_bakend_api.exception.*;
+import com.github.bhlangonijr.chesslib.move.MoveGeneratorException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,11 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @ControllerAdvice
 public class ExceptionAdviceController extends ResponseEntityExceptionHandler {
@@ -24,17 +21,19 @@ public class ExceptionAdviceController extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
                                                                   HttpHeaders headers,
                                                                   HttpStatus status, WebRequest request) {
-
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("timestamp", new Date());
         body.put("status", status.value());
 
+        Map<String, List<String>> errors = new HashMap<>();
+
         //Get all errors
-        List<String> errors = ex.getBindingResult()
-                .getFieldErrors()
-                .stream()
-                .map(x -> x.getDefaultMessage())
-                .collect(Collectors.toList());
+        ex.getBindingResult().getFieldErrors().forEach(x -> {
+            String name = x.getField();
+            var list = errors.getOrDefault(name, new ArrayList<>());
+            list.add(x.getDefaultMessage());
+            errors.put(name, list);
+        });
 
         body.put("errors", errors);
 
@@ -54,7 +53,7 @@ public class ExceptionAdviceController extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler({PlaceAlreadyTakenException.class, GameAlreadyStartedException.class,
-            AlreadyJoinedException.class})
+            AlreadyJoinedException.class, InvalidMoveException.class})
     public ResponseEntity<Object> handleBadRequestException(Exception ex, WebRequest request) {
 
         Map<String, Object> body = new LinkedHashMap<>();
@@ -65,15 +64,38 @@ public class ExceptionAdviceController extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 
-    // TODO: 2019-07-17 fix
-    @ExceptionHandler(InvalidPieceColorException.class)
-    public ResponseEntity<Object> handleInvalidPieceColor(Exception ex, WebRequest request) {
+    @ExceptionHandler({ForbiddenException.class})
+    public ResponseEntity<Object> handleForbiddenException(Exception ex, WebRequest request) {
 
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("timestamp", new Date());
-        body.put("status", 400);
+        body.put("status", 403);
         body.put("error", ex.getMessage());
 
-        return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+        return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.FORBIDDEN, request);
     }
+
+    @ExceptionHandler({MoveGeneratorException.class})
+    public ResponseEntity<Object> handleMoveGeneratorException(Exception ex, WebRequest request) {
+        logger.error(ex.getStackTrace());
+
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", new Date());
+        body.put("status", 500);
+        body.put("error", "Server could not handle game logic.");
+
+        return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
+    }
+
+    // TODO: 2019-07-17 fix
+//    @ExceptionHandler(InvalidPieceColorException.class)
+//    public ResponseEntity<Object> handleInvalidPieceColor(Exception ex, WebRequest request) {
+//
+//        Map<String, Object> body = new LinkedHashMap<>();
+//        body.put("timestamp", new Date());
+//        body.put("status", 400);
+//        body.put("error", ex.getMessage());
+//
+//        return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+//    }
 }

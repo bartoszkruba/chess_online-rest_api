@@ -108,8 +108,8 @@ public class AuthenticationControllerIT extends AbstractRestControllerTest {
                 .content(asJsonString(userCommand)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status", equalTo(400)))
-                .andExpect(jsonPath("$.errors[0]", equalTo(UniqueUsernameConstraint.ERROR_MESSAGE)))
-                .andExpect(jsonPath("$.errors", hasSize(1)));
+                .andExpect(jsonPath("$.errors.username[0]", equalTo(UniqueUsernameConstraint.ERROR_MESSAGE)))
+                .andExpect(jsonPath("$.errors.username", hasSize(1)));
 
     }
 

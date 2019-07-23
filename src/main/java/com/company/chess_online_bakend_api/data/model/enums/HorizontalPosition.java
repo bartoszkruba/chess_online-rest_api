@@ -3,6 +3,9 @@ package com.company.chess_online_bakend_api.data.model.enums;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.Nullable;
 
+import java.util.Arrays;
+import java.util.List;
+
 @Slf4j
 public enum HorizontalPosition {
     A("A"),
@@ -15,6 +18,7 @@ public enum HorizontalPosition {
     H("H");
 
     private String positionString;
+    private static List<HorizontalPosition> positionList = Arrays.asList(A, B, C, D, E, F, G, H);
 
     HorizontalPosition(String position) {
         this.positionString = position;

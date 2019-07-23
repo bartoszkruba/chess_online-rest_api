@@ -62,8 +62,8 @@ public class AuthenticationControllerValidationIT extends AbstractRestController
                 .content(asJsonString(userCommand)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status", equalTo(400)))
-                .andExpect(jsonPath("$.errors[0]", equalTo(UserCommand.USERNAME_NOT_EMPTY_MESSAGE)))
-                .andExpect(jsonPath("$.errors", hasSize(1)));
+                .andExpect(jsonPath("$.errors.username[0]", equalTo(UserCommand.USERNAME_NOT_EMPTY_MESSAGE)))
+                .andExpect(jsonPath("$.errors.username", hasSize(1)));
     }
 
     @Test
@@ -81,8 +81,8 @@ public class AuthenticationControllerValidationIT extends AbstractRestController
                 .content(asJsonString(userCommand)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status", equalTo(400)))
-                .andExpect(jsonPath("$.errors[0]", equalTo(UserCommand.USERNAME_SIZE_MESSAGE)))
-                .andExpect(jsonPath("$.errors", hasSize(1)));
+                .andExpect(jsonPath("$.errors.username[0]", equalTo(UserCommand.USERNAME_SIZE_MESSAGE)))
+                .andExpect(jsonPath("$.errors.username", hasSize(1)));
     }
 
     @Test
@@ -100,8 +100,8 @@ public class AuthenticationControllerValidationIT extends AbstractRestController
                 .content(asJsonString(userCommand)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status", equalTo(400)))
-                .andExpect(jsonPath("$.errors[0]", equalTo(UserCommand.USERNAME_SIZE_MESSAGE)))
-                .andExpect(jsonPath("$.errors", hasSize(1)));
+                .andExpect(jsonPath("$.errors.username[0]", equalTo(UserCommand.USERNAME_SIZE_MESSAGE)))
+                .andExpect(jsonPath("$.errors.username", hasSize(1)));
     }
 
     @Test
@@ -119,8 +119,8 @@ public class AuthenticationControllerValidationIT extends AbstractRestController
                 .content(asJsonString(userCommand)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status", equalTo(400)))
-                .andExpect(jsonPath("$.errors[0]", equalTo(ValidUsernameConstraint.ERROR_MESSAGE)))
-                .andExpect(jsonPath("$.errors", hasSize(1)));
+                .andExpect(jsonPath("$.errors.username[0]", equalTo(ValidUsernameConstraint.ERROR_MESSAGE)))
+                .andExpect(jsonPath("$.errors.username", hasSize(1)));
     }
 
     @Test
@@ -138,9 +138,9 @@ public class AuthenticationControllerValidationIT extends AbstractRestController
                 .content(asJsonString(userCommand)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status", equalTo(400)))
-                .andExpect(jsonPath("$.errors", containsInAnyOrder(UserCommand.USERNAME_NOT_EMPTY_MESSAGE,
+                .andExpect(jsonPath("$.errors.username", containsInAnyOrder(UserCommand.USERNAME_NOT_EMPTY_MESSAGE,
                         UserCommand.USERNAME_SIZE_MESSAGE)))
-                .andExpect(jsonPath("$.errors", hasSize(2)));
+                .andExpect(jsonPath("$.errors.username", hasSize(2)));
     }
 
     @Test
@@ -158,10 +158,10 @@ public class AuthenticationControllerValidationIT extends AbstractRestController
                 .content(asJsonString(userCommand)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status", equalTo(400)))
-                .andExpect(jsonPath("$.errors",
+                .andExpect(jsonPath("$.errors.password",
                         containsInAnyOrder(UserCommand.PASSWORD_NOT_SIZE_MESSAGE,
                                 UserCommand.PASSWORD_NOT_EMPTY_MESSAGE)))
-                .andExpect(jsonPath("$.errors", hasSize(2)));
+                .andExpect(jsonPath("$.errors.password", hasSize(2)));
     }
 
     @Test
@@ -179,8 +179,8 @@ public class AuthenticationControllerValidationIT extends AbstractRestController
                 .content(asJsonString(userCommand)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status", equalTo(400)))
-                .andExpect(jsonPath("$.errors[0]", equalTo(UserCommand.PASSWORD_NOT_SIZE_MESSAGE)))
-                .andExpect(jsonPath("$.errors", hasSize(1)));
+                .andExpect(jsonPath("$.errors.password[0]", equalTo(UserCommand.PASSWORD_NOT_SIZE_MESSAGE)))
+                .andExpect(jsonPath("$.errors.password", hasSize(1)));
     }
 
     @Test
@@ -198,8 +198,8 @@ public class AuthenticationControllerValidationIT extends AbstractRestController
                 .content(asJsonString(userCommand)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status", equalTo(400)))
-                .andExpect(jsonPath("$.errors[0]", equalTo(UserCommand.PASSWORD_NOT_EMPTY_MESSAGE)))
-                .andExpect(jsonPath("$.errors", hasSize(1)));
+                .andExpect(jsonPath("$.errors.password[0]", equalTo(UserCommand.PASSWORD_NOT_EMPTY_MESSAGE)))
+                .andExpect(jsonPath("$.errors.password", hasSize(1)));
     }
 
     @Test
@@ -217,8 +217,8 @@ public class AuthenticationControllerValidationIT extends AbstractRestController
                 .content(asJsonString(userCommand)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status", equalTo(400)))
-                .andExpect(jsonPath("$.errors[0]", equalTo(ValidPasswordConstraint.ERROR_MESSAGE)))
-                .andExpect(jsonPath("$.errors", hasSize(1)));
+                .andExpect(jsonPath("$.errors.password[0]", equalTo(ValidPasswordConstraint.ERROR_MESSAGE)))
+                .andExpect(jsonPath("$.errors.password", hasSize(1)));
     }
 
     @Test
@@ -236,8 +236,8 @@ public class AuthenticationControllerValidationIT extends AbstractRestController
                 .content(asJsonString(userCommand)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status", equalTo(400)))
-                .andExpect(jsonPath("$.errors[0]", equalTo(UserCommand.EMAIL_NOT_VALID_MESSAGE)))
-                .andExpect(jsonPath("$.errors", hasSize(1)));
+                .andExpect(jsonPath("$.errors.email[0]", equalTo(UserCommand.EMAIL_NOT_VALID_MESSAGE)))
+                .andExpect(jsonPath("$.errors.email", hasSize(1)));
     }
 
     @Test
@@ -255,7 +255,7 @@ public class AuthenticationControllerValidationIT extends AbstractRestController
                 .content(asJsonString(userCommand)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status", equalTo(400)))
-                .andExpect(jsonPath("$.errors[0]", equalTo(UserCommand.EMAIL_NOT_EMPTY_MESSAGE)))
-                .andExpect(jsonPath("$.errors", hasSize(1)));
+                .andExpect(jsonPath("$.errors.email[0]", equalTo(UserCommand.EMAIL_NOT_EMPTY_MESSAGE)))
+                .andExpect(jsonPath("$.errors.email", hasSize(1)));
     }
 }

@@ -47,6 +47,11 @@ class MoveToMoveCommandTest {
         assertNull(moveCommand.getTo());
         assertNull(moveCommand.getPieceColor());
         assertNull(moveCommand.getPieceType());
+        assertNull(moveCommand.getIsKingSideCastle());
+        assertNull(moveCommand.getIsQueenSideCastle());
+        assertNull(moveCommand.getIsKingAttacked());
+        assertNull(moveCommand.getIsCheckmate());
+        assertNull(moveCommand.getIsDraw());
     }
 
     @Test
@@ -60,6 +65,11 @@ class MoveToMoveCommandTest {
                 .verticalEndPosition(VerticalPosition.TWO)
                 .pieceColor(PieceColor.WHITE)
                 .pieceType(PieceType.QUEEN)
+                .isKingSideCastle(true)
+                .isQueenSideCastle(true)
+                .isKingAttacked(true)
+                .isCheckmate(true)
+                .isDraw(true)
                 .build();
 
         MoveCommand moveCommand = moveToMoveCommand.convert(move);
@@ -71,5 +81,10 @@ class MoveToMoveCommandTest {
         assertEquals("B2", moveCommand.getTo());
         assertEquals(PieceColor.WHITE, moveCommand.getPieceColor());
         assertEquals(PieceType.QUEEN, moveCommand.getPieceType());
+        assertEquals(true, moveCommand.getIsKingSideCastle());
+        assertEquals(true, moveCommand.getIsQueenSideCastle());
+        assertEquals(true, moveCommand.getIsKingAttacked());
+        assertEquals(true, moveCommand.getIsCheckmate());
+        assertEquals(true, moveCommand.getIsDraw());
     }
 }
