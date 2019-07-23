@@ -47,8 +47,8 @@ public class RoomControllerValidationIT extends AbstractRestControllerTest {
                 .content(asJsonString(roomCommand)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status", equalTo(400)))
-                .andExpect(jsonPath("$.errors[0]", equalTo(RoomCommand.NAME_NOT_EMPTY_MESSAGE)))
-                .andExpect(jsonPath("$.errors", hasSize(1)));
+                .andExpect(jsonPath("$.errors.name[0]", equalTo(RoomCommand.NAME_NOT_EMPTY_MESSAGE)))
+                .andExpect(jsonPath("$.errors.name", hasSize(1)));
     }
 
     @Test
@@ -60,8 +60,8 @@ public class RoomControllerValidationIT extends AbstractRestControllerTest {
                 .content(asJsonString(roomCommand)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status", equalTo(400)))
-                .andExpect(jsonPath("$.errors[0]", equalTo(RoomCommand.NAME_SIZE_MESSAGE)))
-                .andExpect(jsonPath("$.errors", hasSize(1)));
+                .andExpect(jsonPath("$.errors.name[0]", equalTo(RoomCommand.NAME_SIZE_MESSAGE)))
+                .andExpect(jsonPath("$.errors.name", hasSize(1)));
     }
 
     @Test
@@ -74,9 +74,7 @@ public class RoomControllerValidationIT extends AbstractRestControllerTest {
                 .content(asJsonString(roomCommand)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status", equalTo(400)))
-                .andExpect(jsonPath("$.errors[0]", equalTo(RoomCommand.NAME_SIZE_MESSAGE)))
-                .andExpect(jsonPath("$.errors", hasSize(1)));
+                .andExpect(jsonPath("$.errors.name[0]", equalTo(RoomCommand.NAME_SIZE_MESSAGE)))
+                .andExpect(jsonPath("$.errors.name", hasSize(1)));
     }
-
-    // TODO: 2019-07-14 Setup name validation
 }

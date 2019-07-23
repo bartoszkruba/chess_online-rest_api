@@ -11,11 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @ControllerAdvice
 public class ExceptionAdviceController extends ResponseEntityExceptionHandler {
@@ -25,17 +21,19 @@ public class ExceptionAdviceController extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
                                                                   HttpHeaders headers,
                                                                   HttpStatus status, WebRequest request) {
-
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("timestamp", new Date());
         body.put("status", status.value());
 
+        Map<String, List<String>> errors = new HashMap<>();
+
         //Get all errors
-        List<String> errors = ex.getBindingResult()
-                .getFieldErrors()
-                .stream()
-                .map(x -> x.getDefaultMessage())
-                .collect(Collectors.toList());
+        ex.getBindingResult().getFieldErrors().forEach(x -> {
+            String name = x.getField();
+            var list = errors.getOrDefault(name, new ArrayList<>());
+            list.add(x.getDefaultMessage());
+            errors.put(name, list);
+        });
 
         body.put("errors", errors);
 

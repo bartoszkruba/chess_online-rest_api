@@ -215,8 +215,8 @@ public class GameControllerIT extends AbstractRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(moveCommand)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errors", hasSize(1)))
-                .andExpect(jsonPath("$.errors[0]", equalTo(MoveCommand.MESSAGE_FROM_INVALID)))
+                .andExpect(jsonPath("$.errors.from", hasSize(1)))
+                .andExpect(jsonPath("$.errors.from[0]", equalTo(MoveCommand.MESSAGE_FROM_INVALID)))
                 .andExpect(jsonPath("$.status", equalTo(400)));
     }
 

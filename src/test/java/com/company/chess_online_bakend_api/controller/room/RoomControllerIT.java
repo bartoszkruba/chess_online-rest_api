@@ -108,8 +108,8 @@ public class RoomControllerIT extends AbstractRestControllerTest {
                 .content(asJsonString(RoomCommand.builder().name("Alpha").build())))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status", Matchers.equalTo(400)))
-                .andExpect(jsonPath("$.errors[0]", Matchers.equalTo(UniqueRoomNameConstraint.ERROR_MESSAGE)))
-                .andExpect(jsonPath("$.errors", hasSize(1)));
+                .andExpect(jsonPath("$.errors.name[0]", Matchers.equalTo(UniqueRoomNameConstraint.ERROR_MESSAGE)))
+                .andExpect(jsonPath("$.errors.name", hasSize(1)));
     }
 
     @Test
