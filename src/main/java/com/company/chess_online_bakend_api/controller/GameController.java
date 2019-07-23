@@ -19,6 +19,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.List;
 import java.util.Set;
 
 @Slf4j
@@ -107,5 +108,15 @@ public class GameController {
         log.debug("New Request: POST " + BASE_URL + id + "/move");
 
         return moveService.performMove(principal.getName(), id, moveCommand.getFrom(), moveCommand.getTo());
+    }
+
+    @ApiOperation(value = "Get all moves for game",
+            notes = "Retruns 404 NOT FOUND if game does not exist")
+    @GetMapping({"{id}/moves", "{id}/moves/"})
+    @ResponseStatus(HttpStatus.OK)
+    public List<MoveCommand> getMoves(@PathVariable Long id) {
+        log.debug("New request: GET " + BASE_URL + id + "/moves");
+
+        return moveService.getGameMoves(id);
     }
 }

@@ -24,6 +24,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -398,6 +400,45 @@ class GameControllerTest extends AbstractRestControllerTest {
                 .andExpect(jsonPath("$.status", equalTo(500)));
 
         verify(moveService, times(1)).performMove(username, gameId, from, to);
+        verifyNoMoreInteractions(moveService);
+
+        verifyZeroInteractions(gameService);
+    }
+
+    @Test
+    void getGameMovesInvalidId() throws Exception {
+        Long gameId = 1L;
+
+        when(moveService.getGameMoves(gameId)).thenThrow(GameNotFoundException.class);
+
+        mockMvc.perform(get(GameController.BASE_URL + gameId + "/moves")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status", equalTo(404)));
+
+        verify(moveService, times(1)).getGameMoves(gameId);
+        verifyNoMoreInteractions(moveService);
+
+        verifyZeroInteractions(gameService);
+    }
+
+    @Test
+    void getGameMoves() throws Exception {
+        Long gameId = 1L;
+
+        MoveCommand moveCommand1 = MoveCommand.builder().id(1L).build();
+        MoveCommand moveCommand2 = MoveCommand.builder().id(2L).build();
+
+        List<MoveCommand> moveCommands = Arrays.asList(moveCommand1, moveCommand2);
+        when(moveService.getGameMoves(gameId)).thenReturn(moveCommands);
+
+        mockMvc.perform(get(GameController.BASE_URL + gameId + "/moves")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id", equalTo(1)))
+                .andExpect(jsonPath("$[1].id", equalTo(2)));
+
+        verify(moveService, times(1)).getGameMoves(gameId);
         verifyNoMoreInteractions(moveService);
 
         verifyZeroInteractions(gameService);

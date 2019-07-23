@@ -31,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -99,6 +100,19 @@ public class MoveServiceJpaImpl implements MoveService {
         MoveCommand moveCommand = updateGameWithMove(game, from, to, board);
 
         return moveCommand;
+    }
+
+    @Override
+    @Transactional
+    public List<MoveCommand> getGameMoves(Long gameId) {
+        Game game = gameRepository.findById(gameId)
+                .orElseThrow(() -> new GameNotFoundException("Game with id " + gameId + " does not exist"));
+
+        return game.getMoves()
+                .stream()
+                .sorted(Comparator.comparing(BaseEntity::getCreated))
+                .map(moveToMoveCommand::convert)
+                .collect(Collectors.toList());
     }
 
     private Board validateMoveAction(Game game, String username, String from, String to) throws MoveGeneratorException {

@@ -24,6 +24,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -698,5 +701,51 @@ class MoveServiceJpaImplTest {
                     piece.setVerticalPosition(vPosTo);
                     piece.increaseMoveCount();
                 });
+    }
+
+    @Test
+    void getGameMoves() {
+        Move move1 = Move.builder().id(1L).created(LocalDateTime.now().minusMinutes(2)).build();
+        Move move2 = Move.builder().id(2L).created(LocalDateTime.now().minusMinutes(1)).build();
+        Move move3 = Move.builder().id(3L).created(LocalDateTime.now()).build();
+
+        List<Move> moves = Arrays.asList(move2, move1, move3);
+
+        Game game = Game.builder().id(1L).moves(moves).build();
+
+        when(gameRepository.findById(1L)).thenReturn(Optional.of(game));
+        when(moveToMoveCommand.convert(move1)).thenReturn(MoveCommand.builder().id(1L).build());
+        when(moveToMoveCommand.convert(move2)).thenReturn(MoveCommand.builder().id(2L).build());
+        when(moveToMoveCommand.convert(move3)).thenReturn(MoveCommand.builder().id(3L).build());
+
+        List<MoveCommand> moveCommands = moveService.getGameMoves(1L);
+
+        assertEquals(moveCommands.size(), 3);
+        assertEquals(moveCommands.get(0).getId(), Long.valueOf(1));
+        assertEquals(moveCommands.get(1).getId(), Long.valueOf(2));
+        assertEquals(moveCommands.get(2).getId(), Long.valueOf(3));
+
+        verify(gameRepository, times(1)).findById(1L);
+        verifyNoMoreInteractions(gameRepository);
+
+        verify(moveToMoveCommand, times(3)).convert(any());
+        verifyNoMoreInteractions(moveToMoveCommand);
+
+        verifyZeroInteractions(userRepository);
+        verifyZeroInteractions(roomRepository);
+    }
+
+    @Test
+    void getGameMovesInvalidId() {
+        when(gameRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(GameNotFoundException.class, () -> moveService.getGameMoves(1L));
+
+        verify(gameRepository, times(1)).findById(1L);
+        verifyNoMoreInteractions(gameRepository);
+
+        verifyZeroInteractions(moveToMoveCommand);
+        verifyZeroInteractions(userRepository);
+        verifyZeroInteractions(roomRepository);
     }
 }
