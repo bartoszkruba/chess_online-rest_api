@@ -12,6 +12,7 @@ import com.company.chess_online_bakend_api.data.repository.GameRepository;
 import com.company.chess_online_bakend_api.data.repository.RoleRepository;
 import com.company.chess_online_bakend_api.data.repository.RoomRepository;
 import com.company.chess_online_bakend_api.data.repository.UserRepository;
+import com.company.chess_online_bakend_api.data.validation.constraint.ValidPositionConstraint;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -216,7 +217,7 @@ public class GameControllerIT extends AbstractRestControllerTest {
                 .content(asJsonString(moveCommand)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errors.from", hasSize(1)))
-                .andExpect(jsonPath("$.errors.from[0]", equalTo(MoveCommand.MESSAGE_FROM_INVALID)))
+                .andExpect(jsonPath("$.errors.from[0]", equalTo(ValidPositionConstraint.ERROR_MESSAGE)))
                 .andExpect(jsonPath("$.status", equalTo(400)));
     }
 
@@ -232,5 +233,98 @@ public class GameControllerIT extends AbstractRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(requestBody)))
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void performMoveNullValues() throws Exception {
+        Long gameId = 1L;
+
+        MoveCommand requestBody = MoveCommand.builder().build();
+
+        mockMvc.perform(post(GameController.BASE_URL + gameId + "/move")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(requestBody)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors.from[0]", equalTo(MoveCommand.MESSAGE_FROM_NULL)))
+                .andExpect(jsonPath("$.errors.from", hasSize(1)))
+                .andExpect(jsonPath("$.errors.to[0]", equalTo(MoveCommand.MESSAGE_TO_NULL)))
+                .andExpect(jsonPath("$.errors.to", hasSize(1)));
+    }
+
+    @Test
+    void performMoveInvalidPositions() throws Exception {
+        Long gameId = 1L;
+
+        String from = "z";
+        String to = "x";
+
+        MoveCommand requestBody = MoveCommand.builder().from(from).to(to).build();
+
+        mockMvc.perform(post(GameController.BASE_URL + gameId + "/move")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(requestBody)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors.from[0]", equalTo(ValidPositionConstraint.ERROR_MESSAGE)))
+                .andExpect(jsonPath("$.errors.from", hasSize(1)))
+                .andExpect(jsonPath("$.errors.to[0]", equalTo(ValidPositionConstraint.ERROR_MESSAGE)))
+                .andExpect(jsonPath("$.errors.to", hasSize(1)));
+    }
+
+    @Test
+    @WithMockUser(username = UserBootstrap.USER_USERNAME)
+    void performMoveAsUser() throws Exception {
+        Long gameId = 1L;
+
+        String from = "d2";
+        String to = "d3";
+
+        MoveCommand requestBody = MoveCommand.builder().from(from).to(to).build();
+        User user = userRepository.findByUsernameLike(UserBootstrap.USER_USERNAME).get();
+        User admin = userRepository.findByUsernameLike(UserBootstrap.ADMIN_USERNAME).get();
+
+        Game game = gameRepository.findById(1L).get();
+
+        game.setWhitePlayer(user);
+        game.setBlackPlayer(admin);
+
+        gameRepository.save(game);
+
+        mockMvc.perform(post(GameController.BASE_URL + gameId + "/move")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(requestBody)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.pieceType", equalTo("PAWN")))
+                .andExpect(jsonPath("$.pieceColor", equalTo("WHITE")))
+                .andExpect(jsonPath("$.from", equalTo("D2")))
+                .andExpect(jsonPath("$.to", equalTo("D3")));
+    }
+
+    @Test
+    @WithMockUser(username = UserBootstrap.ADMIN_USERNAME)
+    void performMoveAsAdmin() throws Exception {
+        Long gameId = 1L;
+
+        String from = "d2";
+        String to = "d3";
+
+        MoveCommand requestBody = MoveCommand.builder().from(from).to(to).build();
+        User user = userRepository.findByUsernameLike(UserBootstrap.USER_USERNAME).get();
+        User admin = userRepository.findByUsernameLike(UserBootstrap.ADMIN_USERNAME).get();
+
+        Game game = gameRepository.findById(1L).get();
+
+        game.setWhitePlayer(admin);
+        game.setBlackPlayer(user);
+
+        gameRepository.save(game);
+
+        mockMvc.perform(post(GameController.BASE_URL + gameId + "/move")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(requestBody)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.pieceType", equalTo("PAWN")))
+                .andExpect(jsonPath("$.pieceColor", equalTo("WHITE")))
+                .andExpect(jsonPath("$.from", equalTo("D2")))
+                .andExpect(jsonPath("$.to", equalTo("D3")));
     }
 }

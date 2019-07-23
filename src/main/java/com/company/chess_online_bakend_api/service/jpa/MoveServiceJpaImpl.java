@@ -85,13 +85,8 @@ public class MoveServiceJpaImpl implements MoveService {
                 .collect(Collectors.toSet());
     }
 
-
-    // TODO: 2019-07-20 write tests
-    // Test cases:
-    // Checkmate
-    // King attacked
     @Override
-    @Transactional(rollbackFor = MoveGeneratorException.class)
+    @Transactional(rollbackFor = Exception.class)
     public MoveCommand performMove(String username, Long gameId, String from, String to) throws MoveGeneratorException {
         log.debug("Performing move for game with id " + gameId + ", from position: " + from + " to: " + to);
 
@@ -178,7 +173,8 @@ public class MoveServiceJpaImpl implements MoveService {
         log.debug("Updating game with new move and status");
 
         // Moving piece on Board Model
-        board.doMove(new com.github.bhlangonijr.chesslib.move.Move(Square.fromValue(from), Square.fromValue(to)));
+        board.doMove(new com.github.bhlangonijr.chesslib.move.Move(Square.fromValue(from.toUpperCase()),
+                Square.fromValue(to.toUpperCase())));
 
         // Moving piece on Database model
         BoardUtil.movePiece(piece, game.getBoard(), to);

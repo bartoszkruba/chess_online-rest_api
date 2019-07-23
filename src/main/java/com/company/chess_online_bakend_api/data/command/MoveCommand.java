@@ -20,17 +20,14 @@ import java.time.LocalDateTime;
 public class MoveCommand extends BaseEntityCommand {
 
     public static final String MESSAGE_FROM_NULL = "Start position cannot be null";
-    public static final String MESSAGE_FROM_INVALID = "Invalid start position";
-
     public static final String MESSAGE_TO_NULL = "New position cannot be null";
-    public static final String MESSAGE_TO_INVALID = "Invalid new position";
 
     @NotNull(groups = OnCreateNewMove.class, message = MESSAGE_FROM_NULL)
-    @ValidPositionConstraint(groups = {OnCreateNewMove.class, OnGetPossibleMoves.class}, message = MESSAGE_FROM_INVALID)
+    @ValidPositionConstraint(groups = {OnCreateNewMove.class, OnGetPossibleMoves.class})
     private String from;
 
     @NotNull(groups = OnCreateNewMove.class, message = MESSAGE_TO_NULL)
-    @ValidPositionConstraint(groups = OnCreateNewMove.class, message = MESSAGE_TO_INVALID)
+    @ValidPositionConstraint(groups = OnCreateNewMove.class)
     private String to;
     private PieceColor pieceColor;
     private PieceType pieceType;
