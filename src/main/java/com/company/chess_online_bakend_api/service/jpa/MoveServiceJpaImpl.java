@@ -11,9 +11,9 @@ import com.company.chess_online_bakend_api.data.model.enums.VerticalPosition;
 import com.company.chess_online_bakend_api.data.repository.GameRepository;
 import com.company.chess_online_bakend_api.data.repository.RoomRepository;
 import com.company.chess_online_bakend_api.data.repository.UserRepository;
+import com.company.chess_online_bakend_api.exception.ForbiddenException;
 import com.company.chess_online_bakend_api.exception.GameNotFoundException;
 import com.company.chess_online_bakend_api.exception.InvalidMoveException;
-import com.company.chess_online_bakend_api.exception.UnauthorizedException;
 import com.company.chess_online_bakend_api.exception.UserNotFoundException;
 import com.company.chess_online_bakend_api.service.MoveService;
 import com.company.chess_online_bakend_api.util.BoardUtil;
@@ -91,7 +91,7 @@ public class MoveServiceJpaImpl implements MoveService {
     // Checkmate
     // King attacked
     @Override
-    @Transactional
+    @Transactional(rollbackFor = MoveGeneratorException.class)
     public MoveCommand performMove(String username, Long gameId, String from, String to) throws MoveGeneratorException {
         log.debug("Performing move for game with id " + gameId + ", from position: " + from + " to: " + to);
 
@@ -123,7 +123,7 @@ public class MoveServiceJpaImpl implements MoveService {
 
         // Checking if player is part of the game
         if (!whitePlayer.getUsername().equals(username) && !blackPlayer.getUsername().equals(username)) {
-            throw new UnauthorizedException("You are not authorized to make moves");
+            throw new ForbiddenException("You are not authorized to make moves");
         }
 
         // Changing game status to STARTED if game not started yet and user is white

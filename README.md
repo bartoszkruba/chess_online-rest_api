@@ -5,11 +5,11 @@
 
 REST API server for playing chess online written in Java using Spring Boot and MYSQL for data storage.
 
-### Docker Image:
+## Docker Image:
 
 You can find docker image for this project on [DockerHub](https://cloud.docker.com/u/nawajo/repository/docker/nawajo/chess_rest_api)  
   
-### How To Run:
+## How To Run:
   
 Running development stand-alone setup through docker-compose:  
 ```
@@ -18,12 +18,12 @@ $ cd dev
 $ docker-compose up
 ```
 
-### Documentation:
+## Documentation:
 Swagger documentation for REST API can be accessed through following endpoint:
 
 ```
 http://localhost:8080/swagger-ui.html
 ```
 
-###Used Libraries:
+## Used Libraries:
 [Chesslib](https://github.com/bhlangonijr/chesslib) - Java chess library for generating legal chess moves given a chessboard position, parsing a chess game stored in PGN or FEN format and many other things.

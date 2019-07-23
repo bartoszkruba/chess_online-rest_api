@@ -1,6 +1,7 @@
 package com.company.chess_online_bakend_api.controller;
 
 import com.company.chess_online_bakend_api.exception.*;
+import com.github.bhlangonijr.chesslib.move.MoveGeneratorException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -65,26 +66,38 @@ public class ExceptionAdviceController extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 
-    @ExceptionHandler({UnauthorizedException.class})
-    public ResponseEntity<Object> handleUnauthorizedException(Exception ex, WebRequest request) {
+    @ExceptionHandler({ForbiddenException.class})
+    public ResponseEntity<Object> handleForbiddenException(Exception ex, WebRequest request) {
 
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("timestamp", new Date());
-        body.put("status", 401);
+        body.put("status", 403);
         body.put("error", ex.getMessage());
 
-        return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.UNAUTHORIZED, request);
+        return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.FORBIDDEN, request);
+    }
+
+    @ExceptionHandler({MoveGeneratorException.class})
+    public ResponseEntity<Object> handleMoveGeneratorException(Exception ex, WebRequest request) {
+        logger.error(ex.getStackTrace());
+
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", new Date());
+        body.put("status", 500);
+        body.put("error", "Server could not handle game logic.");
+
+        return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
     }
 
     // TODO: 2019-07-17 fix
-    @ExceptionHandler(InvalidPieceColorException.class)
-    public ResponseEntity<Object> handleInvalidPieceColor(Exception ex, WebRequest request) {
-
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put("timestamp", new Date());
-        body.put("status", 400);
-        body.put("error", ex.getMessage());
-
-        return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
-    }
+//    @ExceptionHandler(InvalidPieceColorException.class)
+//    public ResponseEntity<Object> handleInvalidPieceColor(Exception ex, WebRequest request) {
+//
+//        Map<String, Object> body = new LinkedHashMap<>();
+//        body.put("timestamp", new Date());
+//        body.put("status", 400);
+//        body.put("error", ex.getMessage());
+//
+//        return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+//    }
 }

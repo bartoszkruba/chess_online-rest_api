@@ -30,8 +30,7 @@ import org.springframework.web.context.WebApplicationContext;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -219,5 +218,19 @@ public class GameControllerIT extends AbstractRestControllerTest {
                 .andExpect(jsonPath("$.errors", hasSize(1)))
                 .andExpect(jsonPath("$.errors[0]", equalTo(MoveCommand.MESSAGE_FROM_INVALID)))
                 .andExpect(jsonPath("$.status", equalTo(400)));
+    }
+
+    @Test
+    void performMoveUnauthorized() throws Exception {
+        Long gameId = 1L;
+        String from = "D2";
+        String to = "D3";
+
+        MoveCommand requestBody = MoveCommand.builder().from(from).to(to).build();
+
+        mockMvc.perform(post(GameController.BASE_URL + gameId + "/move")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(requestBody)))
+                .andExpect(status().isUnauthorized());
     }
 }

@@ -10,9 +10,9 @@ import com.company.chess_online_bakend_api.data.model.enums.*;
 import com.company.chess_online_bakend_api.data.repository.GameRepository;
 import com.company.chess_online_bakend_api.data.repository.RoomRepository;
 import com.company.chess_online_bakend_api.data.repository.UserRepository;
+import com.company.chess_online_bakend_api.exception.ForbiddenException;
 import com.company.chess_online_bakend_api.exception.GameNotFoundException;
 import com.company.chess_online_bakend_api.exception.InvalidMoveException;
-import com.company.chess_online_bakend_api.exception.UnauthorizedException;
 import com.company.chess_online_bakend_api.exception.UserNotFoundException;
 import com.company.chess_online_bakend_api.util.GameUtil;
 import com.github.bhlangonijr.chesslib.Board;
@@ -203,7 +203,7 @@ class MoveServiceJpaImplTest {
         when(userRepository.findByUsernameLike(username))
                 .thenReturn(Optional.of(User.builder().username(username).build()));
 
-        assertThrows(UnauthorizedException.class, () -> {
+        assertThrows(ForbiddenException.class, () -> {
             moveService.performMove(username, 3L, "", "");
         });
 
