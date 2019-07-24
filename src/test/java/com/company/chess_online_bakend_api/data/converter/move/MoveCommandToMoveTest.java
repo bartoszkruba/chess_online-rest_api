@@ -11,7 +11,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -20,7 +22,7 @@ class MoveCommandToMoveTest {
 
     private final Long MOVE_ID = 1L;
     private final Integer COUNT = 7;
-    private final LocalDateTime CREATION_TIME = LocalDateTime.now();
+    private final Long CREATION_TIME = LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
 
     @InjectMocks
     MoveCommandToMove moveCommandToMove;
@@ -60,7 +62,7 @@ class MoveCommandToMoveTest {
         MoveCommand moveCommand = MoveCommand.builder()
                 .id(MOVE_ID)
                 .count(COUNT)
-                .happenedOn(CREATION_TIME)
+                .timestamp(CREATION_TIME)
                 .pieceColor(PieceColor.BLACK)
                 .pieceType(PieceType.BISHOP)
                 .isKingSideCastle(true)
@@ -73,9 +75,12 @@ class MoveCommandToMoveTest {
 
         Move move = moveCommandToMove.convert(moveCommand);
 
+        Instant instant = Instant.ofEpochMilli(moveCommand.getTimestamp());
+        LocalDateTime time = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
+
         assertEquals(MOVE_ID, move.getId());
         assertEquals(COUNT, move.getMoveCount());
-        assertEquals(CREATION_TIME, move.getCreated());
+        assertEquals(time, move.getCreated());
         assertEquals(PieceColor.BLACK, move.getPieceColor());
         assertEquals(PieceType.BISHOP, move.getPieceType());
         assertEquals(HorizontalPosition.A, move.getHorizontalStartPosition());

@@ -9,7 +9,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
@@ -39,12 +38,11 @@ public class MoveCommand extends BaseEntityCommand {
     private Boolean isDraw;
     private Integer count;
 
-    // TODO: 2019-07-11 Consider switching to epoch time
-    private LocalDateTime happenedOn;
+    private Long timestamp;
 
     @Builder
     public MoveCommand(Long id, String from, String to, PieceColor pieceColor, PieceType pieceType, Integer count,
-                       LocalDateTime happenedOn, Boolean isKingSideCastle, Boolean isQueenSideCastle,
+                       Long timestamp, Boolean isKingSideCastle, Boolean isQueenSideCastle,
                        Boolean isKingAttacked, Boolean isCheckmate, Boolean isDraw) {
         super(id);
         this.from = from;
@@ -52,7 +50,7 @@ public class MoveCommand extends BaseEntityCommand {
         this.pieceColor = pieceColor;
         this.pieceType = pieceType;
         this.count = count;
-        this.happenedOn = happenedOn;
+        this.timestamp = timestamp;
         this.isKingSideCastle = isKingSideCastle;
         this.isQueenSideCastle = isQueenSideCastle;
         this.isKingAttacked = isKingAttacked;

@@ -24,6 +24,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -237,14 +238,14 @@ class GameControllerTest extends AbstractRestControllerTest {
         String from = "D2";
         String to = "D3";
 
-        LocalDateTime now = LocalDateTime.now();
+        Long now = LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
 
         MoveCommand response = MoveCommand.builder()
                 .from(from)
                 .to(to)
                 .count(1)
                 .isKingAttacked(true)
-                .happenedOn(now)
+                .timestamp(now)
                 .isCheckmate(true)
                 .isDraw(true)
                 .isKingSideCastle(true)
