@@ -18,6 +18,8 @@ $ cd dev
 $ docker-compose up
 ```
 
+By default server binds to port **8080**.
+
 ## Documentation:
 Swagger documentation for REST API can be accessed through following endpoint:
 

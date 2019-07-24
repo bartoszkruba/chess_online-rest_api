@@ -7,7 +7,6 @@ import com.company.chess_online_bakend_api.data.repository.UserRepository;
 import com.company.chess_online_bakend_api.exception.UserNotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -90,89 +89,6 @@ class UserServiceJpaImplTest {
         verify(userRepository, times(1)).findById(anyLong());
         verifyNoMoreInteractions(userRepository);
         verifyZeroInteractions(userToUserCommand);
-    }
-
-    @Test
-    @Disabled
-    void save() {
-//        User userToSave = User.builder().username(USERNAME1).build();
-//
-//        when(userRepository.save(any())).thenReturn(returnUser1);
-//
-//        User user = userService.save(userToSave);
-//
-//        assertNotNull(user);
-//        assertEquals(USERNAME1, user.getUsername());
-//
-//        verify(userRepository, times(1)).save(userToSave);
-    }
-
-    @Test
-    @Disabled
-    void findAll() {
-//        List<User> returnUserList = new ArrayList<>();
-//        returnUserList.add(returnUser1);
-//        returnUserList.add(returnUser2);
-//
-//        when(userRepository.findAll()).thenReturn(returnUserList);
-//
-//        Set<User> users = userService.findAll();
-//
-//        assertEquals(2, users.size());
-//
-//        assertTrue(users.contains(returnUser1));
-//        assertTrue(users.contains(returnUser2));
-//
-//        verify(userRepository, times(1)).findAll();
-    }
-
-    @Test
-    @Disabled
-    void delete() {
-//        when(userRepository.findById(anyLong())).thenReturn(Optional.of(returnUser1));
-//
-//        userService.delete(returnUser1);
-//
-//        verify(userRepository, times(1)).delete(returnUser1);
-    }
-
-    @Test
-    @Disabled
-    void deleteUserNotFound() {
-//        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
-//
-//        Assertions.assertThrows(RuntimeException.class, () -> userService.delete(returnUser1));
-    }
-
-    @Test
-    @Disabled
-    void deleteIdIsNull() {
-//        Assertions.assertThrows(RuntimeException.class, () -> userService.delete(null));
-    }
-
-    @Test
-    @Disabled
-    void deleteById() {
-//        when(userRepository.findById(anyLong())).thenReturn(Optional.of(returnUser1));
-//
-//        userService.deleteById(USER1_ID);
-//
-//        verify(userRepository, times(1)).deleteById(USER1_ID);
-    }
-
-    @Test
-    @Disabled
-    void deleteByIdUserNotFound() {
-//        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
-//
-//        Assertions.assertThrows(RuntimeException.class, () -> userService.deleteById(USER1_ID));
-    }
-
-    @Test
-    @Disabled
-    void deleteByIdIsNull() {
-//        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
-//        Assertions.assertThrows(RuntimeException.class, () -> userService.deleteById(USER1_ID));
     }
 
     @Test

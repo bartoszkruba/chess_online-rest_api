@@ -23,12 +23,22 @@ public class UserController {
     }
 
     @ApiOperation(value = "Get user by id",
-            notes = "Return 404 NOT FOUND if user does not exist")
+            notes = "Returns 404 NOT FOUND if user does not exist")
     @GetMapping({"{id}", "/{id}/"})
     @ResponseStatus(HttpStatus.OK)
     public UserCommand getUserById(@PathVariable Long id) {
         log.debug("New request: GET " + BASE_URL + id);
 
         return userService.findById(id);
+    }
+
+    @ApiOperation(value = "Get user by username",
+            notes = "Returns 404 NOT FOUND if user does not exist")
+    @GetMapping({"username/{username}", "username/{username}"})
+    @ResponseStatus(HttpStatus.OK)
+    public UserCommand getUserByUsername(@PathVariable String username) {
+        log.debug("New request: GET " + BASE_URL + "username/" + username);
+
+        return userService.findByUsername(username);
     }
 }
