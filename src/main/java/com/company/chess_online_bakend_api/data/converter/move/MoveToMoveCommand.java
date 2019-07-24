@@ -8,6 +8,8 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
+import java.time.ZoneId;
+
 @Component
 @Slf4j
 public class MoveToMoveCommand implements Converter<Move, MoveCommand> {
@@ -22,9 +24,8 @@ public class MoveToMoveCommand implements Converter<Move, MoveCommand> {
             return null;
         }
 
-        return MoveCommand.builder()
+        MoveCommand moveCommand = MoveCommand.builder()
                 .id(move.getId())
-                .happenedOn(move.getCreated())
                 .count(move.getMoveCount())
                 .pieceColor(move.getPieceColor())
                 .pieceType(move.getPieceType())
@@ -39,5 +40,11 @@ public class MoveToMoveCommand implements Converter<Move, MoveCommand> {
                 .isDraw(move.getIsDraw())
                 .build();
 
+        if (move.getCreated() != null) {
+            ZoneId zoneId = ZoneId.systemDefault();
+            moveCommand.setTimestamp(move.getCreated().atZone(zoneId).toInstant().toEpochMilli());
+        }
+
+        return moveCommand;
     }
 }

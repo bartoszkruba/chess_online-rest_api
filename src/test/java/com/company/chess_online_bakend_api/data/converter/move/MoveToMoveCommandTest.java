@@ -12,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -42,7 +43,7 @@ class MoveToMoveCommandTest {
 
         assertNull(moveCommand.getId());
         assertNull(moveCommand.getCount());
-        assertNull(moveCommand.getHappenedOn());
+        assertNull(moveCommand.getTimestamp());
         assertNull(moveCommand.getFrom());
         assertNull(moveCommand.getTo());
         assertNull(moveCommand.getPieceColor());
@@ -74,9 +75,11 @@ class MoveToMoveCommandTest {
 
         MoveCommand moveCommand = moveToMoveCommand.convert(move);
 
+        Long time = CREATION_TIME.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+
         assertEquals(MOVE_ID, moveCommand.getId());
         assertEquals(COUNT, moveCommand.getCount());
-        assertEquals(CREATION_TIME, moveCommand.getHappenedOn());
+        assertEquals(time, moveCommand.getTimestamp());
         assertEquals("A1", moveCommand.getFrom());
         assertEquals("B2", moveCommand.getTo());
         assertEquals(PieceColor.WHITE, moveCommand.getPieceColor());
