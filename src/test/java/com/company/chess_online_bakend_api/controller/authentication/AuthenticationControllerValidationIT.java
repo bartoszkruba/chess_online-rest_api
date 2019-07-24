@@ -3,6 +3,7 @@ package com.company.chess_online_bakend_api.controller.authentication;
 import com.company.chess_online_bakend_api.controller.AbstractRestControllerTest;
 import com.company.chess_online_bakend_api.controller.AuthenticationController;
 import com.company.chess_online_bakend_api.data.command.UserCommand;
+import com.company.chess_online_bakend_api.data.validation.constraint.ValidNameConstraint;
 import com.company.chess_online_bakend_api.data.validation.constraint.ValidPasswordConstraint;
 import com.company.chess_online_bakend_api.data.validation.constraint.ValidUsernameConstraint;
 import org.junit.jupiter.api.BeforeEach;
@@ -257,5 +258,26 @@ public class AuthenticationControllerValidationIT extends AbstractRestController
                 .andExpect(jsonPath("$.status", equalTo(400)))
                 .andExpect(jsonPath("$.errors.email[0]", equalTo(UserCommand.EMAIL_NOT_EMPTY_MESSAGE)))
                 .andExpect(jsonPath("$.errors.email", hasSize(1)));
+    }
+
+    @Test
+    void registerInvalidName() throws Exception {
+        UserCommand userCommand = UserCommand.builder()
+                .username(USERNAME)
+                .password(PASSWORD)
+                .email(null)
+                .firstName("%%%%%%%%")
+                .lastName("¤¤¤¤¤¤¤¤")
+                .build();
+
+        mockMvc.perform(post(AuthenticationController.BASE_URL + "register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(userCommand)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status", equalTo(400)))
+                .andExpect(jsonPath("$.errors.firstName[0]", equalTo(ValidNameConstraint.ERROR_MESSAGE)))
+                .andExpect(jsonPath("$.errors.firstName", hasSize(1)))
+                .andExpect(jsonPath("$.errors.lastName[0]", equalTo(ValidNameConstraint.ERROR_MESSAGE)))
+                .andExpect(jsonPath("$.errors.lastName", hasSize(1)));
     }
 }
