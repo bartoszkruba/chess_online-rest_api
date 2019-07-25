@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Slf4j
 @EqualsAndHashCode(callSuper = true)
@@ -16,6 +17,9 @@ public class Room extends BaseEntity {
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Game game;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ChatMessage> chatMessages;
 
     @Column(unique = true)
     private String name;
