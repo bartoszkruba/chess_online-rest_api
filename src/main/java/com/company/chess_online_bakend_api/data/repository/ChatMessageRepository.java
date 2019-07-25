@@ -10,4 +10,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ChatMessageRepository extends PagingAndSortingRepository<ChatMessage, Long> {
     Page<ChatMessage> findByRoom(Room room, Pageable pageable);
+
+    Long countByRoom(Room room);
 }
