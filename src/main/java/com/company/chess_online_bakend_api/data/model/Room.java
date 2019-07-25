@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -25,14 +26,26 @@ public class Room extends BaseEntity {
     private String name;
 
     @Builder
-    public Room(Long id, LocalDateTime created, LocalDateTime updated, String name, Game game) {
+    public Room(Long id, LocalDateTime created, LocalDateTime updated, String name, Game game,
+                List<ChatMessage> chatMessages) {
         super(id, created, updated);
         this.name = name;
         this.game = game;
+        this.chatMessages = chatMessages;
     }
 
     public void addGame(Game game) {
         this.game = game;
         game.setRoom(this);
+    }
+
+    public void addChatMessage(ChatMessage chatMessage) {
+        if (this.chatMessages == null) {
+            this.chatMessages = new ArrayList<>();
+        }
+
+        this.chatMessages.add(chatMessage);
+
+        chatMessage.setRoom(this);
     }
 }
