@@ -1,4 +1,8 @@
 /*
+ * 7/26/19 8:09 PM. Created by Bartosz Kruba.
+ */
+
+/*
  * 7/26/19 7:15 PM. Created by Bartosz Kruba.
  */
 
@@ -19,7 +23,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Builder
-public class RoomCountCommand {
+public class CountCommand {
 
     private Long count;
 }

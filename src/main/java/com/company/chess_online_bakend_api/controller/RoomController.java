@@ -1,4 +1,8 @@
 /*
+ * 7/26/19 8:09 PM. Created by Bartosz Kruba.
+ */
+
+/*
  * 7/26/19 7:15 PM. Created by Bartosz Kruba.
  */
 
@@ -8,9 +12,9 @@
 
 package com.company.chess_online_bakend_api.controller;
 
+import com.company.chess_online_bakend_api.data.command.CountCommand;
 import com.company.chess_online_bakend_api.data.command.GameCommand;
 import com.company.chess_online_bakend_api.data.command.RoomCommand;
-import com.company.chess_online_bakend_api.data.command.RoomCountCommand;
 import com.company.chess_online_bakend_api.service.GameService;
 import com.company.chess_online_bakend_api.service.RoomService;
 import io.swagger.annotations.Api;
@@ -54,10 +58,10 @@ public class RoomController {
     @ApiOperation(value = "Get rooms count")
     @GetMapping({"count", "count/"})
     @ResponseStatus(HttpStatus.OK)
-    public RoomCountCommand getRoomCount() {
+    public CountCommand getRoomCount() {
         log.debug("New request: GET " + BASE_URL + "count");
 
-        return RoomCountCommand.builder().count(roomService.getRoomCount()).build();
+        return CountCommand.builder().count(roomService.getRoomCount()).build();
     }
 
     @ApiOperation(value = "Create new room",
