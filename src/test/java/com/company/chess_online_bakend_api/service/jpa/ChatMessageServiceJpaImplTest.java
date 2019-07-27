@@ -13,7 +13,7 @@
 package com.company.chess_online_bakend_api.service.jpa;
 
 import com.company.chess_online_bakend_api.data.command.ChatMessageCommand;
-import com.company.chess_online_bakend_api.data.converter.chatMessage.ChatMessageToChatMessageCommand;
+import com.company.chess_online_bakend_api.data.converter.command.chatMessage.ChatMessageToChatMessageCommand;
 import com.company.chess_online_bakend_api.data.model.ChatMessage;
 import com.company.chess_online_bakend_api.data.model.Room;
 import com.company.chess_online_bakend_api.data.model.User;
@@ -81,6 +81,8 @@ class ChatMessageServiceJpaImplTest {
         verifyNoMoreInteractions(chatMessageRepository);
 
         verifyZeroInteractions(chatMessageToChatMessageCommand);
+
+        // TODO: 2019-07-27 verify socketService
     }
 
     @Test
@@ -101,6 +103,8 @@ class ChatMessageServiceJpaImplTest {
         verifyZeroInteractions(chatMessageRepository);
 
         verifyZeroInteractions(chatMessageToChatMessageCommand);
+
+        // TODO: 2019-07-27 verify socketService
     }
 
     @Test
@@ -138,6 +142,8 @@ class ChatMessageServiceJpaImplTest {
         verify(chatMessageToChatMessageCommand, times(1)).convert(chatMessage1);
         verify(chatMessageToChatMessageCommand, times(1)).convert(chatMessage2);
         verifyNoMoreInteractions(chatMessageToChatMessageCommand);
+
+        // TODO: 2019-07-27 verify socketService
     }
 
     @Test
@@ -155,6 +161,8 @@ class ChatMessageServiceJpaImplTest {
         verifyZeroInteractions(chatMessageRepository);
 
         verifyZeroInteractions(chatMessageToChatMessageCommand);
+
+        // TODO: 2019-07-27 verify socketService
     }
 
     @Test
@@ -175,6 +183,8 @@ class ChatMessageServiceJpaImplTest {
         verifyZeroInteractions(chatMessageRepository);
 
         verifyZeroInteractions(chatMessageToChatMessageCommand);
+
+        // TODO: 2019-07-27 verify socketService
     }
 
     @Test
@@ -197,6 +207,8 @@ class ChatMessageServiceJpaImplTest {
         verifyZeroInteractions(chatMessageRepository);
 
         verifyZeroInteractions(chatMessageToChatMessageCommand);
+
+        // TODO: 2019-07-27 verify socketService
     }
 
     @Test
@@ -244,6 +256,8 @@ class ChatMessageServiceJpaImplTest {
 
         verify(chatMessageToChatMessageCommand, times(1)).convert(savedMessage);
         verifyNoMoreInteractions(chatMessageToChatMessageCommand);
+
+        // TODO: 2019-07-27 verify socketService
     }
 
     @Test
@@ -291,5 +305,7 @@ class ChatMessageServiceJpaImplTest {
 
         verify(chatMessageToChatMessageCommand, times(1)).convert(savedMessage);
         verifyNoMoreInteractions(chatMessageToChatMessageCommand);
+
+        // TODO: 2019-07-27 verify socketService
     }
 }

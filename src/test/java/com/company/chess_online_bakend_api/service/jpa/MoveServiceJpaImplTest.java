@@ -9,7 +9,7 @@
 package com.company.chess_online_bakend_api.service.jpa;
 
 import com.company.chess_online_bakend_api.data.command.MoveCommand;
-import com.company.chess_online_bakend_api.data.converter.move.MoveToMoveCommand;
+import com.company.chess_online_bakend_api.data.converter.command.move.MoveToMoveCommand;
 import com.company.chess_online_bakend_api.data.model.Game;
 import com.company.chess_online_bakend_api.data.model.Move;
 import com.company.chess_online_bakend_api.data.model.Room;

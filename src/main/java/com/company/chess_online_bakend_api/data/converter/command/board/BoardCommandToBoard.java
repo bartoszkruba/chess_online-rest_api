@@ -1,4 +1,8 @@
 /*
+ * 7/27/19 3:25 PM. Updated by Bartosz Kruba.
+ */
+
+/*
  * 7/26/19 7:15 PM. Created by Bartosz Kruba.
  */
 
@@ -6,10 +10,10 @@
  * 7/26/19 7:12 PM. Created by Bartosz Kruba.
  */
 
-package com.company.chess_online_bakend_api.data.converter.board;
+package com.company.chess_online_bakend_api.data.converter.command.board;
 
 import com.company.chess_online_bakend_api.data.command.BoardCommand;
-import com.company.chess_online_bakend_api.data.converter.piece.PieceCommandToPiece;
+import com.company.chess_online_bakend_api.data.converter.command.piece.PieceCommandToPiece;
 import com.company.chess_online_bakend_api.data.model.Board;
 import com.company.chess_online_bakend_api.data.model.Piece;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +46,7 @@ public class BoardCommandToBoard implements Converter<BoardCommand, Board> {
             return null;
         }
 
-        Board board = Board.builder()
+        var board = Board.builder()
                 .id(boardCommand.getId()).build();
 
         if (boardCommand.getPieces() != null) {

@@ -1,4 +1,8 @@
 /*
+ * 7/27/19 3:26 PM. Updated by Bartosz Kruba.
+ */
+
+/*
  * 7/26/19 7:15 PM. Created by Bartosz Kruba.
  */
 
@@ -6,7 +10,7 @@
  * 7/26/19 7:12 PM. Created by Bartosz Kruba.
  */
 
-package com.company.chess_online_bakend_api.data.converter.chatMessage;
+package com.company.chess_online_bakend_api.data.converter.command.chatMessage;
 
 import com.company.chess_online_bakend_api.data.command.ChatMessageCommand;
 import com.company.chess_online_bakend_api.data.model.ChatMessage;
@@ -31,7 +35,7 @@ public class ChatMessageToChatMessageCommand implements Converter<ChatMessage, C
             return null;
         }
 
-        ChatMessageCommand chatMessageCommand = ChatMessageCommand.builder()
+        var chatMessageCommand = ChatMessageCommand.builder()
                 .id(chatMessage.getId())
                 .message(chatMessage.getMessage()).build();
 

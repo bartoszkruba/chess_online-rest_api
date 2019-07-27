@@ -9,6 +9,7 @@
 package com.company.chess_online_bakend_api.data.converter.chatMessage;
 
 import com.company.chess_online_bakend_api.data.command.ChatMessageCommand;
+import com.company.chess_online_bakend_api.data.converter.command.chatMessage.ChatMessageCommandToChatMessage;
 import com.company.chess_online_bakend_api.data.model.ChatMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

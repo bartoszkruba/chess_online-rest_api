@@ -9,7 +9,7 @@
 package com.company.chess_online_bakend_api.service.jpa;
 
 import com.company.chess_online_bakend_api.data.command.UserCommand;
-import com.company.chess_online_bakend_api.data.converter.user.UserToUserCommand;
+import com.company.chess_online_bakend_api.data.converter.command.user.UserToUserCommand;
 import com.company.chess_online_bakend_api.data.model.User;
 import com.company.chess_online_bakend_api.data.repository.UserRepository;
 import com.company.chess_online_bakend_api.exception.UserNotFoundException;

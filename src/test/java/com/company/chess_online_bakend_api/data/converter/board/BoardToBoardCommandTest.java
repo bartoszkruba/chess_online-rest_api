@@ -10,7 +10,8 @@ package com.company.chess_online_bakend_api.data.converter.board;
 
 import com.company.chess_online_bakend_api.data.command.BoardCommand;
 import com.company.chess_online_bakend_api.data.command.PieceCommand;
-import com.company.chess_online_bakend_api.data.converter.piece.PieceToPieceCommand;
+import com.company.chess_online_bakend_api.data.converter.command.board.BoardToBoardCommand;
+import com.company.chess_online_bakend_api.data.converter.command.piece.PieceToPieceCommand;
 import com.company.chess_online_bakend_api.data.model.Board;
 import com.company.chess_online_bakend_api.data.model.Piece;
 import org.junit.jupiter.api.BeforeEach;

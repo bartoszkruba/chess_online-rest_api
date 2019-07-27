@@ -1,4 +1,8 @@
 /*
+ * 7/27/19 3:26 PM. Updated by Bartosz Kruba.
+ */
+
+/*
  * 7/26/19 7:15 PM. Created by Bartosz Kruba.
  */
 
@@ -6,7 +10,7 @@
  * 7/26/19 7:12 PM. Created by Bartosz Kruba.
  */
 
-package com.company.chess_online_bakend_api.data.converter.move;
+package com.company.chess_online_bakend_api.data.converter.command.move;
 
 import com.company.chess_online_bakend_api.data.command.MoveCommand;
 import com.company.chess_online_bakend_api.data.model.Move;
@@ -32,7 +36,7 @@ public class MoveToMoveCommand implements Converter<Move, MoveCommand> {
             return null;
         }
 
-        MoveCommand moveCommand = MoveCommand.builder()
+        var moveCommand = MoveCommand.builder()
                 .id(move.getId())
                 .count(move.getMoveCount())
                 .pieceColor(move.getPieceColor())

@@ -1,4 +1,8 @@
 /*
+ * 7/27/19 3:26 PM. Updated by Bartosz Kruba.
+ */
+
+/*
  * 7/26/19 7:15 PM. Created by Bartosz Kruba.
  */
 
@@ -6,11 +10,11 @@
  * 7/26/19 7:12 PM. Created by Bartosz Kruba.
  */
 
-package com.company.chess_online_bakend_api.data.converter.game;
+package com.company.chess_online_bakend_api.data.converter.command.game;
 
 import com.company.chess_online_bakend_api.data.command.GameCommand;
-import com.company.chess_online_bakend_api.data.converter.board.BoardToBoardCommand;
-import com.company.chess_online_bakend_api.data.converter.user.UserToUserCommand;
+import com.company.chess_online_bakend_api.data.converter.command.board.BoardToBoardCommand;
+import com.company.chess_online_bakend_api.data.converter.command.user.UserToUserCommand;
 import com.company.chess_online_bakend_api.data.model.Game;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +45,7 @@ public class GameToGameCommand implements Converter<Game, GameCommand> {
             return null;
         }
 
-        GameCommand gameCommand = GameCommand.builder()
+        var gameCommand = GameCommand.builder()
                 .status(game.getStatus())
                 .turn(game.getTurn())
                 .fenNotation(game.getFenNotation())
