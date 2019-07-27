@@ -26,6 +26,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -70,7 +71,7 @@ public class ChatMessageControllerIT extends AbstractRestControllerTest {
 
     @Test
     void createNewMessageNotLogged() throws Exception {
-        ChatMessageCommand chatMessageCommand = ChatMessageCommand.builder().message("ddddd sdadasads dasdasads").build();
+        var chatMessageCommand = ChatMessageCommand.builder().message("ddddd sdadasads dasdasads").build();
 
         mockMvc.perform(post(RoomController.BASE_URL + "1/message")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -81,7 +82,7 @@ public class ChatMessageControllerIT extends AbstractRestControllerTest {
     @Test
     @WithMockUser(username = UserBootstrap.ADMIN_USERNAME, authorities = UserBootstrap.ROLE_ADMIN)
     void createNewMessageLoggedAsAdmin() throws Exception {
-        ChatMessageCommand chatMessageCommand = ChatMessageCommand.builder().message("ddddd sdadasads dasdasads").build();
+        var chatMessageCommand = ChatMessageCommand.builder().message("ddddd sdadasads dasdasads").build();
 
         mockMvc.perform(post(RoomController.BASE_URL + "1/message")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -93,7 +94,7 @@ public class ChatMessageControllerIT extends AbstractRestControllerTest {
     @Test
     @WithMockUser(username = UserBootstrap.USER_USERNAME, authorities = UserBootstrap.ROLE_USER)
     void createNewMessageLoggedAsUser() throws Exception {
-        ChatMessageCommand chatMessageCommand = ChatMessageCommand.builder().message("ddddd sdadasads dasdasads").build();
+        var chatMessageCommand = ChatMessageCommand.builder().message("ddddd sdadasads dasdasads").build();
 
         mockMvc.perform(post(RoomController.BASE_URL + "1/message")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -102,5 +103,50 @@ public class ChatMessageControllerIT extends AbstractRestControllerTest {
                 .andExpect(jsonPath("$.status", equalTo(404)));
     }
 
+    @Test
+    void createNewMessageNullMessage() throws Exception {
+        var chatMessageCommand = ChatMessageCommand.builder().message(null).build();
 
+        mockMvc.perform(post(RoomController.BASE_URL + "1/message")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(chatMessageCommand)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status", equalTo(400)))
+                .andExpect(jsonPath("$.errors.message[0]", equalTo(ChatMessageCommand.MESSAGE_NOT_BLANK_ERROR)))
+                .andExpect(jsonPath("$.errors.message", hasSize(1)));
+    }
+
+    @Test
+    void createNewMessageBlankMessage() throws Exception {
+        var chatMessageCommand = ChatMessageCommand.builder().message("      ").build();
+
+        mockMvc.perform(post(RoomController.BASE_URL + "1/message")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(chatMessageCommand)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status", equalTo(400)))
+                .andExpect(jsonPath("$.errors.message[0]", equalTo(ChatMessageCommand.MESSAGE_NOT_BLANK_ERROR)))
+                .andExpect(jsonPath("$.errors.message", hasSize(1)));
+    }
+
+    @Test
+    void createNewMessageInvalidLength() throws Exception {
+        var sb = new StringBuilder();
+
+        for (int i = 0; i < 501; i++) {
+            sb.append("b");
+        }
+
+        var chatMessageCommand = ChatMessageCommand.builder()
+                .message(sb.toString())
+                .build();
+
+        mockMvc.perform(post(RoomController.BASE_URL + "1/message")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(chatMessageCommand)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status", equalTo(400)))
+                .andExpect(jsonPath("$.errors.message[0]", equalTo(ChatMessageCommand.MESSAGE_LENGTH_ERROR)))
+                .andExpect(jsonPath("$.errors.message", hasSize(1)));
+    }
 }

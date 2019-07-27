@@ -23,7 +23,7 @@ import javax.validation.constraints.Size;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ChatMessageCommand extends BaseEntityCommand {
 
-    public static final String MESSAGE_NOT_NULL_ERROR = "Message cannot be null";
+    public static final String MESSAGE_NOT_BLANK_ERROR = "Message cannot be null";
     public static final String MESSAGE_LENGTH_ERROR = "Message needs to be between 1 and 500 characters long";
 
     private Long roomId;
@@ -32,7 +32,7 @@ public class ChatMessageCommand extends BaseEntityCommand {
 
     private Long timestamp;
 
-    @NotBlank(message = MESSAGE_NOT_NULL_ERROR)
+    @NotBlank(message = MESSAGE_NOT_BLANK_ERROR)
     @Size(max = 500, message = MESSAGE_LENGTH_ERROR)
     @ApiModelProperty(required = true)
     private String message;
