@@ -33,9 +33,9 @@ public class SocketServiceImpl implements SocketService {
     @Override
     @Async
     public void broadcastChatMessage(ChatMessage chatMessage) {
-        log.debug("Broadcasting ChatMessage to room" + chatMessage.getRoom().getId());
+        log.debug("Broadcasting ChatMessage to room " + chatMessage.getRoom().getId());
 
-        String channel = "/room/" + chatMessage.getRoom().getId();
+        String channel = "/topic/room/" + chatMessage.getRoom().getId();
 
         messagingTemplate.convertAndSend(channel, chatMessageToChatNotification.convert(chatMessage));
     }
