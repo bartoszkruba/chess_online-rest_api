@@ -5,5 +5,5 @@
 package com.company.chess_online_bakend_api.data.notification.enums;
 
 public enum NotificationType {
-    CHAT_MESSAGE
+    CHAT_MESSAGE, JOIN_GAME
 }
