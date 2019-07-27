@@ -15,7 +15,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-public class ChessOnlineBakendApiApplicationTests {
+public class ChessOnlineRestApiApplicationTests {
 
     @Test
     public void contextLoads() {

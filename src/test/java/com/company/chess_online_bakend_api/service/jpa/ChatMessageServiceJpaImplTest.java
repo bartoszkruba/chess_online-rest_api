@@ -22,6 +22,7 @@ import com.company.chess_online_bakend_api.data.repository.RoomRepository;
 import com.company.chess_online_bakend_api.data.repository.UserRepository;
 import com.company.chess_online_bakend_api.exception.RoomNotFoundException;
 import com.company.chess_online_bakend_api.exception.UserNotFoundException;
+import com.company.chess_online_bakend_api.service.SocketService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -54,6 +55,9 @@ class ChatMessageServiceJpaImplTest {
     @Mock
     ChatMessageToChatMessageCommand chatMessageToChatMessageCommand;
 
+    @Mock
+    SocketService socketService;
+
     @InjectMocks
     ChatMessageServiceJpaImpl chatMessageService;
 
@@ -64,7 +68,7 @@ class ChatMessageServiceJpaImplTest {
 
     @Test
     void getMessageCountForRoom() {
-        Room room = Room.builder().id(1L).build();
+        var room = Room.builder().id(1L).build();
 
         when(roomRepository.findById(1L)).thenReturn(Optional.of(room));
 
@@ -82,12 +86,12 @@ class ChatMessageServiceJpaImplTest {
 
         verifyZeroInteractions(chatMessageToChatMessageCommand);
 
-        // TODO: 2019-07-27 verify socketService
+        verifyZeroInteractions(socketService);
     }
 
     @Test
     void getMessageCountForRoomInvalidId() {
-        Room room = Room.builder().id(1L).build();
+        var room = Room.builder().id(1L).build();
 
         when(roomRepository.findById(1L)).thenReturn(Optional.empty());
 
@@ -104,20 +108,18 @@ class ChatMessageServiceJpaImplTest {
 
         verifyZeroInteractions(chatMessageToChatMessageCommand);
 
-        // TODO: 2019-07-27 verify socketService
+        verifyZeroInteractions(socketService);
     }
 
     @Test
     void getMessagePageForRoom() {
-        ChatMessage chatMessage1 = ChatMessage.builder().id(1L).build();
-        ChatMessage chatMessage2 = ChatMessage.builder().id(2L).build();
+        var chatMessage1 = ChatMessage.builder().id(1L).build();
+        var chatMessage2 = ChatMessage.builder().id(2L).build();
 
         List<ChatMessage> messages = Arrays.asList(chatMessage1, chatMessage2);
         Page messagesPage = new PageImpl(messages);
 
-        Room room = Room.builder().id(1L).build();
-
-//        Pageable pageRequest = PageRequest.of(0, 10, Sort.by("created").ascending());
+        var room = Room.builder().id(1L).build();
 
         when(roomRepository.findById(1L)).thenReturn(Optional.of(room));
         when(chatMessageRepository.findByRoom(any(), any())).thenReturn(messagesPage);
@@ -143,7 +145,7 @@ class ChatMessageServiceJpaImplTest {
         verify(chatMessageToChatMessageCommand, times(1)).convert(chatMessage2);
         verifyNoMoreInteractions(chatMessageToChatMessageCommand);
 
-        // TODO: 2019-07-27 verify socketService
+        verifyZeroInteractions(socketService);
     }
 
     @Test
@@ -162,7 +164,7 @@ class ChatMessageServiceJpaImplTest {
 
         verifyZeroInteractions(chatMessageToChatMessageCommand);
 
-        // TODO: 2019-07-27 verify socketService
+        verifyZeroInteractions(socketService);
     }
 
     @Test
@@ -184,7 +186,7 @@ class ChatMessageServiceJpaImplTest {
 
         verifyZeroInteractions(chatMessageToChatMessageCommand);
 
-        // TODO: 2019-07-27 verify socketService
+        verifyZeroInteractions(socketService);
     }
 
     @Test
@@ -208,7 +210,7 @@ class ChatMessageServiceJpaImplTest {
 
         verifyZeroInteractions(chatMessageToChatMessageCommand);
 
-        // TODO: 2019-07-27 verify socketService
+        verifyZeroInteractions(socketService);
     }
 
     @Test
@@ -220,13 +222,13 @@ class ChatMessageServiceJpaImplTest {
         User user = User.builder().id(1L).username(username).build();
         Room room = Room.builder().id(roomId).build();
 
-        ChatMessage createdMessage = ChatMessage.builder()
+        var createdMessage = ChatMessage.builder()
                 .message(message)
                 .user(user)
                 .room(room)
                 .build();
 
-        ChatMessage savedMessage = ChatMessage.builder()
+        var savedMessage = ChatMessage.builder()
                 .message(message)
                 .user(user)
                 .room(room)
@@ -234,14 +236,14 @@ class ChatMessageServiceJpaImplTest {
                 .id(4L)
                 .build();
 
-        ChatMessageCommand convertedMessage = ChatMessageCommand.builder().id(5L).build();
+        var convertedMessage = ChatMessageCommand.builder().id(5L).build();
 
         when(userRepository.findByUsernameLike(username)).thenReturn(Optional.of(user));
         when(roomRepository.findById(roomId)).thenReturn(Optional.of(room));
         when(chatMessageRepository.save(createdMessage)).thenReturn(savedMessage);
         when(chatMessageToChatMessageCommand.convert(savedMessage)).thenReturn(convertedMessage);
 
-        ChatMessageCommand chatMessageCommand = chatMessageService.createNewMessage(message, username, roomId);
+        var chatMessageCommand = chatMessageService.createNewMessage(message, username, roomId);
 
         assertEquals(convertedMessage, chatMessageCommand);
 
@@ -257,7 +259,8 @@ class ChatMessageServiceJpaImplTest {
         verify(chatMessageToChatMessageCommand, times(1)).convert(savedMessage);
         verifyNoMoreInteractions(chatMessageToChatMessageCommand);
 
-        // TODO: 2019-07-27 verify socketService
+        verify(socketService, times(1)).notifyChatMessage(savedMessage);
+        verifyNoMoreInteractions(socketService);
     }
 
     @Test
@@ -266,16 +269,16 @@ class ChatMessageServiceJpaImplTest {
         String message = "       message               ";
         Long roomId = 1L;
 
-        User user = User.builder().id(1L).username(username).build();
+        var user = User.builder().id(1L).username(username).build();
         Room room = Room.builder().id(roomId).build();
 
-        ChatMessage createdMessage = ChatMessage.builder()
+        var createdMessage = ChatMessage.builder()
                 .message(message.trim())
                 .user(user)
                 .room(room)
                 .build();
 
-        ChatMessage savedMessage = ChatMessage.builder()
+        var savedMessage = ChatMessage.builder()
                 .message(message.trim())
                 .user(user)
                 .room(room)
@@ -283,14 +286,14 @@ class ChatMessageServiceJpaImplTest {
                 .id(4L)
                 .build();
 
-        ChatMessageCommand convertedMessage = ChatMessageCommand.builder().id(5L).build();
+        var convertedMessage = ChatMessageCommand.builder().id(5L).build();
 
         when(userRepository.findByUsernameLike(username)).thenReturn(Optional.of(user));
         when(roomRepository.findById(roomId)).thenReturn(Optional.of(room));
         when(chatMessageRepository.save(createdMessage)).thenReturn(savedMessage);
         when(chatMessageToChatMessageCommand.convert(savedMessage)).thenReturn(convertedMessage);
 
-        ChatMessageCommand chatMessageCommand = chatMessageService.createNewMessage(message, username, roomId);
+        var chatMessageCommand = chatMessageService.createNewMessage(message, username, roomId);
 
         assertEquals(convertedMessage, chatMessageCommand);
 
@@ -306,6 +309,7 @@ class ChatMessageServiceJpaImplTest {
         verify(chatMessageToChatMessageCommand, times(1)).convert(savedMessage);
         verifyNoMoreInteractions(chatMessageToChatMessageCommand);
 
-        // TODO: 2019-07-27 verify socketService
+        verify(socketService, times(1)).notifyChatMessage(savedMessage);
+        verifyNoMoreInteractions(socketService);
     }
 }

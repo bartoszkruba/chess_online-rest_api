@@ -10,12 +10,14 @@ package com.company.chess_online_bakend_api;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication
-public class ChessOnlineBakendApiApplication {
+@EnableAsync
+public class ChessOnlineRestApiApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(ChessOnlineBakendApiApplication.class, args);
+        SpringApplication.run(ChessOnlineRestApiApplication.class, args);
     }
 
 }
