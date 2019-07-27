@@ -259,7 +259,7 @@ class ChatMessageServiceJpaImplTest {
         verify(chatMessageToChatMessageCommand, times(1)).convert(savedMessage);
         verifyNoMoreInteractions(chatMessageToChatMessageCommand);
 
-        verify(socketService, times(1)).notifyChatMessage(savedMessage);
+        verify(socketService, times(1)).broadcastChatMessage(savedMessage);
         verifyNoMoreInteractions(socketService);
     }
 
@@ -309,7 +309,7 @@ class ChatMessageServiceJpaImplTest {
         verify(chatMessageToChatMessageCommand, times(1)).convert(savedMessage);
         verifyNoMoreInteractions(chatMessageToChatMessageCommand);
 
-        verify(socketService, times(1)).notifyChatMessage(savedMessage);
+        verify(socketService, times(1)).broadcastChatMessage(savedMessage);
         verifyNoMoreInteractions(socketService);
     }
 }

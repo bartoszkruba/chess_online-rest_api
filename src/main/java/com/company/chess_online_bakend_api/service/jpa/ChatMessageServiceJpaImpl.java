@@ -95,7 +95,7 @@ public class ChatMessageServiceJpaImpl implements ChatMessageService {
 
         var savedChatMessage = chatMessageRepository.save(chatMessage);
 
-        socketService.notifyChatMessage(savedChatMessage);
+        socketService.broadcastChatMessage(savedChatMessage);
 
         return chatMessageToChatMessageCommand.convert(savedChatMessage);
     }

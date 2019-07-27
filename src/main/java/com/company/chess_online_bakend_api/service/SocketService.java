@@ -8,5 +8,5 @@ import com.company.chess_online_bakend_api.data.model.ChatMessage;
 
 public interface SocketService {
 
-    void notifyChatMessage(ChatMessage chatMessage);
+    void broadcastChatMessage(ChatMessage chatMessage);
 }
