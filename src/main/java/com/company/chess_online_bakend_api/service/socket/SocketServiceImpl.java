@@ -10,6 +10,8 @@ package com.company.chess_online_bakend_api.service.socket;
 
 import com.company.chess_online_bakend_api.data.converter.notification.chatMessage.ChatMessageToChatNotification;
 import com.company.chess_online_bakend_api.data.model.ChatMessage;
+import com.company.chess_online_bakend_api.data.model.Game;
+import com.company.chess_online_bakend_api.data.model.User;
 import com.company.chess_online_bakend_api.service.SocketService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
@@ -38,5 +40,17 @@ public class SocketServiceImpl implements SocketService {
         String channel = "/topic/room/" + chatMessage.getRoom().getId();
 
         messagingTemplate.convertAndSend(channel, chatMessageToChatNotification.convert(chatMessage));
+    }
+
+    @Override
+    @Async
+    public void broadcastJoinGame(Game game, User user, Long roomId) {
+
+    }
+
+    @Override
+    @Async
+    public void broadcastLeaveGame(Game game, User user, Long roomId) {
+
     }
 }

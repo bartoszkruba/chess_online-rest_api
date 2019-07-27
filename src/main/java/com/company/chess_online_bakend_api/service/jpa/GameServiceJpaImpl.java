@@ -7,7 +7,6 @@ package com.company.chess_online_bakend_api.service.jpa;
 import com.company.chess_online_bakend_api.data.command.GameCommand;
 import com.company.chess_online_bakend_api.data.converter.command.game.GameCommandToGame;
 import com.company.chess_online_bakend_api.data.converter.command.game.GameToGameCommand;
-import com.company.chess_online_bakend_api.data.model.Game;
 import com.company.chess_online_bakend_api.data.model.Room;
 import com.company.chess_online_bakend_api.data.model.User;
 import com.company.chess_online_bakend_api.data.model.enums.GameStatus;
@@ -17,6 +16,7 @@ import com.company.chess_online_bakend_api.data.repository.RoomRepository;
 import com.company.chess_online_bakend_api.data.repository.UserRepository;
 import com.company.chess_online_bakend_api.exception.*;
 import com.company.chess_online_bakend_api.service.GameService;
+import com.company.chess_online_bakend_api.service.SocketService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,6 +28,8 @@ import java.util.Set;
 @Service
 public class GameServiceJpaImpl implements GameService {
 
+    private final SocketService socketService;
+
     private final GameRepository gameRepository;
     private final RoomRepository roomRepository;
     private final UserRepository userRepository;
@@ -36,9 +38,10 @@ public class GameServiceJpaImpl implements GameService {
     private final GameCommandToGame gameCommandToGame;
 
     @Autowired
-    public GameServiceJpaImpl(GameRepository gameRepository, RoomRepository roomRepository,
-                              UserRepository userRepository,
-                              GameToGameCommand gameToGameCommand, GameCommandToGame gameCommandToGame) {
+    public GameServiceJpaImpl(SocketService socketService, GameRepository gameRepository, RoomRepository roomRepository,
+                              UserRepository userRepository, GameToGameCommand gameToGameCommand,
+                              GameCommandToGame gameCommandToGame) {
+        this.socketService = socketService;
         this.gameRepository = gameRepository;
         this.roomRepository = roomRepository;
         this.userRepository = userRepository;
@@ -60,10 +63,10 @@ public class GameServiceJpaImpl implements GameService {
     public GameCommand joinGame(PieceColor color, String username, Long gameId) {
         log.debug(username + " joining game with id " + gameId + ", place " + color);
 
-        User user = userRepository.findByUsernameLike(username)
+        var user = userRepository.findByUsernameLike(username)
                 .orElseThrow(() -> new UserNotFoundException("User with username " + username + " does not exist"));
 
-        Game game = gameRepository.findById(gameId)
+        var game = gameRepository.findById(gameId)
                 .orElseThrow(() -> new GameNotFoundException("Game with id " + gameId + " does not exist"));
 
         if (game.getStatus() != GameStatus.WAITNG_TO_START) {
@@ -94,6 +97,9 @@ public class GameServiceJpaImpl implements GameService {
         } else {
             game.setBlackPlayer(user);
         }
+
+        // TODO: 2019-07-27 socket broadcast
+
         return gameToGameCommand.convert(gameRepository.save(game));
     }
 
@@ -101,10 +107,10 @@ public class GameServiceJpaImpl implements GameService {
     public GameCommand leaveGame(String username, Long gameId) {
         log.debug(username + " leaving game with id " + gameId);
 
-        User user = userRepository.findByUsernameLike(username)
+        var user = userRepository.findByUsernameLike(username)
                 .orElseThrow(() -> new UserNotFoundException("User with username " + username + " does not exist"));
 
-        Game game = gameRepository.findById(gameId)
+        var game = gameRepository.findById(gameId)
                 .orElseThrow(() -> new GameNotFoundException("Game with id " + gameId + " does not exist"));
 
         if (game.getWhitePlayer() != null && game.getWhitePlayer().getId() != null &&
@@ -121,7 +127,7 @@ public class GameServiceJpaImpl implements GameService {
             game.setStatus(GameStatus.STOPPED);
         }
 
-        System.out.println(game);
+        socketService.broadcastLeaveGame(game, user, game.getRoom().getId());
 
         return gameToGameCommand.convert(gameRepository.save(game));
     }

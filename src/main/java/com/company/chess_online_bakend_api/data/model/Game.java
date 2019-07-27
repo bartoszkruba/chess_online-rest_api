@@ -23,7 +23,7 @@ import java.util.List;
 @NoArgsConstructor
 public class Game extends BaseEntity {
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     private Room room;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
