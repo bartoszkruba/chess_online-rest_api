@@ -1,3 +1,15 @@
+/*
+ * 7/26/19 7:15 PM. Created by Bartosz Kruba.
+ */
+
+/*
+ * 7/26/19 7:12 PM. Created by Bartosz Kruba.
+ */
+
+/*
+ * 7/26/19 7:10 PM. Created by Bartosz Kruba.
+ */
+
 package com.company.chess_online_bakend_api.bootstrap.dev;
 
 import com.company.chess_online_bakend_api.data.model.Room;
@@ -11,6 +23,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+
 
 @Slf4j
 @Component

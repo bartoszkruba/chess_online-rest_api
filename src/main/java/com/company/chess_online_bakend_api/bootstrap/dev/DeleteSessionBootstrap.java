@@ -1,3 +1,17 @@
+
+
+/*
+ * 7/26/19 7:15 PM. Created by Bartosz Kruba.
+ */
+
+/*
+ * 7/26/19 7:12 PM. Created by Bartosz Kruba.
+ */
+
+/*
+ * 7/26/19 7:10 PM. Created by Bartosz Kruba.
+ */
+
 package com.company.chess_online_bakend_api.bootstrap.dev;
 
 
@@ -10,6 +24,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+
 
 @Slf4j
 @Component

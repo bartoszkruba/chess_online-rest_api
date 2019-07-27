@@ -1,3 +1,11 @@
+/*
+ * 7/26/19 7:15 PM. Created by Bartosz Kruba.
+ */
+
+/*
+ * 7/26/19 7:12 PM. Created by Bartosz Kruba.
+ */
+
 package com.company.chess_online_bakend_api.controller;
 
 import com.company.chess_online_bakend_api.controller.propertyEditor.PieceColorPropertyEditor;
@@ -111,7 +119,7 @@ public class GameController {
     }
 
     @ApiOperation(value = "Get all moves for game",
-            notes = "Retruns 404 NOT FOUND if game does not exist")
+            notes = "Returns 404 NOT FOUND if game does not exist")
     @GetMapping({"{id}/moves", "{id}/moves/"})
     @ResponseStatus(HttpStatus.OK)
     public List<MoveCommand> getMoves(@PathVariable Long id) {

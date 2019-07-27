@@ -1,6 +1,15 @@
+/*
+ * 7/26/19 7:15 PM. Created by Bartosz Kruba.
+ */
+
+/*
+ * 7/26/19 7:12 PM. Created by Bartosz Kruba.
+ */
+
 package com.company.chess_online_bakend_api.data.converter.user;
 
 import com.company.chess_online_bakend_api.data.command.UserCommand;
+import com.company.chess_online_bakend_api.data.converter.command.user.UserCommandToUser;
 import com.company.chess_online_bakend_api.data.model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

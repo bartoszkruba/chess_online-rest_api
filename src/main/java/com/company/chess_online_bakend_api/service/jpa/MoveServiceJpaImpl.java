@@ -1,9 +1,17 @@
+/*
+ * 7/26/19 7:15 PM. Created by Bartosz Kruba.
+ */
+
+/*
+ * 7/26/19 7:12 PM. Created by Bartosz Kruba.
+ */
+
 package com.company.chess_online_bakend_api.service.jpa;
 
 import com.company.chess_online_bakend_api.data.command.MoveCommand;
-import com.company.chess_online_bakend_api.data.converter.game.GameCommandToGame;
-import com.company.chess_online_bakend_api.data.converter.game.GameToGameCommand;
-import com.company.chess_online_bakend_api.data.converter.move.MoveToMoveCommand;
+import com.company.chess_online_bakend_api.data.converter.command.game.GameCommandToGame;
+import com.company.chess_online_bakend_api.data.converter.command.game.GameToGameCommand;
+import com.company.chess_online_bakend_api.data.converter.command.move.MoveToMoveCommand;
 import com.company.chess_online_bakend_api.data.model.*;
 import com.company.chess_online_bakend_api.data.model.enums.GameStatus;
 import com.company.chess_online_bakend_api.data.model.enums.HorizontalPosition;
