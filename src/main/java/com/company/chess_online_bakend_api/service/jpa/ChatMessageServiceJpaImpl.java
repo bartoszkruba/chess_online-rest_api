@@ -85,7 +85,7 @@ public class ChatMessageServiceJpaImpl implements ChatMessageService {
                 .orElseThrow(() -> new RoomNotFoundException("Room with id " + roomId + " does not exist."));
 
         ChatMessage chatMessage = ChatMessage.builder()
-                .message(message)
+                .message(message.trim())
                 .user(user)
                 .room(room)
                 .build();

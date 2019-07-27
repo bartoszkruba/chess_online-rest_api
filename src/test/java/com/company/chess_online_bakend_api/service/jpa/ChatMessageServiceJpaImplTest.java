@@ -245,4 +245,51 @@ class ChatMessageServiceJpaImplTest {
         verify(chatMessageToChatMessageCommand, times(1)).convert(savedMessage);
         verifyNoMoreInteractions(chatMessageToChatMessageCommand);
     }
+
+    @Test
+    void createNewMessageTrimTest() {
+        String username = "username";
+        String message = "       message               ";
+        Long roomId = 1L;
+
+        User user = User.builder().id(1L).username(username).build();
+        Room room = Room.builder().id(roomId).build();
+
+        ChatMessage createdMessage = ChatMessage.builder()
+                .message(message.trim())
+                .user(user)
+                .room(room)
+                .build();
+
+        ChatMessage savedMessage = ChatMessage.builder()
+                .message(message.trim())
+                .user(user)
+                .room(room)
+                .created(LocalDateTime.now())
+                .id(4L)
+                .build();
+
+        ChatMessageCommand convertedMessage = ChatMessageCommand.builder().id(5L).build();
+
+        when(userRepository.findByUsernameLike(username)).thenReturn(Optional.of(user));
+        when(roomRepository.findById(roomId)).thenReturn(Optional.of(room));
+        when(chatMessageRepository.save(createdMessage)).thenReturn(savedMessage);
+        when(chatMessageToChatMessageCommand.convert(savedMessage)).thenReturn(convertedMessage);
+
+        ChatMessageCommand chatMessageCommand = chatMessageService.createNewMessage(message, username, roomId);
+
+        assertEquals(convertedMessage, chatMessageCommand);
+
+        verify(userRepository, times(1)).findByUsernameLike(username);
+        verifyNoMoreInteractions(userRepository);
+
+        verify(roomRepository, times(1)).findById(roomId);
+        verifyNoMoreInteractions(roomRepository);
+
+        verify(chatMessageRepository, times(1)).save(createdMessage);
+        verifyNoMoreInteractions(chatMessageRepository);
+
+        verify(chatMessageToChatMessageCommand, times(1)).convert(savedMessage);
+        verifyNoMoreInteractions(chatMessageToChatMessageCommand);
+    }
 }

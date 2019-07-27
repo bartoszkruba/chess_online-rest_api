@@ -15,11 +15,11 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import java.security.Principal;
 import java.util.List;
 
 @Slf4j
@@ -53,5 +53,19 @@ public class ChatMessageController {
         log.debug("New request: Get " + RoomController.BASE_URL + id + "/message/page/" + page);
 
         return chatMessageService.getMessagePageForRoom(id, page);
+    }
+
+    @ApiOperation(value = "Create new message.",
+            notes = "Returns 404 NOT FOUND if roomId or username does not exist. \n" +
+                    "Restricted to logged users")
+    @PostMapping({RoomController.BASE_URL + "{id}/message", RoomController.BASE_URL + "{id}/message/"})
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
+    @ResponseStatus(HttpStatus.CREATED)
+    public ChatMessageCommand createChatMessage(@PathVariable Long id,
+                                                @Valid @RequestBody ChatMessageCommand chatMessageCommand,
+                                                Principal principal) {
+        log.debug("New request: POST " + RoomController.BASE_URL + id + "/message");
+
+        return chatMessageService.createNewMessage(chatMessageCommand.getMessage(), principal.getName(), id);
     }
 }

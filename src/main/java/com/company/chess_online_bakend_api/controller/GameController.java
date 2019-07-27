@@ -119,7 +119,7 @@ public class GameController {
     }
 
     @ApiOperation(value = "Get all moves for game",
-            notes = "Retruns 404 NOT FOUND if game does not exist")
+            notes = "Returns 404 NOT FOUND if game does not exist")
     @GetMapping({"{id}/moves", "{id}/moves/"})
     @ResponseStatus(HttpStatus.OK)
     public List<MoveCommand> getMoves(@PathVariable Long id) {
