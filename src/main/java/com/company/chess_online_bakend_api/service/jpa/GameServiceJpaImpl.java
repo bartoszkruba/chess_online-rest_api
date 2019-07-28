@@ -16,7 +16,7 @@ import com.company.chess_online_bakend_api.data.repository.RoomRepository;
 import com.company.chess_online_bakend_api.data.repository.UserRepository;
 import com.company.chess_online_bakend_api.exception.*;
 import com.company.chess_online_bakend_api.service.GameService;
-import com.company.chess_online_bakend_api.service.SocketService;
+import com.company.chess_online_bakend_api.service.socket.SocketService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -98,7 +98,7 @@ public class GameServiceJpaImpl implements GameService {
             game.setBlackPlayer(user);
         }
 
-        // TODO: 2019-07-27 socket broadcast
+        socketService.broadcastJoinGame(user, gameId, color, game.getFenNotation(), game.getRoom().getId());
 
         return gameToGameCommand.convert(gameRepository.save(game));
     }
@@ -113,23 +113,30 @@ public class GameServiceJpaImpl implements GameService {
         var game = gameRepository.findById(gameId)
                 .orElseThrow(() -> new GameNotFoundException("Game with id " + gameId + " does not exist"));
 
+        PieceColor color;
+
         if (game.getWhitePlayer() != null && game.getWhitePlayer().getId() != null &&
                 game.getWhitePlayer().getId().equals(user.getId())) {
             game.setWhitePlayer(null);
+            color = PieceColor.WHITE;
         } else if (game.getBlackPlayer() != null && game.getBlackPlayer().getId() != null &&
                 game.getBlackPlayer().getId().equals(user.getId())) {
             game.setBlackPlayer(null);
+            color = PieceColor.BLACK;
         } else {
             throw new UserNotFoundException("You have not joined game with id " + gameId);
         }
 
         if (game.getStatus() != GameStatus.WAITNG_TO_START) {
             game.setStatus(GameStatus.STOPPED);
+            // TODO: 2019-07-28 startNewGame
+            // TODO: 2019-07-28 broadcast game over notification
+            // TODO: 2019-07-28 write tests
+            return gameToGameCommand.convert(game);
+        } else {
+            socketService.broadcastLeaveGame(user, gameId, color, game.getFenNotation(), game.getRoom().getId());
+            return gameToGameCommand.convert(gameRepository.save(game));
         }
-
-        socketService.broadcastLeaveGame(game, user, game.getRoom().getId());
-
-        return gameToGameCommand.convert(gameRepository.save(game));
     }
 
     @Override

@@ -22,7 +22,7 @@ import com.company.chess_online_bakend_api.data.repository.RoomRepository;
 import com.company.chess_online_bakend_api.data.repository.UserRepository;
 import com.company.chess_online_bakend_api.exception.RoomNotFoundException;
 import com.company.chess_online_bakend_api.exception.UserNotFoundException;
-import com.company.chess_online_bakend_api.service.SocketService;
+import com.company.chess_online_bakend_api.service.socket.SocketService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

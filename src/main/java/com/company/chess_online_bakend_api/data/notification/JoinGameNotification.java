@@ -14,12 +14,12 @@ import lombok.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonInclude
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class JoinGameNotification extends BaseNotification {
-    String fenNotation;
-    Long gameId;
-    UserNotification user;
-    PieceColor color;
+    private String fenNotation;
+    private Long gameId;
+    private UserNotification user;
+    private PieceColor color;
 
     @Builder
     public JoinGameNotification(Long gameId, UserNotification user, PieceColor color, String fenNotation) {
