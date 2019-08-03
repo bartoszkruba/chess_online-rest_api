@@ -9,6 +9,7 @@
 package com.company.chess_online_bakend_api.service.socket;
 
 import com.company.chess_online_bakend_api.data.model.ChatMessage;
+import com.company.chess_online_bakend_api.data.model.Move;
 import com.company.chess_online_bakend_api.data.model.User;
 import com.company.chess_online_bakend_api.data.model.enums.PieceColor;
 
@@ -19,4 +20,6 @@ public interface SocketService {
     void broadcastJoinGame(User user, Long gameId, PieceColor color, String fenNotation, Long roomId);
 
     void broadcastLeaveGame(User user, Long gameId, PieceColor color, String fenNotation, Long roomId);
+
+    void broadcastMove(Move move, Long roomId);
 }

@@ -5,9 +5,13 @@
 package com.company.chess_online_bakend_api.service.socket;
 
 import com.company.chess_online_bakend_api.data.model.ChatMessage;
+import com.company.chess_online_bakend_api.data.model.Move;
 import com.company.chess_online_bakend_api.data.model.Room;
 import com.company.chess_online_bakend_api.data.model.User;
+import com.company.chess_online_bakend_api.data.model.enums.HorizontalPosition;
 import com.company.chess_online_bakend_api.data.model.enums.PieceColor;
+import com.company.chess_online_bakend_api.data.model.enums.PieceType;
+import com.company.chess_online_bakend_api.data.model.enums.VerticalPosition;
 import com.company.chess_online_bakend_api.data.notification.ChatMessageNotification;
 import com.company.chess_online_bakend_api.data.notification.enums.NotificationType;
 import org.junit.jupiter.api.BeforeEach;
@@ -159,6 +163,71 @@ class SocketServiceImplIT {
         assertEquals(color.toString(), notification.get("color"));
         assertEquals(fenNotation, notification.get("fenNotation"));
         assertEquals(NotificationType.LEAVE_GAME.toString(), notification.get("notificationType"));
+    }
+
+    @Test
+    void sendMoveNotification() throws InterruptedException, ExecutionException, TimeoutException {
+        Long roomId = 1L;
+        var color = PieceColor.WHITE;
+        var time = LocalDateTime.now();
+        Long timestamp = time.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+        var hStart = HorizontalPosition.A;
+        var vStart = VerticalPosition.ONE;
+
+        var hEnd = HorizontalPosition.B;
+        var vEnd = VerticalPosition.TWO;
+
+        String startPosition = "A1";
+        String endPosition = "B2";
+
+        var pieceType = PieceType.KING;
+
+        Boolean isKingSideCastle = true;
+        Boolean isQueenSideCastle = true;
+        Boolean isKingAttacked = true;
+        Boolean isCheckmate = true;
+        Boolean isDraw = true;
+        int moveCount = 1;
+
+        var move = Move.builder()
+                .pieceColor(color)
+                .created(time)
+                .horizontalStartPosition(hStart)
+                .verticalStartPosition(vStart)
+                .horizontalEndPosition(hEnd)
+                .verticalEndPosition(vEnd)
+                .pieceType(pieceType)
+                .isQueenSideCastle(isQueenSideCastle)
+                .isKingSideCastle(isKingSideCastle)
+                .isKingAttacked(isKingAttacked)
+                .isCheckmate(isCheckmate)
+                .isDraw(isDraw)
+                .moveCount(moveCount).build();
+
+        WebSocketStompClient stompClient = new WebSocketStompClient(new SockJsClient(createTransportClient()));
+        stompClient.setMessageConverter(new MappingJackson2MessageConverter());
+
+        StompSession stompSession = stompClient.connect(URL, new StompSessionHandlerAdapter() {
+        }).get(1, SECONDS);
+
+        stompSession.subscribe("/topic/room/" + roomId,
+                new CreateNotificationStompFrameHandler(Object.class));
+
+        socketService.broadcastMove(move, roomId);
+
+        var notification = (Map) completableFuture.get(10, SECONDS);
+
+        assertEquals(color.toString(), notification.get("color").toString());
+        assertEquals(timestamp, notification.get("timestamp"));
+        assertEquals(startPosition, notification.get("from"));
+        assertEquals(endPosition, notification.get("to"));
+        assertEquals(pieceType.toString(), notification.get("pieceType"));
+        assertEquals(isQueenSideCastle, notification.get("isQueenSideCastle"));
+        assertEquals(isKingSideCastle, notification.get("isKingSideCastle"));
+        assertEquals(isKingAttacked, notification.get("isKingAttacked"));
+        assertEquals(isCheckmate, notification.get("isCheckmate"));
+        assertEquals(isDraw, notification.get("isDraw"));
+        assertEquals(moveCount, notification.get("moveCount"));
     }
 
     private List<Transport> createTransportClient() {

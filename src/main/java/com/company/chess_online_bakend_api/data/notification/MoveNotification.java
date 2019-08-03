@@ -8,10 +8,7 @@ import com.company.chess_online_bakend_api.data.model.enums.PieceColor;
 import com.company.chess_online_bakend_api.data.model.enums.PieceType;
 import com.company.chess_online_bakend_api.data.notification.enums.NotificationType;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
@@ -25,7 +22,7 @@ public class MoveNotification extends BaseNotification {
     private String from;
     private String to;
     private PieceColor color;
-    private PieceType type;
+    private PieceType pieceType;
     private Boolean isKingSideCastle;
     private Boolean isQueenSideCastle;
     private Boolean isKingAttacked;
@@ -33,8 +30,9 @@ public class MoveNotification extends BaseNotification {
     private Boolean isDraw;
     private Integer moveCount;
 
+    @Builder
     public MoveNotification(Long timestamp, String from, String to, PieceColor color,
-                            PieceType type, Boolean isKingSideCastle, Boolean isQueenSideCastle, Boolean isKingAttacked,
+                            PieceType pieceType, Boolean isKingSideCastle, Boolean isQueenSideCastle, Boolean isKingAttacked,
                             Boolean isCheckmate, Boolean isDraw, Integer moveCount) {
 
         super(NotificationType.MOVE);
@@ -42,7 +40,7 @@ public class MoveNotification extends BaseNotification {
         this.from = from;
         this.to = to;
         this.color = color;
-        this.type = type;
+        this.pieceType = pieceType;
         this.isKingSideCastle = isKingSideCastle;
         this.isQueenSideCastle = isQueenSideCastle;
         this.isKingAttacked = isKingAttacked;

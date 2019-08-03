@@ -45,12 +45,11 @@ class MoveToMoveNotificationTest {
 
         var moveNotification = moveToMoveNotification.convert(Move.builder().build());
 
-        assertNull(moveNotification.getId());
-        assertNull(moveNotification.getCount());
+        assertNull(moveNotification.getMoveCount());
         assertNull(moveNotification.getTimestamp());
         assertNull(moveNotification.getFrom());
         assertNull(moveNotification.getTo());
-        assertNull(moveNotification.getPieceColor());
+        assertNull(moveNotification.getColor());
         assertNull(moveNotification.getPieceType());
         assertNull(moveNotification.getIsKingSideCastle());
         assertNull(moveNotification.getIsQueenSideCastle());
@@ -81,12 +80,11 @@ class MoveToMoveNotificationTest {
 
         Long time = CREATION_TIME.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
 
-        assertEquals(MOVE_ID, moveNotification.getId());
-        assertEquals(COUNT, moveNotification.getCount());
+        assertEquals(COUNT, moveNotification.getMoveCount());
         assertEquals(time, moveNotification.getTimestamp());
         assertEquals("A1", moveNotification.getFrom());
         assertEquals("B2", moveNotification.getTo());
-        assertEquals(PieceColor.WHITE, moveNotification.getPieceColor());
+        assertEquals(PieceColor.WHITE, moveNotification.getColor());
         assertEquals(PieceType.QUEEN, moveNotification.getPieceType());
         assertEquals(true, moveNotification.getIsKingSideCastle());
         assertEquals(true, moveNotification.getIsQueenSideCastle());
