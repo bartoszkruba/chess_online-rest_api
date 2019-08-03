@@ -21,5 +21,11 @@ public interface SocketService {
 
     void broadcastLeaveGame(User user, Long gameId, PieceColor color, String fenNotation, Long roomId);
 
-    void broadcastMove(Move move, Long roomId);
+    void broadcastMove(Move move, String fenNotation, Long gameId, Long roomId);
+
+    void broadcastGameOverWithDraw(String fenNotation, Long gameId, Long roomId);
+
+    void broadcastGameOverWithCheckmate(User winner, PieceColor winnerColor, String fenNotation, Long gameId, Long roomId);
+
+    void broadcastGameOverWithPlayerLeft(User winner, PieceColor winnerColor, String fenNotation, Long gameId, Long roomId);
 }

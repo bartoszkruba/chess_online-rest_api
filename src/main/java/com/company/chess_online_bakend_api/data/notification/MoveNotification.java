@@ -17,6 +17,8 @@ import lombok.*;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class MoveNotification extends BaseNotification {
 
+    private Long gameId;
+
     private Long timestamp;
 
     private String from;
@@ -30,10 +32,12 @@ public class MoveNotification extends BaseNotification {
     private Boolean isDraw;
     private Integer moveCount;
 
+    private String fenNotation;
+
     @Builder
     public MoveNotification(Long timestamp, String from, String to, PieceColor color,
                             PieceType pieceType, Boolean isKingSideCastle, Boolean isQueenSideCastle, Boolean isKingAttacked,
-                            Boolean isCheckmate, Boolean isDraw, Integer moveCount) {
+                            Boolean isCheckmate, Boolean isDraw, Integer moveCount, String fenNotation, Long gameId) {
 
         super(NotificationType.MOVE);
         this.timestamp = timestamp;
@@ -47,5 +51,7 @@ public class MoveNotification extends BaseNotification {
         this.isCheckmate = isCheckmate;
         this.isDraw = isDraw;
         this.moveCount = moveCount;
+        this.fenNotation = fenNotation;
+        this.gameId = gameId;
     }
 }

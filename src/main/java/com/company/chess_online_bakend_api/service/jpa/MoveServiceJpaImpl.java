@@ -239,7 +239,7 @@ public class MoveServiceJpaImpl implements MoveService {
                     .stream().max(Comparator.comparing(BaseEntity::getCreated))
                     .orElseThrow(() -> new RuntimeException("Something went really wrong with game and move logic"));
 
-            socketService.broadcastMove(savedMove, game.getRoom().getId());
+            socketService.broadcastMove(savedMove, game.getFenNotation(), game.getId(), game.getRoom().getId());
 
             return moveToMoveCommand.convert(savedMove);
 
@@ -263,7 +263,7 @@ public class MoveServiceJpaImpl implements MoveService {
                     .stream().max(Comparator.comparing(BaseEntity::getCreated))
                     .orElseThrow(() -> new RuntimeException("Something went really wrong with game and move logic"));
 
-            socketService.broadcastMove(savedMove, game.getRoom().getId());
+            socketService.broadcastMove(savedMove, game.getFenNotation(), game.getId(), game.getRoom().getId());
 
             return moveToMoveCommand.convert(savedMove);
 
@@ -278,7 +278,7 @@ public class MoveServiceJpaImpl implements MoveService {
                 .stream().max(Comparator.comparing(BaseEntity::getCreated))
                 .orElseThrow(() -> new RuntimeException("Something went really wrong with game and move logic"));
 
-        socketService.broadcastMove(savedMove, game.getRoom().getId());
+        socketService.broadcastMove(savedMove, game.getFenNotation(), game.getId(), game.getRoom().getId());
 
         return moveToMoveCommand.convert(savedMove);
     }

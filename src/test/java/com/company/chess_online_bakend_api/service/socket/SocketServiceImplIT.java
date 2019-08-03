@@ -189,6 +189,9 @@ class SocketServiceImplIT {
         Boolean isDraw = true;
         int moveCount = 1;
 
+        String fenNotation = "notation";
+        Long gameId = 1L;
+
         var move = Move.builder()
                 .pieceColor(color)
                 .created(time)
@@ -213,10 +216,11 @@ class SocketServiceImplIT {
         stompSession.subscribe("/topic/room/" + roomId,
                 new CreateNotificationStompFrameHandler(Object.class));
 
-        socketService.broadcastMove(move, roomId);
+        socketService.broadcastMove(move, fenNotation, gameId, roomId);
 
         var notification = (Map) completableFuture.get(10, SECONDS);
 
+        assertEquals(NotificationType.MOVE.toString(), notification.get("notificationType"));
         assertEquals(color.toString(), notification.get("color").toString());
         assertEquals(timestamp, notification.get("timestamp"));
         assertEquals(startPosition, notification.get("from"));
@@ -228,6 +232,8 @@ class SocketServiceImplIT {
         assertEquals(isCheckmate, notification.get("isCheckmate"));
         assertEquals(isDraw, notification.get("isDraw"));
         assertEquals(moveCount, notification.get("moveCount"));
+        assertEquals(fenNotation, notification.get("fenNotation"));
+        assertEquals(gameId.intValue(), notification.get("gameId"));
     }
 
     private List<Transport> createTransportClient() {

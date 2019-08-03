@@ -97,17 +97,40 @@ public class SocketServiceImpl implements SocketService {
 
     @Override
     @Async
-    public void broadcastMove(Move move, Long roomId) {
+    public void broadcastMove(Move move, String fenNotation, Long gameId, Long roomId) {
         String channel = "/topic/room/" + roomId;
 
         log.debug("Broadcasting Move to room " + channel);
 
         if (roomId == null) {
-            log.error("Trying to send Move Notification with null roomId");
+            log.error("Trying to send MoveNotification with null roomId");
+            return;
+        }
+
+        if (move == null) {
+            log.error("Trying to send MoveNotification with null move");
+            return;
         }
 
         var moveNotification = moveToMoveNotification.convert(move);
+        moveNotification.setFenNotation(fenNotation);
+        moveNotification.setGameId(gameId);
 
         messagingTemplate.convertAndSend(channel, moveNotification);
+    }
+
+    @Override
+    public void broadcastGameOverWithDraw(String fenNotation, Long gameId, Long roomId) {
+
+    }
+
+    @Override
+    public void broadcastGameOverWithCheckmate(User winner, PieceColor winnerColor, String fenNotation, Long gameId, Long roomId) {
+
+    }
+
+    @Override
+    public void broadcastGameOverWithPlayerLeft(User winner, PieceColor winnerColor, String fenNotation, Long gameId, Long roomId) {
+
     }
 }

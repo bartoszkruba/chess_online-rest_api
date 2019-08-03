@@ -473,7 +473,7 @@ class MoveServiceJpaImplTest {
         verify(moveToMoveCommand, times(1)).convert(gameAfterMove.getMoves().get(0));
         verifyNoMoreInteractions(moveToMoveCommand);
 
-        verify(socketService, times(1)).broadcastMove(generatedMove, 3L);
+        verify(socketService, times(1)).broadcastMove(generatedMove, "rnbqkbnr/pppppppp/8/8/8/3P4/PPP1PPPP/RNBQKBNR b KQkq - 0 1", gameAfterMove.getId(), 3L);
         verifyNoMoreInteractions(socketService);
     }
 
@@ -559,7 +559,7 @@ class MoveServiceJpaImplTest {
         verify(moveToMoveCommand, times(1)).convert(gameAfterMove.getMoves().get(0));
         verifyNoMoreInteractions(moveToMoveCommand);
 
-        verify(socketService, times(1)).broadcastMove(generatedMove, 3L);
+        verify(socketService, times(1)).broadcastMove(generatedMove, "rnbqkbnr/ppp1pppp/3p4/8/8/3P4/PPP1PPPP/RNBQKBNR w KQkq - 0 2", gameAfterMove.getId(), 3L);
         verifyNoMoreInteractions(socketService);
     }
 
@@ -629,7 +629,8 @@ class MoveServiceJpaImplTest {
         verify(moveToMoveCommand, times(1)).convert(gameAfterMove.getMoves().get(0));
         verifyNoMoreInteractions(moveToMoveCommand);
 
-        verify(socketService, times(1)).broadcastMove(generatedMove, 3L);
+        verify(socketService, times(1)).broadcastMove(generatedMove, board.getFen(),
+                gameAfterMove.getId(), 3L);
         verifyNoMoreInteractions(socketService);
     }
 
@@ -703,7 +704,8 @@ class MoveServiceJpaImplTest {
         verify(moveToMoveCommand, times(1)).convert(gameAfterMove.getMoves().get(0));
         verifyNoMoreInteractions(moveToMoveCommand);
 
-        verify(socketService, times(1)).broadcastMove(generatedMove, 3L);
+        verify(socketService, times(1)).broadcastMove(generatedMove, board.getFen(),
+                gameAfterMove.getId(), 3L);
         verifyNoMoreInteractions(socketService);
     }
 
