@@ -24,6 +24,7 @@ import com.company.chess_online_bakend_api.exception.GameNotFoundException;
 import com.company.chess_online_bakend_api.exception.InvalidMoveException;
 import com.company.chess_online_bakend_api.exception.UserNotFoundException;
 import com.company.chess_online_bakend_api.service.MoveService;
+import com.company.chess_online_bakend_api.service.socket.SocketService;
 import com.company.chess_online_bakend_api.util.BoardUtil;
 import com.company.chess_online_bakend_api.util.GameUtil;
 import com.company.chess_online_bakend_api.util.PositionUtils;
@@ -48,6 +49,8 @@ import java.util.stream.Stream;
 @Slf4j
 public class MoveServiceJpaImpl implements MoveService {
 
+    private final SocketService socketService;
+
     private final GameRepository gameRepository;
     private final UserRepository userRepository;
     private final RoomRepository roomRepository;
@@ -58,9 +61,10 @@ public class MoveServiceJpaImpl implements MoveService {
     private final MoveToMoveCommand moveToMoveCommand;
 
     @Autowired
-    public MoveServiceJpaImpl(GameRepository gameRepository, UserRepository userRepository,
+    public MoveServiceJpaImpl(SocketService socketService, GameRepository gameRepository, UserRepository userRepository,
                               RoomRepository roomRepository, GameToGameCommand gameToGameCommand,
                               GameCommandToGame gameCommandToGame, MoveToMoveCommand moveToMoveCommand) {
+        this.socketService = socketService;
         this.gameRepository = gameRepository;
         this.userRepository = userRepository;
         this.roomRepository = roomRepository;
@@ -220,6 +224,7 @@ public class MoveServiceJpaImpl implements MoveService {
                     .orElseThrow(() -> new RuntimeException("Something went wrong with game logic"));
             room.setGame(GameUtil.initNewGameBetweenPlayers(game.getWhitePlayer(), game.getBlackPlayer()));
 
+            // TODO: 2019-08-03 send game over notification
             // TODO: 2019-07-21 Archive old game
             game.setIsCheckmate(true);
             move.setIsCheckmate(true);
@@ -230,15 +235,20 @@ public class MoveServiceJpaImpl implements MoveService {
 
             roomRepository.save(room);
 
-            return moveToMoveCommand.convert(game.getMoves()
+            var savedMove = game.getMoves()
                     .stream().max(Comparator.comparing(BaseEntity::getCreated))
-                    .orElseThrow(() -> new RuntimeException("Something went really wrong with game and move logic")));
+                    .orElseThrow(() -> new RuntimeException("Something went really wrong with game and move logic"));
+
+            socketService.broadcastMove(savedMove, game.getRoom().getId());
+
+            return moveToMoveCommand.convert(savedMove);
 
         } else if (board.isDraw()) {
             Room room = roomRepository.findRoomByGame(game)
                     .orElseThrow(() -> new RuntimeException("Something went wrong with game logic"));
             room.setGame(GameUtil.initNewGameBetweenPlayers(game.getWhitePlayer(), game.getBlackPlayer()));
 
+            // TODO: 2019-08-03 send game over notification
             // TODO: 2019-07-21 Archive old game
             game.setIsDraw(true);
             move.setIsDraw(true);
@@ -249,9 +259,14 @@ public class MoveServiceJpaImpl implements MoveService {
 
             roomRepository.save(room);
 
-            return moveToMoveCommand.convert(game.getMoves()
+            var savedMove = game.getMoves()
                     .stream().max(Comparator.comparing(BaseEntity::getCreated))
-                    .orElseThrow(() -> new RuntimeException("Something went really wrong with game and move logic")));
+                    .orElseThrow(() -> new RuntimeException("Something went really wrong with game and move logic"));
+
+            socketService.broadcastMove(savedMove, game.getRoom().getId());
+
+            return moveToMoveCommand.convert(savedMove);
+
         } else if (board.isKingAttacked()) {
             game.setIsKingAttacked(true);
             move.setIsKingAttacked(true);
@@ -259,14 +274,13 @@ public class MoveServiceJpaImpl implements MoveService {
 
         gameRepository.save(game);
 
-
-        var moveCommand = moveToMoveCommand.convert(game.getMoves()
+        var savedMove = game.getMoves()
                 .stream().max(Comparator.comparing(BaseEntity::getCreated))
-                .orElseThrow(() -> new RuntimeException("Something went really wrong with game and move logic")));
+                .orElseThrow(() -> new RuntimeException("Something went really wrong with game and move logic"));
 
-        // TODO: 2019-07-20 send socket message about the game
+        socketService.broadcastMove(savedMove, game.getRoom().getId());
 
-        return moveCommand;
+        return moveToMoveCommand.convert(savedMove);
     }
 
     @Override

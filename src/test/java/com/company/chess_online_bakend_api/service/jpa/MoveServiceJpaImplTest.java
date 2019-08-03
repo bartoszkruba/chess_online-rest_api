@@ -22,6 +22,7 @@ import com.company.chess_online_bakend_api.exception.ForbiddenException;
 import com.company.chess_online_bakend_api.exception.GameNotFoundException;
 import com.company.chess_online_bakend_api.exception.InvalidMoveException;
 import com.company.chess_online_bakend_api.exception.UserNotFoundException;
+import com.company.chess_online_bakend_api.service.socket.SocketService;
 import com.company.chess_online_bakend_api.util.GameUtil;
 import com.github.bhlangonijr.chesslib.Board;
 import com.github.bhlangonijr.chesslib.Square;
@@ -42,6 +43,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class MoveServiceJpaImplTest {
+
+    @Mock
+    SocketService socketService;
 
     @Mock
     GameRepository gameRepository;
@@ -81,6 +85,8 @@ class MoveServiceJpaImplTest {
 
         verify(gameRepository, times(1)).findById(1L);
         verifyNoMoreInteractions(gameRepository);
+
+        verifyZeroInteractions(socketService);
     }
 
     @Test
@@ -101,6 +107,8 @@ class MoveServiceJpaImplTest {
 
         verify(gameRepository, times(1)).findById(1L);
         verifyNoMoreInteractions(gameRepository);
+
+        verifyZeroInteractions(socketService);
     }
 
     @Test
@@ -111,6 +119,8 @@ class MoveServiceJpaImplTest {
         assertThrows(GameNotFoundException.class, () -> moveService.getPossibleMoves(null, 1L));
         verify(gameRepository, times(1)).findById(1L);
         verifyNoMoreInteractions(gameRepository);
+
+        verifyZeroInteractions(socketService);
     }
 
     @Test
@@ -126,6 +136,8 @@ class MoveServiceJpaImplTest {
         verifyZeroInteractions(userRepository);
         verifyZeroInteractions(roomRepository);
         verifyZeroInteractions(moveToMoveCommand);
+
+        verifyZeroInteractions(socketService);
     }
 
     @Test
@@ -147,6 +159,8 @@ class MoveServiceJpaImplTest {
 
         verifyZeroInteractions(roomRepository);
         verifyZeroInteractions(moveToMoveCommand);
+
+        verifyZeroInteractions(socketService);
     }
 
     @Test
@@ -173,6 +187,8 @@ class MoveServiceJpaImplTest {
         verifyZeroInteractions(roomRepository);
 
         verifyZeroInteractions(moveToMoveCommand);
+
+        verifyZeroInteractions(socketService);
     }
 
     @Test
@@ -199,6 +215,8 @@ class MoveServiceJpaImplTest {
         verifyZeroInteractions(roomRepository);
 
         verifyZeroInteractions(moveToMoveCommand);
+
+        verifyZeroInteractions(socketService);
     }
 
     @Test
@@ -227,6 +245,8 @@ class MoveServiceJpaImplTest {
         verifyZeroInteractions(roomRepository);
 
         verifyZeroInteractions(moveToMoveCommand);
+
+        verifyZeroInteractions(socketService);
     }
 
     @Test
@@ -258,6 +278,8 @@ class MoveServiceJpaImplTest {
         verifyZeroInteractions(roomRepository);
 
         verifyZeroInteractions(moveToMoveCommand);
+
+        verifyZeroInteractions(socketService);
     }
 
     @Test
@@ -289,6 +311,8 @@ class MoveServiceJpaImplTest {
         verifyZeroInteractions(roomRepository);
 
         verifyZeroInteractions(moveToMoveCommand);
+
+        verifyZeroInteractions(socketService);
     }
 
     @Test
@@ -321,6 +345,8 @@ class MoveServiceJpaImplTest {
         verifyZeroInteractions(roomRepository);
 
         verifyZeroInteractions(moveToMoveCommand);
+
+        verifyZeroInteractions(socketService);
     }
 
     @Test
@@ -353,6 +379,8 @@ class MoveServiceJpaImplTest {
         verifyZeroInteractions(roomRepository);
 
         verifyZeroInteractions(moveToMoveCommand);
+
+        verifyZeroInteractions(socketService);
     }
 
     @Test
@@ -381,6 +409,8 @@ class MoveServiceJpaImplTest {
         verifyZeroInteractions(roomRepository);
 
         verifyZeroInteractions(moveToMoveCommand);
+
+        verifyZeroInteractions(socketService);
     }
 
     @Test
@@ -392,6 +422,7 @@ class MoveServiceJpaImplTest {
 
         Game game = GameUtil.initNewGameBetweenPlayers(user2, user1);
         game.setId(3L);
+        game.setRoom(Room.builder().id(3L).build());
 
         when(gameRepository.findById(3L)).thenReturn(Optional.of(game));
         when(userRepository.findByUsernameLike(username)).thenReturn(Optional.of(user2));
@@ -409,6 +440,7 @@ class MoveServiceJpaImplTest {
         gameAfterMove.setFenNotation("rnbqkbnr/pppppppp/8/8/8/3P4/PPP1PPPP/RNBQKBNR b KQkq - 0 1");
         gameAfterMove.increaseTurnCount();
         gameAfterMove.setStatus(GameStatus.STARTED);
+        gameAfterMove.setRoom(Room.builder().id(3L).build());
         Move generatedMove = Move.builder()
                 .moveCount(1)
                 .pieceColor(PieceColor.WHITE)
@@ -440,6 +472,9 @@ class MoveServiceJpaImplTest {
 
         verify(moveToMoveCommand, times(1)).convert(gameAfterMove.getMoves().get(0));
         verifyNoMoreInteractions(moveToMoveCommand);
+
+        verify(socketService, times(1)).broadcastMove(generatedMove, 3L);
+        verifyNoMoreInteractions(socketService);
     }
 
     @Test
@@ -459,6 +494,7 @@ class MoveServiceJpaImplTest {
                     piece.setVerticalPosition(VerticalPosition.THREE);
                     piece.increaseMoveCount();
                 });
+        game.setRoom(Room.builder().id(3L).build());
 
         game.setFenNotation("rnbqkbnr/pppppppp/8/8/8/3P4/PPP1PPPP/RNBQKBNR b KQkq - 0 1");
 
@@ -475,6 +511,7 @@ class MoveServiceJpaImplTest {
                     piece.setVerticalPosition(VerticalPosition.THREE);
                     piece.increaseMoveCount();
                 });
+        gameAfterMove.setRoom(Room.builder().id(3L).build());
 
         gameAfterMove.getBoard().getPieces()
                 .stream()
@@ -489,6 +526,7 @@ class MoveServiceJpaImplTest {
         gameAfterMove.increaseTurnCount();
         gameAfterMove.increaseTurnCount();
         gameAfterMove.setStatus(GameStatus.STARTED);
+        gameAfterMove.setRoom(Room.builder().id(3L).build());
         Move generatedMove = Move.builder()
                 .moveCount(1)
                 .pieceColor(PieceColor.BLACK)
@@ -520,6 +558,9 @@ class MoveServiceJpaImplTest {
 
         verify(moveToMoveCommand, times(1)).convert(gameAfterMove.getMoves().get(0));
         verifyNoMoreInteractions(moveToMoveCommand);
+
+        verify(socketService, times(1)).broadcastMove(generatedMove, 3L);
+        verifyNoMoreInteractions(socketService);
     }
 
     @Test
@@ -587,6 +628,9 @@ class MoveServiceJpaImplTest {
 
         verify(moveToMoveCommand, times(1)).convert(gameAfterMove.getMoves().get(0));
         verifyNoMoreInteractions(moveToMoveCommand);
+
+        verify(socketService, times(1)).broadcastMove(generatedMove, 3L);
+        verifyNoMoreInteractions(socketService);
     }
 
     @Test
@@ -658,12 +702,16 @@ class MoveServiceJpaImplTest {
 
         verify(moveToMoveCommand, times(1)).convert(gameAfterMove.getMoves().get(0));
         verifyNoMoreInteractions(moveToMoveCommand);
+
+        verify(socketService, times(1)).broadcastMove(generatedMove, 3L);
+        verifyNoMoreInteractions(socketService);
     }
 
     private Game generateCheckPossibleBoard(User white, User black) {
         Game game = GameUtil.initNewGameBetweenPlayers(white, black);
         game.setTurn(3);
         game.setStatus(GameStatus.STARTED);
+        game.setRoom(Room.builder().id(3L).build());
 
         Board board = new Board();
         board.doMove(new com.github.bhlangonijr.chesslib.move.Move(Square.C2, Square.C3));
@@ -681,6 +729,7 @@ class MoveServiceJpaImplTest {
         Game game = GameUtil.initNewGameBetweenPlayers(white, black);
         game.setTurn(4);
         game.setStatus(GameStatus.STARTED);
+        game.setRoom(Room.builder().id(3L).build());
 
         Board board = new Board();
         board.doMove(new com.github.bhlangonijr.chesslib.move.Move(Square.F2, Square.F3));
