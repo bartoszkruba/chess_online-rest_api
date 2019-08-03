@@ -1,4 +1,8 @@
 /*
+ * 8/3/19, 3:17 PM. Updated by Bartosz Kruba.
+ */
+
+/*
  * 7/26/19 7:15 PM. Created by Bartosz Kruba.
  */
 
@@ -6,56 +10,53 @@
  * 7/26/19 7:12 PM. Created by Bartosz Kruba.
  */
 
-package com.company.chess_online_bakend_api.data.converter.user;
+package com.company.chess_online_bakend_api.data.converter.command.user;
 
 import com.company.chess_online_bakend_api.data.command.UserCommand;
-import com.company.chess_online_bakend_api.data.converter.command.user.UserCommandToUser;
 import com.company.chess_online_bakend_api.data.model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class UserCommandToUserTest {
+class UserToUserCommandTest {
 
-    private static final Long USER_ID = 1L;
+    private final Long USER_ID = 1L;
     private static final String USERNAME = "john69";
     private static final String PASSWORD = "password1234";
     private static final String FIRST_NAME = "John";
-    private static final String LAST_NAME = "doe";
+    private static final String LAST_NAME = "Doe";
     private static final String EMAIL = "john.doe@gmail.com";
 
-    private UserCommandToUser commandToUser;
+    private UserToUserCommand userToUserCommand;
 
     @BeforeEach
     void setUp() {
-        commandToUser = new UserCommandToUser();
+        userToUserCommand = new UserToUserCommand();
     }
 
     @Test
     public void testNullObject() throws Exception {
-        assertNull(commandToUser.convert(null));
+        assertNull(userToUserCommand.convert(null));
     }
 
     @Test
-    public void testEmptyObject() throws Exception {
-        User convertedUser = commandToUser.convert(UserCommand.builder().build());
+    public void testConvertEmptyObject() throws Exception {
+        UserCommand convertedUser = userToUserCommand.convert(User.builder().build());
 
         assertNotNull(convertedUser);
+
         assertNull(convertedUser.getId());
         assertNull(convertedUser.getUsername());
-        assertNull(convertedUser.getEmail());
+//        assertNull(convertedUser.getPassword());
         assertNull(convertedUser.getFirstName());
         assertNull(convertedUser.getLastName());
-        assertNull(convertedUser.getPassword());
-        assertNull(convertedUser.getProfileImage());
-        assertNull(convertedUser.getCreated());
-        assertNull(convertedUser.getUpdated());
+        assertNull(convertedUser.getEmail());
     }
 
     @Test
-    public void testConvert() throws Exception {
-        UserCommand userToConvert = UserCommand.builder()
+    public void testConvertUser() throws Exception {
+        User userToConvert = User.builder()
                 .id(USER_ID)
                 .username(USERNAME)
                 .password(PASSWORD)
@@ -63,20 +64,17 @@ class UserCommandToUserTest {
                 .lastName(LAST_NAME)
                 .email(EMAIL).build();
 
-        User convertedUser = commandToUser.convert(userToConvert);
+        UserCommand convertedUser = userToUserCommand.convert(userToConvert);
+
+        assertNotNull(convertedUser);
 
         assertNotNull(convertedUser);
         assertEquals(USER_ID, convertedUser.getId());
         assertEquals(USERNAME, convertedUser.getUsername());
-        assertEquals(PASSWORD, convertedUser.getPassword());
         assertEquals(FIRST_NAME, convertedUser.getFirstName());
         assertEquals(LAST_NAME, convertedUser.getLastName());
         assertEquals(EMAIL, convertedUser.getEmail());
 
-        assertNull(convertedUser.getCreated());
-        assertNull(convertedUser.getUpdated());
-        assertNull(convertedUser.getProfileImage());
-
-        assertEquals(0, convertedUser.getRoles().size());
+        assertNull(convertedUser.getPassword());
     }
 }

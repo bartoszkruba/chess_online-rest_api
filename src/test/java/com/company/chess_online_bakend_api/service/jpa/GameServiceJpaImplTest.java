@@ -23,6 +23,7 @@ import com.company.chess_online_bakend_api.data.repository.RoomRepository;
 import com.company.chess_online_bakend_api.data.repository.UserRepository;
 import com.company.chess_online_bakend_api.exception.*;
 import com.company.chess_online_bakend_api.service.socket.SocketService;
+import com.company.chess_online_bakend_api.util.GameUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -691,16 +692,23 @@ class GameServiceJpaImplTest {
 
         var user = User.builder().id(1L).username(username).build();
 
+        var opponent = User.builder().id(5L).username("username").build();
+
         var joinedGame = Game.builder()
                 .id(1L)
+                .whitePlayer(opponent)
                 .blackPlayer(user)
                 .status(GameStatus.STARTED)
                 .room(ROOM).build();
 
         var gameToSave = Game.builder()
                 .id(1L)
+                .whitePlayer(opponent)
                 .status(GameStatus.STOPPED)
                 .room(ROOM).build();
+
+        var newGame = GameUtil.initNewGame();
+        newGame.setWhitePlayer(opponent);
 
         var gameWithoutPlayer = GameCommand.builder()
                 .id(1L)
@@ -719,7 +727,7 @@ class GameServiceJpaImplTest {
         verifyNoMoreInteractions(userRepository);
 
         verify(gameRepository, times(1)).findById(1L);
-        verify(gameRepository, times(1)).save(gameToSave);
+        verify(gameRepository, times(1)).save(newGame);
         verifyNoMoreInteractions(gameRepository);
 
         verify(gameToGameCommand, times(1)).convert(gameToSave);

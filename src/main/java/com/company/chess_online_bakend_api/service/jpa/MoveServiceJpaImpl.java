@@ -259,11 +259,14 @@ public class MoveServiceJpaImpl implements MoveService {
 
         gameRepository.save(game);
 
-        // TODO: 2019-07-20 send socket message about the game
 
-        return moveToMoveCommand.convert(game.getMoves()
+        var moveCommand = moveToMoveCommand.convert(game.getMoves()
                 .stream().max(Comparator.comparing(BaseEntity::getCreated))
                 .orElseThrow(() -> new RuntimeException("Something went really wrong with game and move logic")));
+
+        // TODO: 2019-07-20 send socket message about the game
+
+        return moveCommand;
     }
 
     @Override

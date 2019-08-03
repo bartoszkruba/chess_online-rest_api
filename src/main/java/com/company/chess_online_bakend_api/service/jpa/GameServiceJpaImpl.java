@@ -17,6 +17,7 @@ import com.company.chess_online_bakend_api.data.repository.UserRepository;
 import com.company.chess_online_bakend_api.exception.*;
 import com.company.chess_online_bakend_api.service.GameService;
 import com.company.chess_online_bakend_api.service.socket.SocketService;
+import com.company.chess_online_bakend_api.util.GameUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -129,7 +130,18 @@ public class GameServiceJpaImpl implements GameService {
 
         if (game.getStatus() != GameStatus.WAITNG_TO_START) {
             game.setStatus(GameStatus.STOPPED);
-            // TODO: 2019-07-28 startNewGame
+
+            var newGame = GameUtil.initNewGame();
+            newGame.setRoom(game.getRoom());
+
+            if (color == PieceColor.BLACK) {
+                newGame.setWhitePlayer(game.getWhitePlayer());
+            } else {
+                newGame.setBlackPlayer(game.getBlackPlayer());
+            }
+
+            gameRepository.save(newGame);
+
             // TODO: 2019-07-28 broadcast game over notification
             // TODO: 2019-07-28 write tests
             return gameToGameCommand.convert(game);

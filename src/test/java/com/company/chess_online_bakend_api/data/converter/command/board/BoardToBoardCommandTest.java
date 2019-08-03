@@ -1,4 +1,8 @@
 /*
+ * 8/3/19, 3:16 PM. Updated by Bartosz Kruba.
+ */
+
+/*
  * 7/26/19 7:15 PM. Created by Bartosz Kruba.
  */
 
@@ -6,11 +10,10 @@
  * 7/26/19 7:12 PM. Created by Bartosz Kruba.
  */
 
-package com.company.chess_online_bakend_api.data.converter.board;
+package com.company.chess_online_bakend_api.data.converter.command.board;
 
 import com.company.chess_online_bakend_api.data.command.BoardCommand;
 import com.company.chess_online_bakend_api.data.command.PieceCommand;
-import com.company.chess_online_bakend_api.data.converter.command.board.BoardToBoardCommand;
 import com.company.chess_online_bakend_api.data.converter.command.piece.PieceToPieceCommand;
 import com.company.chess_online_bakend_api.data.model.Board;
 import com.company.chess_online_bakend_api.data.model.Piece;
