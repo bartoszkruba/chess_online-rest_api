@@ -15,8 +15,10 @@ import com.company.chess_online_bakend_api.data.model.ChatMessage;
 import com.company.chess_online_bakend_api.data.model.Move;
 import com.company.chess_online_bakend_api.data.model.User;
 import com.company.chess_online_bakend_api.data.model.enums.PieceColor;
+import com.company.chess_online_bakend_api.data.notification.GameOverNotification;
 import com.company.chess_online_bakend_api.data.notification.JoinGameNotification;
 import com.company.chess_online_bakend_api.data.notification.LeaveGameNotification;
+import com.company.chess_online_bakend_api.data.notification.enums.GameOverCause;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.scheduling.annotation.Async;
@@ -120,17 +122,72 @@ public class SocketServiceImpl implements SocketService {
     }
 
     @Override
+    @Async
     public void broadcastGameOverWithDraw(String fenNotation, Long gameId, Long roomId) {
+        String channel = "/topic/room/" + roomId;
 
+        log.debug("Broadcasting GameOver with draw to room " + channel);
+
+        if (roomId == null) {
+            log.error("Trying to broadcast GameOver with null roomId");
+
+            return;
+        }
+
+        var gameOverNotification = GameOverNotification.builder()
+                .gameOverCause(GameOverCause.DRAW)
+                .gameId(gameId)
+                .fenNotation(fenNotation)
+                .build();
+
+        messagingTemplate.convertAndSend(channel, gameOverNotification);
     }
 
     @Override
-    public void broadcastGameOverWithCheckmate(User winner, PieceColor winnerColor, String fenNotation, Long gameId, Long roomId) {
+    @Async
+    public void broadcastGameOverWithCheckmate(User winner, PieceColor winnerColor, String fenNotation, Long gameId,
+                                               Long roomId) {
+        String channel = "/topic/room/" + roomId;
 
+        log.debug("Broadcasting GameOver with draw to room " + channel);
+
+        if (roomId == null) {
+            log.error("Trying to broadcast GameOver with null roomId");
+            return;
+        }
+
+        var gameOverNotification = GameOverNotification.builder()
+                .gameOverCause(GameOverCause.CHECKMATE)
+                .gameId(gameId)
+                .fenNotation(fenNotation)
+                .winner(userToUserNotification.convert(winner))
+                .winnerColor(winnerColor)
+                .build();
+
+        messagingTemplate.convertAndSend(channel, gameOverNotification);
     }
 
     @Override
-    public void broadcastGameOverWithPlayerLeft(User winner, PieceColor winnerColor, String fenNotation, Long gameId, Long roomId) {
+    @Async
+    public void broadcastGameOverWithPlayerLeft(User winner, PieceColor winnerColor, String fenNotation, Long gameId,
+                                                Long roomId) {
+        String channel = "/topic/room/" + roomId;
 
+        log.debug("Broadcasting GameOver with draw to room " + channel);
+
+        if (roomId == null) {
+            log.error("Trying to broadcast GameOver with null roomId");
+            return;
+        }
+
+        var gameOverNotification = GameOverNotification.builder()
+                .gameOverCause(GameOverCause.PLAYER_LEFT)
+                .gameId(gameId)
+                .fenNotation(fenNotation)
+                .winner(userToUserNotification.convert(winner))
+                .winnerColor(winnerColor)
+                .build();
+
+        messagingTemplate.convertAndSend(channel, gameOverNotification);
     }
 }

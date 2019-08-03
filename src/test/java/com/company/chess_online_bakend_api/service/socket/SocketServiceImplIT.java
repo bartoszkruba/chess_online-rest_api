@@ -13,6 +13,7 @@ import com.company.chess_online_bakend_api.data.model.enums.PieceColor;
 import com.company.chess_online_bakend_api.data.model.enums.PieceType;
 import com.company.chess_online_bakend_api.data.model.enums.VerticalPosition;
 import com.company.chess_online_bakend_api.data.notification.ChatMessageNotification;
+import com.company.chess_online_bakend_api.data.notification.enums.GameOverCause;
 import com.company.chess_online_bakend_api.data.notification.enums.NotificationType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -65,6 +66,7 @@ class SocketServiceImplIT {
     void setUp() {
         completableFuture = new CompletableFuture<>();
         URL = "ws://localhost:" + port + "/ws";
+        System.out.println(URL);
     }
 
     @Test
@@ -234,6 +236,96 @@ class SocketServiceImplIT {
         assertEquals(moveCount, notification.get("moveCount"));
         assertEquals(fenNotation, notification.get("fenNotation"));
         assertEquals(gameId.intValue(), notification.get("gameId"));
+    }
+
+    @Test
+    void sendGameOverDraw() throws InterruptedException, ExecutionException, TimeoutException {
+        Long gameId = 1L;
+        Long roomId = 2L;
+        String fenNotation = "notation";
+
+        WebSocketStompClient stompClient = new WebSocketStompClient(new SockJsClient(createTransportClient()));
+        stompClient.setMessageConverter(new MappingJackson2MessageConverter());
+
+        StompSession stompSession = stompClient.connect(URL, new StompSessionHandlerAdapter() {
+        }).get(1, SECONDS);
+
+        stompSession.subscribe("/topic/room/" + roomId,
+                new CreateNotificationStompFrameHandler(Object.class));
+
+        socketService.broadcastGameOverWithDraw(fenNotation, gameId, roomId);
+
+        var notification = (Map) completableFuture.get(10, SECONDS);
+
+        assertEquals(GameOverCause.DRAW.toString(), notification.get("gameOverCause"));
+        assertEquals(fenNotation, notification.get("fenNotation"));
+        assertEquals(gameId.intValue(), notification.get("gameId"));
+    }
+
+    @Test
+    void sendGameOverCheckmate() throws InterruptedException, ExecutionException, TimeoutException {
+        Long gameId = 1L;
+        Long roomId = 2L;
+        String fenNotation = "notation";
+
+        String username = "username";
+        Long userId = 1L;
+
+        var winnerColor = PieceColor.WHITE;
+
+        WebSocketStompClient stompClient = new WebSocketStompClient(new SockJsClient(createTransportClient()));
+        stompClient.setMessageConverter(new MappingJackson2MessageConverter());
+
+        StompSession stompSession = stompClient.connect(URL, new StompSessionHandlerAdapter() {
+        }).get(1, SECONDS);
+
+        stompSession.subscribe("/topic/room/" + roomId,
+                new CreateNotificationStompFrameHandler(Object.class));
+
+        socketService.broadcastGameOverWithCheckmate(User.builder().username(username).id(userId).build(),
+                winnerColor, fenNotation, gameId, roomId);
+
+        var notification = (Map) completableFuture.get(10, SECONDS);
+
+        assertEquals(GameOverCause.CHECKMATE.toString(), notification.get("gameOverCause"));
+        assertEquals(fenNotation, notification.get("fenNotation"));
+        assertEquals(gameId.intValue(), notification.get("gameId"));
+        assertEquals(winnerColor.toString(), notification.get("winnerColor"));
+        assertEquals(username, ((Map) notification.get("winner")).get("username"));
+        assertEquals(userId.intValue(), ((Map) notification.get("winner")).get("id"));
+    }
+
+    @Test
+    void sendGameOverPlayerLeft() throws InterruptedException, ExecutionException, TimeoutException {
+        Long gameId = 1L;
+        Long roomId = 2L;
+        String fenNotation = "notation";
+
+        String username = "username";
+        Long userId = 1L;
+
+        var winnerColor = PieceColor.WHITE;
+
+        WebSocketStompClient stompClient = new WebSocketStompClient(new SockJsClient(createTransportClient()));
+        stompClient.setMessageConverter(new MappingJackson2MessageConverter());
+
+        StompSession stompSession = stompClient.connect(URL, new StompSessionHandlerAdapter() {
+        }).get(1, SECONDS);
+
+        stompSession.subscribe("/topic/room/" + roomId,
+                new CreateNotificationStompFrameHandler(Object.class));
+
+        socketService.broadcastGameOverWithPlayerLeft(User.builder().username(username).id(userId).build(),
+                winnerColor, fenNotation, gameId, roomId);
+
+        var notification = (Map) completableFuture.get(10, SECONDS);
+
+        assertEquals(GameOverCause.PLAYER_LEFT.toString(), notification.get("gameOverCause"));
+        assertEquals(fenNotation, notification.get("fenNotation"));
+        assertEquals(gameId.intValue(), notification.get("gameId"));
+        assertEquals(winnerColor.toString(), notification.get("winnerColor"));
+        assertEquals(username, ((Map) notification.get("winner")).get("username"));
+        assertEquals(userId.intValue(), ((Map) notification.get("winner")).get("id"));
     }
 
     private List<Transport> createTransportClient() {
