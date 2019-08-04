@@ -66,7 +66,6 @@ class SocketServiceImplIT {
     void setUp() {
         completableFuture = new CompletableFuture<>();
         URL = "ws://localhost:" + port + "/ws";
-        System.out.println(URL);
     }
 
     @Test
@@ -89,7 +88,7 @@ class SocketServiceImplIT {
         StompSession stompSession = stompClient.connect(URL, new StompSessionHandlerAdapter() {
         }).get(1, SECONDS);
 
-        stompSession.subscribe("/topic/room/" + roomId,
+        stompSession.subscribe("/topic/room." + roomId,
                 new CreateNotificationStompFrameHandler(ChatMessageNotification.class));
 
         socketService.broadcastChatMessage(chatMessage);
@@ -101,6 +100,8 @@ class SocketServiceImplIT {
         assertEquals(userId, notification.getUserId());
         assertEquals(timestamp, notification.getTimestamp());
         assertEquals(NotificationType.CHAT_MESSAGE, notification.getNotificationType());
+
+        stompSession.disconnect();
     }
 
     @Test
@@ -120,7 +121,7 @@ class SocketServiceImplIT {
         StompSession stompSession = stompClient.connect(URL, new StompSessionHandlerAdapter() {
         }).get(1, SECONDS);
 
-        stompSession.subscribe("/topic/room/" + roomId,
+        stompSession.subscribe("/topic/room." + roomId,
                 new CreateNotificationStompFrameHandler(Object.class));
 
         socketService.broadcastJoinGame(user, gameId, color, fenNotation, roomId);
@@ -133,6 +134,8 @@ class SocketServiceImplIT {
         assertEquals(color.toString(), notification.get("color"));
         assertEquals(fenNotation, notification.get("fenNotation"));
         assertEquals(NotificationType.JOIN_GAME.toString(), notification.get("notificationType"));
+
+        stompSession.disconnect();
     }
 
     @Test
@@ -152,7 +155,7 @@ class SocketServiceImplIT {
         StompSession stompSession = stompClient.connect(URL, new StompSessionHandlerAdapter() {
         }).get(1, SECONDS);
 
-        stompSession.subscribe("/topic/room/" + roomId,
+        stompSession.subscribe("/topic/room." + roomId,
                 new CreateNotificationStompFrameHandler(Object.class));
 
         socketService.broadcastLeaveGame(user, gameId, color, fenNotation, roomId);
@@ -165,6 +168,8 @@ class SocketServiceImplIT {
         assertEquals(color.toString(), notification.get("color"));
         assertEquals(fenNotation, notification.get("fenNotation"));
         assertEquals(NotificationType.LEAVE_GAME.toString(), notification.get("notificationType"));
+
+        stompSession.disconnect();
     }
 
     @Test
@@ -215,7 +220,7 @@ class SocketServiceImplIT {
         StompSession stompSession = stompClient.connect(URL, new StompSessionHandlerAdapter() {
         }).get(1, SECONDS);
 
-        stompSession.subscribe("/topic/room/" + roomId,
+        stompSession.subscribe("/topic/room." + roomId,
                 new CreateNotificationStompFrameHandler(Object.class));
 
         socketService.broadcastMove(move, fenNotation, gameId, roomId);
@@ -236,6 +241,8 @@ class SocketServiceImplIT {
         assertEquals(moveCount, notification.get("moveCount"));
         assertEquals(fenNotation, notification.get("fenNotation"));
         assertEquals(gameId.intValue(), notification.get("gameId"));
+
+        stompSession.disconnect();
     }
 
     @Test
@@ -250,7 +257,7 @@ class SocketServiceImplIT {
         StompSession stompSession = stompClient.connect(URL, new StompSessionHandlerAdapter() {
         }).get(1, SECONDS);
 
-        stompSession.subscribe("/topic/room/" + roomId,
+        stompSession.subscribe("/topic/room." + roomId,
                 new CreateNotificationStompFrameHandler(Object.class));
 
         socketService.broadcastGameOverWithDraw(fenNotation, gameId, roomId);
@@ -260,6 +267,8 @@ class SocketServiceImplIT {
         assertEquals(GameOverCause.DRAW.toString(), notification.get("gameOverCause"));
         assertEquals(fenNotation, notification.get("fenNotation"));
         assertEquals(gameId.intValue(), notification.get("gameId"));
+
+        stompSession.disconnect();
     }
 
     @Test
@@ -279,7 +288,7 @@ class SocketServiceImplIT {
         StompSession stompSession = stompClient.connect(URL, new StompSessionHandlerAdapter() {
         }).get(1, SECONDS);
 
-        stompSession.subscribe("/topic/room/" + roomId,
+        stompSession.subscribe("/topic/room." + roomId,
                 new CreateNotificationStompFrameHandler(Object.class));
 
         socketService.broadcastGameOverWithCheckmate(User.builder().username(username).id(userId).build(),
@@ -293,6 +302,8 @@ class SocketServiceImplIT {
         assertEquals(winnerColor.toString(), notification.get("winnerColor"));
         assertEquals(username, ((Map) notification.get("winner")).get("username"));
         assertEquals(userId.intValue(), ((Map) notification.get("winner")).get("id"));
+
+        stompSession.disconnect();
     }
 
     @Test
@@ -312,7 +323,7 @@ class SocketServiceImplIT {
         StompSession stompSession = stompClient.connect(URL, new StompSessionHandlerAdapter() {
         }).get(1, SECONDS);
 
-        stompSession.subscribe("/topic/room/" + roomId,
+        stompSession.subscribe("/topic/room." + roomId,
                 new CreateNotificationStompFrameHandler(Object.class));
 
         socketService.broadcastGameOverWithPlayerLeft(User.builder().username(username).id(userId).build(),
@@ -326,6 +337,8 @@ class SocketServiceImplIT {
         assertEquals(winnerColor.toString(), notification.get("winnerColor"));
         assertEquals(username, ((Map) notification.get("winner")).get("username"));
         assertEquals(userId.intValue(), ((Map) notification.get("winner")).get("id"));
+
+        stompSession.disconnect();
     }
 
     private List<Transport> createTransportClient() {

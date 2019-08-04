@@ -47,7 +47,8 @@ public class SocketServiceImpl implements SocketService {
     @Override
     @Async
     public void broadcastChatMessage(ChatMessage chatMessage) {
-        String channel = "/topic/room/" + chatMessage.getRoom().getId();
+        // '/' cannot be used in AMQP specifications. Therefore im using '.'
+        String channel = "/topic/room." + chatMessage.getRoom().getId();
 
         log.debug("Broadcasting ChatMessage to " + channel);
 
@@ -57,7 +58,7 @@ public class SocketServiceImpl implements SocketService {
     @Override
     @Async
     public void broadcastJoinGame(User user, Long gameId, PieceColor color, String fenNotation, Long roomId) {
-        String channel = "/topic/room/" + roomId;
+        String channel = "/topic/room." + roomId;
 
         log.debug("Broadcasting JoinGame to " + channel);
 
@@ -80,7 +81,7 @@ public class SocketServiceImpl implements SocketService {
     @Override
     @Async
     public void broadcastLeaveGame(User user, Long gameId, PieceColor color, String fenNotation, Long roomId) {
-        String channel = "/topic/room/" + roomId;
+        String channel = "/topic/room." + roomId;
 
         log.debug("Broadcasting LeaveGame to room " + channel);
 
@@ -100,7 +101,7 @@ public class SocketServiceImpl implements SocketService {
     @Override
     @Async
     public void broadcastMove(Move move, String fenNotation, Long gameId, Long roomId) {
-        String channel = "/topic/room/" + roomId;
+        String channel = "/topic/room." + roomId;
 
         log.debug("Broadcasting Move to room " + channel);
 
@@ -124,7 +125,7 @@ public class SocketServiceImpl implements SocketService {
     @Override
     @Async
     public void broadcastGameOverWithDraw(String fenNotation, Long gameId, Long roomId) {
-        String channel = "/topic/room/" + roomId;
+        String channel = "/topic/room." + roomId;
 
         log.debug("Broadcasting GameOver with draw to room " + channel);
 
@@ -147,7 +148,7 @@ public class SocketServiceImpl implements SocketService {
     @Async
     public void broadcastGameOverWithCheckmate(User winner, PieceColor winnerColor, String fenNotation, Long gameId,
                                                Long roomId) {
-        String channel = "/topic/room/" + roomId;
+        String channel = "/topic/room." + roomId;
 
         log.debug("Broadcasting GameOver with draw to room " + channel);
 
@@ -171,7 +172,7 @@ public class SocketServiceImpl implements SocketService {
     @Async
     public void broadcastGameOverWithPlayerLeft(User winner, PieceColor winnerColor, String fenNotation, Long gameId,
                                                 Long roomId) {
-        String channel = "/topic/room/" + roomId;
+        String channel = "/topic/room." + roomId;
 
         log.debug("Broadcasting GameOver with draw to room " + channel);
 

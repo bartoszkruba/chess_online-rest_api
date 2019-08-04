@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -77,9 +78,9 @@ class ChatMessageRepositoryIT {
 
         List<ChatMessage> chatMessages = messagePage.get().collect(Collectors.toList());
 
-        assertEquals("message1", chatMessages.get(0).getMessage());
-        assertEquals("message2", chatMessages.get(1).getMessage());
-        assertEquals("message3", chatMessages.get(2).getMessage());
+        assertTrue(chatMessages.stream().anyMatch(m -> m.getMessage().equals("message1")));
+        assertTrue(chatMessages.stream().anyMatch(m -> m.getMessage().equals("message2")));
+        assertTrue(chatMessages.stream().anyMatch(m -> m.getMessage().equals("message3")));
     }
 
     @Test
