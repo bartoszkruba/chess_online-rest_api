@@ -16,6 +16,8 @@ jobs:
           MYSQL_USER: user
           MYSQL_PASSWORD: password
 
+      - image: itzg/rabbitmq-stomp
+
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
       # documented at https://circleci.com/docs/2.0/circleci-images/

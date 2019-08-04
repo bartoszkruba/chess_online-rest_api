@@ -3,6 +3,10 @@ spring:
     url: jdbc:mysql://localhost/chess_online_dev?useSSL=false&serverTimezone=Europe/Stockholm
     username: root
     password: password
+  rabbitmq:
+    host: localhost
+    username: 'guest'
+    password: 'guest'
 
   jpa:
     show-sql: false
