@@ -21,7 +21,7 @@ import com.company.chess_online_bakend_api.data.repository.UserRepository;
 import com.company.chess_online_bakend_api.exception.RoomNotFoundException;
 import com.company.chess_online_bakend_api.exception.UserNotFoundException;
 import com.company.chess_online_bakend_api.service.ChatMessageService;
-import com.company.chess_online_bakend_api.service.SocketService;
+import com.company.chess_online_bakend_api.service.socket.SocketService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;

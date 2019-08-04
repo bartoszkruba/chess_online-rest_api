@@ -22,6 +22,8 @@ import com.company.chess_online_bakend_api.data.repository.GameRepository;
 import com.company.chess_online_bakend_api.data.repository.RoomRepository;
 import com.company.chess_online_bakend_api.data.repository.UserRepository;
 import com.company.chess_online_bakend_api.exception.*;
+import com.company.chess_online_bakend_api.service.socket.SocketService;
+import com.company.chess_online_bakend_api.util.GameUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -81,6 +83,9 @@ class GameServiceJpaImplTest {
             .whitePlayer(USERCOMMAND2).build();
 
     @Mock
+    SocketService socketService;
+
+    @Mock
     private RoomRepository roomRepository;
 
     @Mock
@@ -113,7 +118,7 @@ class GameServiceJpaImplTest {
     void getByRoomId() {
         when(gameRepository.findGameByRoom(ROOM)).thenReturn(Optional.of(GAME_1));
 
-        GameCommand gameCommand = gameService.getByRoomId(ROOM.getId());
+        var gameCommand = gameService.getByRoomId(ROOM.getId());
 
         assertEquals(GAMECOMMAND1, gameCommand);
         verify(gameToGameCommand, times(1)).convert(GAME_1);
@@ -122,6 +127,8 @@ class GameServiceJpaImplTest {
 
         verify(gameRepository, times(1)).findGameByRoom(ROOM);
         verifyNoMoreInteractions(gameRepository);
+
+        verifyZeroInteractions(socketService);
     }
 
     @Test
@@ -135,13 +142,15 @@ class GameServiceJpaImplTest {
 
         verifyZeroInteractions(gameCommandToGame);
         verifyZeroInteractions(gameToGameCommand);
+
+        verifyZeroInteractions(socketService);
     }
 
     @Test
     void findById() {
         when(gameRepository.findById(GAME_1.getId())).thenReturn(Optional.of(GAME_1));
 
-        GameCommand gameCommand = gameService.findById(GAME_1.getId());
+        var gameCommand = gameService.findById(GAME_1.getId());
 
         assertEquals(GAMECOMMAND1, gameCommand);
         verify(gameToGameCommand, times(1)).convert(GAME_1);
@@ -150,6 +159,8 @@ class GameServiceJpaImplTest {
 
         verify(gameRepository, times(1)).findById(GAME_1.getId());
         verifyNoMoreInteractions(gameRepository);
+
+        verifyZeroInteractions(socketService);
     }
 
     @Test
@@ -163,13 +174,15 @@ class GameServiceJpaImplTest {
 
         verify(gameRepository, times(1)).findById(GAME_1.getId());
         verifyNoMoreInteractions(gameRepository);
+
+        verifyZeroInteractions(socketService);
     }
 
     @Test
     void save() {
         when(gameRepository.save(GAME_1)).thenReturn(GAME_1);
 
-        GameCommand gameCommand = gameService.save(GAMECOMMAND1);
+        var gameCommand = gameService.save(GAMECOMMAND1);
 
         verify(gameCommandToGame, times(1)).convert(GAMECOMMAND1);
         verifyNoMoreInteractions(gameCommandToGame);
@@ -182,6 +195,7 @@ class GameServiceJpaImplTest {
 
         assertEquals(GAMECOMMAND1, gameCommand);
 
+        verifyZeroInteractions(socketService);
     }
 
     @Test
@@ -201,6 +215,8 @@ class GameServiceJpaImplTest {
 
         verify(gameRepository, times(1)).findAll();
         verifyNoMoreInteractions(gameRepository);
+
+        verifyZeroInteractions(socketService);
     }
 
     @Test
@@ -213,6 +229,8 @@ class GameServiceJpaImplTest {
 
         verify(gameRepository, times(1)).delete(GAME_1);
         verifyNoMoreInteractions(gameRepository);
+
+        verifyZeroInteractions(socketService);
     }
 
     @Test
@@ -224,27 +242,33 @@ class GameServiceJpaImplTest {
 
         verify(gameRepository, times(1)).deleteById(GAME_1.getId());
         verifyNoMoreInteractions(gameRepository);
+
+        verifyZeroInteractions(socketService);
     }
 
 
     @Test
     void joinGameWhite() {
-
+        String fenNotation = "notation";
         String username = "username";
 
         User user = User.builder().id(1L).username(username).build();
         UserCommand userCommand = UserCommand.builder().id(1L).build();
 
-        Game game = Game.builder()
+        var game = Game.builder()
                 .id(1L)
-                .status(GameStatus.WAITNG_TO_START).build();
+                .status(GameStatus.WAITNG_TO_START)
+                .fenNotation(fenNotation)
+                .room(ROOM).build();
 
-        Game gameWithUser = Game.builder()
+        var gameWithUser = Game.builder()
                 .id(1L)
                 .whitePlayer(user)
-                .status(GameStatus.WAITNG_TO_START).build();
+                .status(GameStatus.WAITNG_TO_START)
+                .fenNotation(fenNotation)
+                .room(ROOM).build();
 
-        GameCommand gameCommandWithUser = GameCommand.builder()
+        var gameCommandWithUser = GameCommand.builder()
                 .id(1L)
                 .whitePlayer(userCommand)
                 .status(GameStatus.WAITNG_TO_START).build();
@@ -254,7 +278,7 @@ class GameServiceJpaImplTest {
         when(gameRepository.save(gameWithUser)).thenReturn(gameWithUser);
         when(gameToGameCommand.convert(gameWithUser)).thenReturn(gameCommandWithUser);
 
-        GameCommand gameCommand = gameService.joinGame(PieceColor.WHITE, username, 1L);
+        var gameCommand = gameService.joinGame(PieceColor.WHITE, username, 1L);
 
         assertEquals(gameCommandWithUser, gameCommand);
 
@@ -269,25 +293,34 @@ class GameServiceJpaImplTest {
         verifyNoMoreInteractions(gameToGameCommand);
 
         verifyZeroInteractions(gameCommandToGame);
+
+        verify(socketService, times(1))
+                .broadcastJoinGame(user, gameWithUser.getId(), PieceColor.WHITE, fenNotation, ROOM.getId());
+        verifyNoMoreInteractions(socketService);
     }
 
     @Test
     void joinGameBlack() {
+        String fenNotation = "notation";
         String username = "username";
 
-        User user = User.builder().id(1L).username(username).build();
-        UserCommand userCommand = UserCommand.builder().id(1L).build();
+        var user = User.builder().id(1L).username(username).build();
+        var userCommand = UserCommand.builder().id(1L).build();
 
-        Game game = Game.builder()
+        var game = Game.builder()
                 .id(1L)
-                .status(GameStatus.WAITNG_TO_START).build();
+                .status(GameStatus.WAITNG_TO_START)
+                .fenNotation(fenNotation)
+                .room(ROOM).build();
 
-        Game gameWithUser = Game.builder()
+        var gameWithUser = Game.builder()
                 .id(1L)
                 .blackPlayer(user)
-                .status(GameStatus.WAITNG_TO_START).build();
+                .status(GameStatus.WAITNG_TO_START)
+                .fenNotation(fenNotation)
+                .room(ROOM).build();
 
-        GameCommand gameCommandWithUser = GameCommand.builder()
+        var gameCommandWithUser = GameCommand.builder()
                 .id(1L).whitePlayer(userCommand)
                 .status(GameStatus.WAITNG_TO_START).build();
 
@@ -296,7 +329,7 @@ class GameServiceJpaImplTest {
         when(gameRepository.save(gameWithUser)).thenReturn(gameWithUser);
         when(gameToGameCommand.convert(gameWithUser)).thenReturn(gameCommandWithUser);
 
-        GameCommand gameCommand = gameService.joinGame(PieceColor.BLACK, username, 1L);
+        var gameCommand = gameService.joinGame(PieceColor.BLACK, username, 1L);
 
         assertEquals(gameCommandWithUser, gameCommand);
 
@@ -311,14 +344,18 @@ class GameServiceJpaImplTest {
         verifyNoMoreInteractions(gameToGameCommand);
 
         verifyZeroInteractions(gameCommandToGame);
+
+        verify(socketService, times(1))
+                .broadcastJoinGame(user, gameWithUser.getId(), PieceColor.BLACK, fenNotation, ROOM.getId());
+        verifyNoMoreInteractions(socketService);
     }
 
     @Test
     void joinGameWhiteNotFree() {
         String username = "username";
 
-        User user = User.builder().id(1L).username(username).build();
-        Game gameWithUser = Game.builder()
+        var user = User.builder().id(1L).username(username).build();
+        var gameWithUser = Game.builder()
                 .id(1L)
                 .whitePlayer(User.builder().id(2L).build())
                 .status(GameStatus.WAITNG_TO_START).build();
@@ -338,14 +375,16 @@ class GameServiceJpaImplTest {
 
         verifyZeroInteractions(gameToGameCommand);
         verifyZeroInteractions(gameCommandToGame);
+
+        verifyZeroInteractions(socketService);
     }
 
     @Test
     void joinGameBlackNotFree() {
         String username = "username";
 
-        User user = User.builder().id(1L).username(username).build();
-        Game gameWithUser = Game.builder()
+        var user = User.builder().id(1L).username(username).build();
+        var gameWithUser = Game.builder()
                 .id(1L)
                 .blackPlayer(User.builder().id(2L).build())
                 .status(GameStatus.WAITNG_TO_START).build();
@@ -365,13 +404,15 @@ class GameServiceJpaImplTest {
 
         verifyZeroInteractions(gameToGameCommand);
         verifyZeroInteractions(gameCommandToGame);
+
+        verifyZeroInteractions(socketService);
     }
 
     @Test
     void joinGameInvalidID() {
         String username = "username";
 
-        User user = User.builder().id(1L).username(username).build();
+        var user = User.builder().id(1L).username(username).build();
 
         when(userRepository.findByUsernameLike(username)).thenReturn(Optional.of(user));
         when(gameRepository.findById(1L)).thenReturn(Optional.empty());
@@ -388,6 +429,8 @@ class GameServiceJpaImplTest {
 
         verifyZeroInteractions(gameToGameCommand);
         verifyZeroInteractions(gameCommandToGame);
+
+        verifyZeroInteractions(socketService);
     }
 
     @Test
@@ -403,14 +446,16 @@ class GameServiceJpaImplTest {
         verifyZeroInteractions(gameRepository);
         verifyZeroInteractions(gameToGameCommand);
         verifyZeroInteractions(gameCommandToGame);
+
+        verifyZeroInteractions(socketService);
     }
 
     @Test
     void joinGameAlreadyStarted() {
         String username = "username";
 
-        User user = User.builder().id(1L).username(username).build();
-        Game startedGame = Game.builder()
+        var user = User.builder().id(1L).username(username).build();
+        var startedGame = Game.builder()
                 .id(1L)
                 .status(GameStatus.STARTED).build();
 
@@ -429,14 +474,16 @@ class GameServiceJpaImplTest {
 
         verifyZeroInteractions(gameToGameCommand);
         verifyZeroInteractions(gameCommandToGame);
+
+        verifyZeroInteractions(socketService);
     }
 
     @Test
     void joinGameAlreadyJoined() {
         String username = "username";
 
-        User user = User.builder().id(1L).username(username).build();
-        Game joinedGame = Game.builder()
+        var user = User.builder().id(1L).username(username).build();
+        var joinedGame = Game.builder()
                 .id(1L)
                 .blackPlayer(user)
                 .status(GameStatus.WAITNG_TO_START).build();
@@ -456,25 +503,34 @@ class GameServiceJpaImplTest {
 
         verifyZeroInteractions(gameToGameCommand);
         verifyZeroInteractions(gameCommandToGame);
+
+        verifyZeroInteractions(socketService);
     }
 
     @Test
     void leaveGameWhite() {
         String username = "username";
+        String fenNotation = "notation";
 
-        User user = User.builder().id(1L).username(username).build();
+        Long gameId = 1L;
 
-        Game joinedGame = Game.builder()
-                .id(1L)
+        var user = User.builder().id(1L).username(username).build();
+
+        var joinedGame = Game.builder()
+                .id(gameId)
                 .whitePlayer(user)
-                .status(GameStatus.WAITNG_TO_START).build();
+                .status(GameStatus.WAITNG_TO_START)
+                .fenNotation(fenNotation)
+                .room(ROOM).build();
 
-        Game gameToSave = Game.builder()
-                .id(1L)
-                .status(GameStatus.WAITNG_TO_START).build();
+        var gameToSave = Game.builder()
+                .id(gameId)
+                .status(GameStatus.WAITNG_TO_START)
+                .fenNotation(fenNotation)
+                .room(ROOM).build();
 
-        GameCommand gameWithoutPlayer = GameCommand.builder()
-                .id(1L)
+        var gameWithoutPlayer = GameCommand.builder()
+                .id(gameId)
                 .status(GameStatus.WAITNG_TO_START).build();
 
         when(userRepository.findByUsernameLike(username)).thenReturn(Optional.of(user));
@@ -482,7 +538,7 @@ class GameServiceJpaImplTest {
         when(gameRepository.save(gameToSave)).thenReturn(gameToSave);
         when(gameToGameCommand.convert(gameToSave)).thenReturn(gameWithoutPlayer);
 
-        GameCommand gameCommand = gameService.leaveGame(username, 1L);
+        var gameCommand = gameService.leaveGame(username, 1L);
 
         assertEquals(gameWithoutPlayer, gameCommand);
 
@@ -497,25 +553,36 @@ class GameServiceJpaImplTest {
         verifyNoMoreInteractions(gameToGameCommand);
 
         verifyZeroInteractions(gameCommandToGame);
+
+        verify(socketService, times(1))
+                .broadcastLeaveGame(user, gameId, PieceColor.WHITE, fenNotation, ROOM.getId());
+        verifyNoMoreInteractions(socketService);
     }
 
     @Test
     void leaveGameBlack() {
         String username = "username";
 
-        User user = User.builder().id(1L).username(username).build();
+        Long gameId = 1L;
+        String fenNotation = "notation";
 
-        Game joinedGame = Game.builder()
-                .id(1L)
+        var user = User.builder().id(1L).username(username).build();
+
+        var joinedGame = Game.builder()
+                .id(gameId)
                 .blackPlayer(user)
-                .status(GameStatus.WAITNG_TO_START).build();
+                .status(GameStatus.WAITNG_TO_START)
+                .fenNotation(fenNotation)
+                .room(ROOM).build();
 
-        Game gameToSave = Game.builder()
-                .id(1L)
-                .status(GameStatus.WAITNG_TO_START).build();
+        var gameToSave = Game.builder()
+                .id(gameId)
+                .status(GameStatus.WAITNG_TO_START)
+                .fenNotation(fenNotation)
+                .room(ROOM).build();
 
-        GameCommand gameWithoutPlayer = GameCommand.builder()
-                .id(1L)
+        var gameWithoutPlayer = GameCommand.builder()
+                .id(gameId)
                 .status(GameStatus.WAITNG_TO_START).build();
 
         when(userRepository.findByUsernameLike(username)).thenReturn(Optional.of(user));
@@ -523,7 +590,7 @@ class GameServiceJpaImplTest {
         when(gameRepository.save(gameToSave)).thenReturn(gameToSave);
         when(gameToGameCommand.convert(gameToSave)).thenReturn(gameWithoutPlayer);
 
-        GameCommand gameCommand = gameService.leaveGame(username, 1L);
+        var gameCommand = gameService.leaveGame(username, 1L);
 
         assertEquals(gameWithoutPlayer, gameCommand);
 
@@ -538,6 +605,10 @@ class GameServiceJpaImplTest {
         verifyNoMoreInteractions(gameToGameCommand);
 
         verifyZeroInteractions(gameCommandToGame);
+
+        verify(socketService, times(1))
+                .broadcastLeaveGame(user, gameId, PieceColor.BLACK, fenNotation, ROOM.getId());
+        verifyNoMoreInteractions(socketService);
     }
 
     @Test
@@ -556,13 +627,15 @@ class GameServiceJpaImplTest {
         verifyZeroInteractions(gameRepository);
         verifyZeroInteractions(gameToGameCommand);
         verifyZeroInteractions(gameCommandToGame);
+
+        verifyZeroInteractions(socketService);
     }
 
     @Test
     void leaveGameGameNotFound() {
         String username = "username";
 
-        User user = User.builder().id(1L).username(username).build();
+        var user = User.builder().id(1L).username(username).build();
 
         when(userRepository.findByUsernameLike(username)).thenReturn(Optional.of(user));
         when(gameRepository.findById(1L)).thenReturn(Optional.empty());
@@ -579,15 +652,17 @@ class GameServiceJpaImplTest {
 
         verifyZeroInteractions(gameToGameCommand);
         verifyZeroInteractions(gameCommandToGame);
+
+        verifyZeroInteractions(socketService);
     }
 
     @Test
     void leaveGameHasNotJoined() {
         String username = "username";
 
-        User user = User.builder().id(1L).username(username).build();
+        var user = User.builder().id(1L).username(username).build();
 
-        Game gameWithoutPlayer = Game.builder()
+        var gameWithoutPlayer = Game.builder()
                 .id(1L)
                 .status(GameStatus.WAITNG_TO_START).build();
 
@@ -605,24 +680,38 @@ class GameServiceJpaImplTest {
         verifyZeroInteractions(gameToGameCommand);
 
         verifyZeroInteractions(gameCommandToGame);
+
+        verifyZeroInteractions(socketService);
     }
 
     @Test
     void leaveGameAlreadyBegin() {
         String username = "username";
+        String fenNotation = "notation";
 
-        User user = User.builder().id(1L).username(username).build();
+        var user = User.builder().id(1L).username(username).build();
 
-        Game joinedGame = Game.builder()
+        var opponent = User.builder().id(5L).username("username").build();
+
+        var joinedGame = Game.builder()
                 .id(1L)
+                .whitePlayer(opponent)
                 .blackPlayer(user)
-                .status(GameStatus.STARTED).build();
+                .status(GameStatus.STARTED)
+                .fenNotation(fenNotation)
+                .room(ROOM).build();
 
-        Game gameToSave = Game.builder()
+        var gameToSave = Game.builder()
                 .id(1L)
-                .status(GameStatus.STOPPED).build();
+                .whitePlayer(opponent)
+                .status(GameStatus.STOPPED)
+                .fenNotation(fenNotation)
+                .room(ROOM).build();
 
-        GameCommand gameWithoutPlayer = GameCommand.builder()
+        var newGame = GameUtil.initNewGame();
+        newGame.setWhitePlayer(opponent);
+
+        var gameWithoutPlayer = GameCommand.builder()
                 .id(1L)
                 .status(GameStatus.STOPPED).build();
 
@@ -631,7 +720,7 @@ class GameServiceJpaImplTest {
         when(gameRepository.save(gameToSave)).thenReturn(gameToSave);
         when(gameToGameCommand.convert(gameToSave)).thenReturn(gameWithoutPlayer);
 
-        GameCommand gameCommand = gameService.leaveGame(username, 1L);
+        var gameCommand = gameService.leaveGame(username, 1L);
 
         assertEquals(gameWithoutPlayer, gameCommand);
 
@@ -639,12 +728,18 @@ class GameServiceJpaImplTest {
         verifyNoMoreInteractions(userRepository);
 
         verify(gameRepository, times(1)).findById(1L);
-        verify(gameRepository, times(1)).save(gameToSave);
+        verify(gameRepository, times(1)).save(newGame);
         verifyNoMoreInteractions(gameRepository);
 
         verify(gameToGameCommand, times(1)).convert(gameToSave);
         verifyNoMoreInteractions(gameToGameCommand);
 
         verifyZeroInteractions(gameCommandToGame);
+
+        verify(socketService, times(1)).broadcastLeaveGame(user, 1L, PieceColor.BLACK,
+                fenNotation, ROOM.getId());
+        verify(socketService, times(1)).broadcastGameOverWithPlayerLeft(opponent,
+                PieceColor.WHITE, fenNotation, 1L, ROOM.getId());
+        verifyNoMoreInteractions(socketService);
     }
 }
