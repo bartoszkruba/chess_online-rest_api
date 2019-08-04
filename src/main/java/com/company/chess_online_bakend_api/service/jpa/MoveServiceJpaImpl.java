@@ -15,6 +15,7 @@ import com.company.chess_online_bakend_api.data.converter.command.move.MoveToMov
 import com.company.chess_online_bakend_api.data.model.*;
 import com.company.chess_online_bakend_api.data.model.enums.GameStatus;
 import com.company.chess_online_bakend_api.data.model.enums.HorizontalPosition;
+import com.company.chess_online_bakend_api.data.model.enums.PieceColor;
 import com.company.chess_online_bakend_api.data.model.enums.VerticalPosition;
 import com.company.chess_online_bakend_api.data.repository.GameRepository;
 import com.company.chess_online_bakend_api.data.repository.RoomRepository;
@@ -224,7 +225,18 @@ public class MoveServiceJpaImpl implements MoveService {
                     .orElseThrow(() -> new RuntimeException("Something went wrong with game logic"));
             room.setGame(GameUtil.initNewGameBetweenPlayers(game.getWhitePlayer(), game.getBlackPlayer()));
 
-            // TODO: 2019-08-03 send game over notification
+            PieceColor winnerColor;
+            User winner;
+
+            // this could be wrong
+            if (game.getTurn() % 2 == 0) {
+                winner = game.getBlackPlayer();
+                winnerColor = PieceColor.BLACK;
+            } else {
+                winner = game.getWhitePlayer();
+                winnerColor = PieceColor.WHITE;
+            }
+
             // TODO: 2019-07-21 Archive old game
             game.setIsCheckmate(true);
             move.setIsCheckmate(true);
@@ -241,14 +253,17 @@ public class MoveServiceJpaImpl implements MoveService {
 
             socketService.broadcastMove(savedMove, game.getFenNotation(), game.getId(), game.getRoom().getId());
 
+            socketService.broadcastGameOverWithCheckmate(winner, winnerColor, game.getFenNotation(), game.getId(),
+                    game.getRoom().getId());
+
             return moveToMoveCommand.convert(savedMove);
 
+            // TODO: 2019-08-04 test this case
         } else if (board.isDraw()) {
             Room room = roomRepository.findRoomByGame(game)
                     .orElseThrow(() -> new RuntimeException("Something went wrong with game logic"));
             room.setGame(GameUtil.initNewGameBetweenPlayers(game.getWhitePlayer(), game.getBlackPlayer()));
 
-            // TODO: 2019-08-03 send game over notification
             // TODO: 2019-07-21 Archive old game
             game.setIsDraw(true);
             move.setIsDraw(true);
@@ -264,6 +279,7 @@ public class MoveServiceJpaImpl implements MoveService {
                     .orElseThrow(() -> new RuntimeException("Something went really wrong with game and move logic"));
 
             socketService.broadcastMove(savedMove, game.getFenNotation(), game.getId(), game.getRoom().getId());
+            socketService.broadcastGameOverWithDraw(game.getFenNotation(), game.getId(), game.getRoom().getId());
 
             return moveToMoveCommand.convert(savedMove);
 

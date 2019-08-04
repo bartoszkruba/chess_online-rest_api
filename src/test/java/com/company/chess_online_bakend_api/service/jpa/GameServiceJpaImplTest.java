@@ -26,7 +26,6 @@ import com.company.chess_online_bakend_api.service.socket.SocketService;
 import com.company.chess_online_bakend_api.util.GameUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -686,9 +685,9 @@ class GameServiceJpaImplTest {
     }
 
     @Test
-    @Disabled
     void leaveGameAlreadyBegin() {
         String username = "username";
+        String fenNotation = "notation";
 
         var user = User.builder().id(1L).username(username).build();
 
@@ -699,12 +698,14 @@ class GameServiceJpaImplTest {
                 .whitePlayer(opponent)
                 .blackPlayer(user)
                 .status(GameStatus.STARTED)
+                .fenNotation(fenNotation)
                 .room(ROOM).build();
 
         var gameToSave = Game.builder()
                 .id(1L)
                 .whitePlayer(opponent)
                 .status(GameStatus.STOPPED)
+                .fenNotation(fenNotation)
                 .room(ROOM).build();
 
         var newGame = GameUtil.initNewGame();
@@ -735,7 +736,10 @@ class GameServiceJpaImplTest {
 
         verifyZeroInteractions(gameCommandToGame);
 
-        // TODO: 2019-07-28 checkout for creation of new game
-        // TODO: 2019-07-28 checkout for "game over" notification
+        verify(socketService, times(1)).broadcastLeaveGame(user, 1L, PieceColor.BLACK,
+                fenNotation, ROOM.getId());
+        verify(socketService, times(1)).broadcastGameOverWithPlayerLeft(opponent,
+                PieceColor.WHITE, fenNotation, 1L, ROOM.getId());
+        verifyNoMoreInteractions(socketService);
     }
 }

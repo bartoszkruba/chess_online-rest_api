@@ -142,8 +142,22 @@ public class GameServiceJpaImpl implements GameService {
 
             gameRepository.save(newGame);
 
-            // TODO: 2019-07-28 broadcast game over notification
-            // TODO: 2019-07-28 write tests
+            socketService.broadcastLeaveGame(user, gameId, color, game.getFenNotation(), game.getRoom().getId());
+
+            PieceColor winnerColor;
+            User winner;
+
+            if (color == PieceColor.WHITE) {
+                winnerColor = PieceColor.BLACK;
+                winner = game.getBlackPlayer();
+            } else {
+                winnerColor = PieceColor.WHITE;
+                winner = game.getWhitePlayer();
+            }
+
+            socketService.broadcastGameOverWithPlayerLeft(winner, winnerColor, game.getFenNotation(),
+                    game.getId(), game.getRoom().getId());
+
             return gameToGameCommand.convert(game);
         } else {
             socketService.broadcastLeaveGame(user, gameId, color, game.getFenNotation(), game.getRoom().getId());

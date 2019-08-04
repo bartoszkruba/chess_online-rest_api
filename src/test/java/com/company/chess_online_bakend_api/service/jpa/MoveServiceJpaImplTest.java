@@ -706,6 +706,9 @@ class MoveServiceJpaImplTest {
 
         verify(socketService, times(1)).broadcastMove(generatedMove, board.getFen(),
                 gameAfterMove.getId(), 3L);
+        verify(socketService, times(1))
+                .broadcastGameOverWithCheckmate(game.getWhitePlayer(), PieceColor.WHITE, gameAfterMove.getFenNotation(),
+                        gameAfterMove.getId(), gameAfterMove.getRoom().getId());
         verifyNoMoreInteractions(socketService);
     }
 
