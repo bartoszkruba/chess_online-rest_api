@@ -27,6 +27,7 @@ spring:
       initialize-schema: always
 
 server:
+  port: 8080
   tomcat:
     max-http-post-size: 10485760
   servlet:
