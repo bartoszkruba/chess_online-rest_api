@@ -75,10 +75,11 @@ public class RoomBootstrap implements CommandLineRunner {
 
         roomRepository.saveAll(rooms);
 
-        log.debug("Rooms loaded = " + roomRepository.count());
+        log.info("Rooms loaded = " + roomRepository.count());
     }
 
     private Room newRoom(String name) {
+        log.info("Creating new room: " + name);
         Room room = Room.builder().name(name).build();
         room.addGame(GameUtil.initNewGame());
         return room;

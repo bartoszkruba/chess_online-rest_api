@@ -53,9 +53,9 @@ public class UserBootstrap implements ApplicationListener<ContextRefreshedEvent>
     @Transactional
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
         loadRoles();
-        log.debug("User roles loaded = " + roleRepository.count());
-        log.debug("Users loaded... = " + userRepository.count());
+        log.info("Roles loaded: [" + ROLE_ADMIN + ", " + ROLE_USER + "]");
         loadUsers();
+        log.debug("Users loaded: " + userRepository.count());
     }
 
     private void loadRoles() {
@@ -91,6 +91,9 @@ public class UserBootstrap implements ApplicationListener<ContextRefreshedEvent>
                     .email(ADMIN_EMAIL)
                     .password(encoder.encode(ADMIN_PASSWORD)).build().addRole(adminRole);
             userRepository.save(adminUser);
+            log.info("Loaded admin - username: " + ADMIN_USERNAME +
+                    ", password: " + ADMIN_PASSWORD +
+                    ", email: " + ADMIN_EMAIL);
         }
 
         if (userRepository.findByUsernameLike(USER_USERNAME).isEmpty()) {
@@ -101,6 +104,9 @@ public class UserBootstrap implements ApplicationListener<ContextRefreshedEvent>
                     .email(USER_EMAIL)
                     .password(encoder.encode(USER_PASSWORD)).build().addRole(userRole);
             userRepository.save(normalUser);
+            log.info("Loaded user - username: " + USER_USERNAME +
+                    ", password: " + USER_PASSWORD +
+                    ", email: " + USER_EMAIL);
         }
     }
 

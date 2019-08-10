@@ -4,7 +4,7 @@ spring:
     username: root
     password: password
   rabbitmq:
-    host: localhost
+    host: 'localhost'
     username: 'guest'
     password: 'guest'
 
@@ -27,11 +27,15 @@ spring:
       initialize-schema: always
 
 server:
+  port: 8080
   tomcat:
     max-http-post-size: 10485760
   servlet:
     session:
-      timeout: -1
+      #      one year in seconds
+      timeout: 157784630
+      cookie:
+        max-age: 157784630
 logging:
   level:
     org:
