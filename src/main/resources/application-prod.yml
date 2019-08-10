@@ -1,3 +1,7 @@
+admin-username: 'lolek'
+admin-password: 'password'
+admin-email: 'test@test.com'
+
 spring:
   jpa:
     show-sql: false

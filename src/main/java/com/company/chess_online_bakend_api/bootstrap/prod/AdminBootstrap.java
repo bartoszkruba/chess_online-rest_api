@@ -14,14 +14,15 @@ import com.company.chess_online_bakend_api.data.repository.RoleRepository;
 import com.company.chess_online_bakend_api.data.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
-@Profile("prod")
 @Slf4j
+@Profile("prod")
 public class AdminBootstrap implements CommandLineRunner {
 
     private final UserRepository userRepository;
@@ -31,9 +32,12 @@ public class AdminBootstrap implements CommandLineRunner {
     public static final String ROLE_ADMIN = "ROLE_ADMIN";
     public static final String ROLE_USER = "ROLE_USER";
 
-    public static final String ADMIN_USERNAME = "admin";
-    public static final String ADMIN_PASSWORD = "password";
-    public static final String ADMIN_EMAIL = "admin@email.com";
+    @Value("${admin-username}")
+    public String ADMIN_USERNAME;
+    @Value("${admin-password}")
+    public String ADMIN_PASSWORD;
+    @Value("${admin-email}")
+    public String ADMIN_EMAIL;
 
     @Autowired
     public AdminBootstrap(UserRepository userRepository, RoleRepository roleRepository,
@@ -67,7 +71,9 @@ public class AdminBootstrap implements CommandLineRunner {
             userRepository.save(adminUser);
         }
 
-        log.info("Loaded admin");
+        log.info("Loaded admin - username: " + ADMIN_USERNAME +
+                ", password: " + ADMIN_PASSWORD +
+                ", email: " + ADMIN_EMAIL);
     }
 
     private void loadRoles() {
@@ -80,6 +86,6 @@ public class AdminBootstrap implements CommandLineRunner {
             roleRepository.save(role2);
         }
 
-        log.info("Loaded roles: " + roleRepository.count());
+        log.info("Loaded roles: [" + ROLE_ADMIN + ", " + ROLE_USER + "]");
     }
 }
