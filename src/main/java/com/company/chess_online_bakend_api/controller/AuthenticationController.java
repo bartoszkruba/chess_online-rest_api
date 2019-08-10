@@ -1,3 +1,11 @@
+/*
+ * 7/26/19 7:15 PM. Created by Bartosz Kruba.
+ */
+
+/*
+ * 7/26/19 7:12 PM. Created by Bartosz Kruba.
+ */
+
 package com.company.chess_online_bakend_api.controller;
 
 import com.company.chess_online_bakend_api.data.command.UserCommand;
@@ -37,6 +45,7 @@ public class AuthenticationController {
     @ResponseStatus(HttpStatus.OK)
     @Secured({"ROLE_ADMIN", "ROLE_USER"})
     public Collection<String> getRoles(Principal principal) {
+        log.debug("New request: GET " + BASE_URL + "role");
 
         return authenticationService.getRolesForUser(principal.getName());
     }
@@ -48,6 +57,8 @@ public class AuthenticationController {
     @PostMapping("register")
     @ResponseStatus(HttpStatus.CREATED)
     public UserCommand registerNewUser(@Valid @RequestBody UserCommand userCommand) {
+        log.debug("New request: POST " + BASE_URL + "register");
+
         return authenticationService.registerNewUser(userCommand);
     }
 

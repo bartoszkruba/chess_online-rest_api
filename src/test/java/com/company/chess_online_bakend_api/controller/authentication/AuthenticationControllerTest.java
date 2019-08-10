@@ -1,3 +1,11 @@
+/*
+ * 7/26/19 7:15 PM. Created by Bartosz Kruba.
+ */
+
+/*
+ * 7/26/19 7:12 PM. Created by Bartosz Kruba.
+ */
+
 package com.company.chess_online_bakend_api.controller.authentication;
 
 import com.company.chess_online_bakend_api.controller.AbstractRestControllerTest;
@@ -45,8 +53,6 @@ class AuthenticationControllerTest extends AbstractRestControllerTest {
 
     @BeforeEach
     void setUp() {
-
-
         MockitoAnnotations.initMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(authenticationController)
                 .setControllerAdvice(ExceptionAdviceController.class)

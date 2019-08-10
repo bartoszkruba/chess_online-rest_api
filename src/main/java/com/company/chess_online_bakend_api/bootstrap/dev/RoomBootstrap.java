@@ -1,7 +1,20 @@
+/*
+ * 7/26/19 7:15 PM. Created by Bartosz Kruba.
+ */
+
+/*
+ * 7/26/19 7:12 PM. Created by Bartosz Kruba.
+ */
+
+/*
+ * 7/26/19 7:10 PM. Created by Bartosz Kruba.
+ */
+
 package com.company.chess_online_bakend_api.bootstrap.dev;
 
 import com.company.chess_online_bakend_api.data.model.Room;
 import com.company.chess_online_bakend_api.data.repository.RoomRepository;
+import com.company.chess_online_bakend_api.util.GameUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -10,6 +23,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+
 
 @Slf4j
 @Component
@@ -61,10 +75,13 @@ public class RoomBootstrap implements CommandLineRunner {
 
         roomRepository.saveAll(rooms);
 
-        log.debug("Rooms loaded = " + roomRepository.count());
+        log.info("Rooms loaded = " + roomRepository.count());
     }
 
     private Room newRoom(String name) {
-        return Room.builder().name(name).build();
+        log.info("Creating new room: " + name);
+        Room room = Room.builder().name(name).build();
+        room.addGame(GameUtil.initNewGame());
+        return room;
     }
 }

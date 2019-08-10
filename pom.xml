@@ -10,14 +10,14 @@
     </parent>
     <groupId>com.company</groupId>
     <artifactId>chess_online_rest_api</artifactId>
-    <version>0.0.2-SNAPSHOT</version>
+    <version>0.0.3-SNAPSHOT</version>
     <name>chess_online_rest_api</name>
     <description>Demo project for Spring Boot</description>
 
     <properties>
         <java.version>11</java.version>
 
-<!--        Fabric8-->
+        <!--        Fabric8-->
         <docker.image.prefix>nawajo</docker.image.prefix>
         <docker.image.name>chess_rest_api</docker.image.name>
 
@@ -29,7 +29,7 @@
 
     <dependencies>
 
-<!--        Spring Boot-->
+        <!--        Spring Boot-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -42,14 +42,32 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
+
+        <!--        For status check-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.session</groupId>
-            <artifactId>spring-session-core</artifactId>
+            <artifactId>spring-session-jdbc</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
+
+        <!--        For RabbitMQ config-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-reactor-netty</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
@@ -57,21 +75,21 @@
             <optional>true</optional>
         </dependency>
 
-<!--        MYSQL-->
+        <!--        MYSQL-->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <scope>runtime</scope>
         </dependency>
 
-<!--        Lombok-->
+        <!--        Lombok-->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
 
-<!--        Swagger-->
+        <!--        Swagger-->
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
@@ -83,8 +101,14 @@
             <version>${swagger.version}</version>
         </dependency>
 
+        <!--        ChessLib-->
+        <dependency>
+            <groupId>com.github.bhlangonijr</groupId>
+            <artifactId>chesslib</artifactId>
+            <version>1.1.12</version>
+        </dependency>
 
-<!--        Tests-->
+        <!--        Tests-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -133,6 +157,13 @@
         </dependency>
     </dependencies>
 
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
+
     <build>
         <plugins>
             <plugin>
@@ -145,7 +176,7 @@
                 <version>2.22.0</version>
             </plugin>
 
-<!--            Test Coverage-->
+            <!--            Test Coverage-->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
@@ -155,6 +186,7 @@
                         <exclude>**/*com/company/chess_online_bakend_api/data/model/**</exclude>
                         <exclude>**/*com/company/chess_online_bakend_api/data/command/**</exclude>
                         <exclude>**/*com/company/chess_online_bakend_api/validation/constraint/**</exclude>
+                        <exclude>**/*com/company/chess_online_bakend_api/validation/group/**</exclude>
                     </excludes>
                 </configuration>
                 <executions>
@@ -194,7 +226,7 @@
                 </configuration>
             </plugin>
 
-<!--            Fabric8-->
+            <!--            Fabric8-->
             <plugin>
                 <groupId>io.fabric8</groupId>
                 <artifactId>docker-maven-plugin</artifactId>

@@ -1,22 +1,29 @@
+/*
+ * 7/26/19 7:15 PM. Created by Bartosz Kruba.
+ */
+
+/*
+ * 7/26/19 7:12 PM. Created by Bartosz Kruba.
+ */
+
 package com.company.chess_online_bakend_api.data.model;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 @Entity
 @Data
 @NoArgsConstructor
-public class User extends BaseEntity {
+public class User extends BaseEntity implements Serializable {
 
     @ManyToMany(fetch = FetchType.EAGER,
             cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})

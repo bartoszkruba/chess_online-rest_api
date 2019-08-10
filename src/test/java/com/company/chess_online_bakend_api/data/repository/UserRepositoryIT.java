@@ -1,3 +1,11 @@
+/*
+ * 7/26/19 7:15 PM. Created by Bartosz Kruba.
+ */
+
+/*
+ * 7/26/19 7:12 PM. Created by Bartosz Kruba.
+ */
+
 package com.company.chess_online_bakend_api.data.repository;
 
 import com.company.chess_online_bakend_api.bootstrap.dev.UserBootstrap;
@@ -39,9 +47,9 @@ class UserRepositoryIT {
 
     @Test
     public void testFindByUsername() throws Exception {
-        Optional<User> userOptional = userRepository.findByUsernameLike("ken123");
+        Optional<User> userOptional = userRepository.findByUsernameLike(UserBootstrap.USER_USERNAME);
         assertTrue(userOptional.isPresent());
-        assertEquals("ken123", userOptional.get().getUsername());
+        assertEquals(UserBootstrap.USER_USERNAME, userOptional.get().getUsername());
     }
 
     @Test

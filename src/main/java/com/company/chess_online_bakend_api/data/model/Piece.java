@@ -1,19 +1,25 @@
+/*
+ * 7/26/19 7:15 PM. Created by Bartosz Kruba.
+ */
+
+/*
+ * 7/26/19 7:12 PM. Created by Bartosz Kruba.
+ */
+
 package com.company.chess_online_bakend_api.data.model;
 
 import com.company.chess_online_bakend_api.data.model.enums.HorizontalPosition;
 import com.company.chess_online_bakend_api.data.model.enums.PieceColor;
 import com.company.chess_online_bakend_api.data.model.enums.PieceType;
 import com.company.chess_online_bakend_api.data.model.enums.VerticalPosition;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;
 import java.time.LocalDateTime;
 
 @EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 @Entity
 @Data
 @NoArgsConstructor
@@ -42,5 +48,12 @@ public class Piece extends BaseEntity {
         this.horizontalPosition = horizontalPosition;
         this.verticalPosition = verticalPosition;
         this.moves = moves;
+    }
+
+    public void increaseMoveCount() {
+        if (moves == null) {
+            moves = 0;
+        }
+        moves++;
     }
 }

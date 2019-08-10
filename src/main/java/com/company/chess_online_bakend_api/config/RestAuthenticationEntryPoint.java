@@ -1,3 +1,11 @@
+/*
+ * 7/26/19 7:15 PM. Created by Bartosz Kruba.
+ */
+
+/*
+ * 7/26/19 7:12 PM. Created by Bartosz Kruba.
+ */
+
 package com.company.chess_online_bakend_api.config;
 
 import org.springframework.security.core.AuthenticationException;
@@ -17,7 +25,6 @@ public final class RestAuthenticationEntryPoint implements AuthenticationEntryPo
             final HttpServletResponse response,
             final AuthenticationException authException) throws IOException {
 
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
-                "Unauthorized");
+        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
     }
 }

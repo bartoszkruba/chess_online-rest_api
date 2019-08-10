@@ -1,6 +1,17 @@
+/*
+ * 7/26/19 7:15 PM. Created by Bartosz Kruba.
+ */
+
+/*
+ * 7/26/19 7:12 PM. Created by Bartosz Kruba.
+ */
+
 package com.company.chess_online_bakend_api.data.model.enums;
 
 import org.springframework.lang.Nullable;
+
+import java.util.Arrays;
+import java.util.List;
 
 public enum VerticalPosition {
     ONE("1"),
@@ -13,6 +24,8 @@ public enum VerticalPosition {
     EIGHT("8");
 
     String positionString;
+
+    private static List<VerticalPosition> positionList = Arrays.asList(ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT);
 
     VerticalPosition(String position) {
         this.positionString = position;

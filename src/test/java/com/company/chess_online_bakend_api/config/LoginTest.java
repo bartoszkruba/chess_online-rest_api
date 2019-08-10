@@ -1,3 +1,11 @@
+/*
+ * 7/26/19 7:15 PM. Created by Bartosz Kruba.
+ */
+
+/*
+ * 7/26/19 7:12 PM. Created by Bartosz Kruba.
+ */
+
 package com.company.chess_online_bakend_api.config;
 
 
@@ -63,10 +71,10 @@ public class LoginTest {
     @Test
     public void adminCanLog() throws Exception {
         mockMvc.perform(formLogin().loginProcessingUrl(AuthenticationController.BASE_URL + "login")
-                .user("ken123")
-                .password("devo"))
+                .user(UserBootstrap.ADMIN_USERNAME)
+                .password(UserBootstrap.ADMIN_PASSWORD))
                 .andExpect(status().isOk())
-                .andExpect(authenticated().withUsername("ken123"));
+                .andExpect(authenticated().withUsername(UserBootstrap.ADMIN_USERNAME));
 
         mockMvc.perform(logout().logoutUrl("/auth/logout"))
                 .andExpect(status().isOk());
@@ -75,10 +83,10 @@ public class LoginTest {
     @Test
     void userCanLog() throws Exception {
         mockMvc.perform(formLogin().loginProcessingUrl(AuthenticationController.BASE_URL + "login")
-                .user("carl69")
-                .password("tyler1"))
+                .user(UserBootstrap.USER_USERNAME)
+                .password(UserBootstrap.USER_PASSWORD))
                 .andExpect(status().isOk())
-                .andExpect(authenticated().withUsername("carl69"));
+                .andExpect(authenticated().withUsername(UserBootstrap.USER_USERNAME));
 //                .andExpect(authenticated().withRoles("USER"));
 
         mockMvc.perform(logout().logoutUrl("/auth/logout"))

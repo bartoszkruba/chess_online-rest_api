@@ -1,6 +1,15 @@
+/*
+ * 7/26/19 7:15 PM. Created by Bartosz Kruba.
+ */
+
+/*
+ * 7/26/19 7:12 PM. Created by Bartosz Kruba.
+ */
+
 package com.company.chess_online_bakend_api.data.command;
 
 import com.company.chess_online_bakend_api.data.validation.constraint.UniqueUsernameConstraint;
+import com.company.chess_online_bakend_api.data.validation.constraint.ValidNameConstraint;
 import com.company.chess_online_bakend_api.data.validation.constraint.ValidPasswordConstraint;
 import com.company.chess_online_bakend_api.data.validation.constraint.ValidUsernameConstraint;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -12,6 +21,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
 @EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -40,9 +50,10 @@ public class UserCommand extends BaseEntityCommand {
     @ApiModelProperty(required = true)
     private String password;
 
-    // TODO: 2019-07-06 Create some custom validators for firstname and lastname
+    @ValidNameConstraint
     private String firstName;
 
+    @ValidNameConstraint
     private String lastName;
 
     @NotEmpty(message = EMAIL_NOT_EMPTY_MESSAGE)
