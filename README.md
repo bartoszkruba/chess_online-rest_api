@@ -15,7 +15,7 @@ You can generate docker image for this application and deploy it to DockerHub th
 To change base image for project:  
 cd into: **src/main/docker** and edit **Dockerfile**
 
-Generate docker image for through following command:
+Generate docker image through following command:
 ```
 $ mvn clean package docker:build
 ```
@@ -59,7 +59,7 @@ By default server binds to port **8080** but you can change this by editing dock
 SERVER_PORT: {your_port} 
 ``` 
 
-###Production Configuration:
+### Production Configuration:
 
 Running through Docker Swarm Stacks:
 
@@ -72,8 +72,10 @@ $ git pull https://github.com/bartoszkruba/chess_online_docker-compose.git
 
 Then cd into **prod** folder.  
 
-Edit docker-compose file and change credentials for admin account, MySQL database and RabbitMQ. 
+Edit **docker-compose** file and change credentials for admin account, MySQL database and RabbitMQ. 
  
+Default configuration is 2 services but you can change this setting to as many application replicas as you want. 
+  
 Deploy Docker stock by following command:
 ```
 $ docker stock deploy -c docker-compose.yml {your_stack_name}
@@ -94,7 +96,7 @@ Application socket endpoint:
 ```
 ws://localhost:{your_port}/ws
 ```
-Subscribing to room info (chat messages & game info):
+Subscribing to room (chat messages & game info):
 ```
 /topic/room.{room_id}
 ```
