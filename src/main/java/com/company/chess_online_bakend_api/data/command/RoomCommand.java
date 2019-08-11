@@ -28,14 +28,16 @@ public class RoomCommand extends BaseEntityCommand {
     public static final String NAME_NOT_EMPTY_MESSAGE = "Name cannot be empty";
     public static final String NAME_SIZE_MESSAGE = "Name must be between 3 and 40 characters long";
 
+    @ApiModelProperty("Current game in the room")
     private GameCommand game;
 
     @NotEmpty(message = NAME_NOT_EMPTY_MESSAGE)
     @Size(min = 3, max = 40, message = NAME_SIZE_MESSAGE)
     @UniqueRoomNameConstraint
-    @ApiModelProperty(required = true)
+    @ApiModelProperty(required = true, value = "Room name")
     private String name;
 
+    @ApiModelProperty("Game status in the current game")
     private GameStatus gameStatus;
 
     @Builder

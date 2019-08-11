@@ -12,6 +12,7 @@ import com.company.chess_online_bakend_api.data.model.enums.PieceColor;
 import com.company.chess_online_bakend_api.data.model.enums.PieceType;
 import com.company.chess_online_bakend_api.data.validation.constraint.ValidPositionConstraint;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
 @EqualsAndHashCode(callSuper = true)
@@ -22,11 +23,15 @@ import lombok.*;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PieceCommand extends BaseEntityCommand {
 
+    @ApiModelProperty("How many times did figure moved")
     Integer moves;
 
+    @ApiModelProperty("Piece color")
     PieceColor pieceColor;
+    @ApiModelProperty("Piece type")
     PieceType pieceType;
 
+    @ApiModelProperty("Piece current position on board")
     @ValidPositionConstraint
     String position;
 

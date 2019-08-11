@@ -14,6 +14,7 @@ import com.company.chess_online_bakend_api.data.validation.constraint.ValidPosit
 import com.company.chess_online_bakend_api.data.validation.group.OnCreateNewMove;
 import com.company.chess_online_bakend_api.data.validation.group.OnGetPossibleMoves;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
 import javax.validation.constraints.NotNull;
@@ -31,21 +32,32 @@ public class MoveCommand extends BaseEntityCommand {
 
     @NotNull(groups = OnCreateNewMove.class, message = MESSAGE_FROM_NULL)
     @ValidPositionConstraint(groups = {OnCreateNewMove.class, OnGetPossibleMoves.class})
+    @ApiModelProperty("From which square figure moved")
     private String from;
 
     @NotNull(groups = OnCreateNewMove.class, message = MESSAGE_TO_NULL)
     @ValidPositionConstraint(groups = OnCreateNewMove.class)
+    @ApiModelProperty("Figures new position")
     private String to;
+    @ApiModelProperty("Piece color")
     private PieceColor pieceColor;
+    @ApiModelProperty("Piece type")
     private PieceType pieceType;
 
+    @ApiModelProperty("Is move a king side castle")
     private Boolean isKingSideCastle;
+    @ApiModelProperty("Is move a queen side castle")
     private Boolean isQueenSideCastle;
+    @ApiModelProperty("Will king be attacked after move")
     private Boolean isKingAttacked;
+    @ApiModelProperty("Is it a checkmate move")
     private Boolean isCheckmate;
+    @ApiModelProperty("Is it a draw move")
     private Boolean isDraw;
+    @ApiModelProperty("Move count")
     private Integer count;
 
+    @ApiModelProperty("Move timestamp")
     private Long timestamp;
 
     @Builder
