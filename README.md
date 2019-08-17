@@ -42,7 +42,7 @@ $ mvn clean package docker:build docker:push
 ### Development Configuration:
 Clone docker-compose repository from GitHub  
 ```shell script
-$ git pull https://github.com/bartoszkruba/chess_online_docker-compose.git    
+$ git clone https://github.com/bartoszkruba/chess_online_docker-compose.git    
 ```
 
 Then cd into **dev** folder
@@ -85,12 +85,12 @@ $ vim /etc/etcd/etcd.conf
 
 Should look like this:
 ```
-ETCD_NAME=etcd1
+ETCD_NAME={unique_node_name}
 ETCD_DATA_DIR="/var/lib/etcd/default.etcd"
 ETCD_LISTEN_PEER_URLS="http://0.0.0.0:2380"
 ETCD_LISTEN_CLIENT_URLS="http://0.0.0.0:2379"
-ETCD_INITIAL_ADVERTISE_PEER_URLS="http://{node_ip}:2380"
-ETCD_INITIAL_CLUSTER="etcd1=http://192.168.55.111:2380,etcd2=http://192.168.55.112:2380,etcd3=http://192.168.55.113:2380"
+ETCD_INITIAL_ADVERTISE_PEER_URLS="{node_ip}:2380"
+ETCD_INITIAL_CLUSTER={node_1_name}={node_1_ip}:2380,{node_2_name}={node_2_ip}:2380,{node_3_name}={node_3_ip}:2380"
 ETCD_INITIAL_CLUSTER_STATE="new"
 ETCD_INITIAL_CLUSTER_TOKEN="etcd-cluster-1"
 ETCD_ADVERTISE_CLIENT_URLS="http://0.0.0.0:2379"
@@ -112,7 +112,7 @@ You can find more info about edcb and Galera Cluste configuration [here](https:/
 
 Clone docker-compose repository from GitHub  
 ```shell script
-$ git pull https://github.com/bartoszkruba/chess_online_docker-compose.git    
+$ git clone https://github.com/bartoszkruba/chess_online_docker-compose.git    
 ```
 
 Then cd into **prod** folder.  
@@ -131,7 +131,7 @@ Recommended setup for high availability is at least 3 Gale Cluster replicas
   
 Deploy Docker stock by following command:
 ```shell script
-$ docker stock deploy -c docker-compose.yml {your_stack_name}
+$ docker stack deploy -c docker-compose.yml {your_stack_name}
 ```
 
 
