@@ -57,7 +57,7 @@ public class MoveCommand extends BaseEntityCommand {
     @ApiModelProperty("Move count")
     private Integer count;
 
-    @ApiModelProperty("Move timestamp")
+    @ApiModelProperty("Move timestamp in epoch milliseconds")
     private Long timestamp;
 
     @Builder
