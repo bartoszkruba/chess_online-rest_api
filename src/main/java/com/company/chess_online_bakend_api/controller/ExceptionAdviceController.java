@@ -13,6 +13,7 @@ import com.github.bhlangonijr.chesslib.move.MoveGeneratorException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -90,9 +91,21 @@ public class ExceptionAdviceController extends ResponseEntityExceptionHandler {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("timestamp", new Date());
         body.put("status", 500);
-        body.put("error", "Server could not handle game logic.");
+        body.put("error", "Could not handle game logic.");
 
         return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
+    }
+
+    @ExceptionHandler({ObjectOptimisticLockingFailureException.class})
+    public ResponseEntity<Object> handleVersionException(Exception ex, WebRequest request) {
+        logger.error(ex.getStackTrace());
+
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", new Date());
+        body.put("status", 500);
+        body.put("error", "More than one transaction override data at the same time. Please try again");
+
+        return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.CONFLICT, request);
     }
 
     // TODO: 2019-07-17 fix

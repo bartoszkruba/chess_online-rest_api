@@ -23,6 +23,9 @@ import java.util.List;
 @NoArgsConstructor
 public class Game extends BaseEntity {
 
+    @Version
+    private Long version;
+
     @OneToOne(fetch = FetchType.LAZY)
     private Room room;
 
