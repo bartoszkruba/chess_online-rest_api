@@ -64,8 +64,7 @@ public class UserCommand extends BaseEntityCommand {
     private String email;
 
     @Builder
-    public UserCommand(Long id, @NotEmpty String username,
-                       @NotEmpty String password, String firstName, String lastName, @Email String email) {
+    public UserCommand(Long id, @NotEmpty String username, @NotEmpty String password, String firstName, String lastName, @Email String email) {
 
         super(id);
         this.username = username;

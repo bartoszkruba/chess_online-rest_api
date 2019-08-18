@@ -33,7 +33,7 @@ public class ChatMessageCommand extends BaseEntityCommand {
     @ApiModelProperty(value = "Creators id")
     private Long userId;
 
-    @ApiModelProperty(value = "Message timestamp")
+    @ApiModelProperty(value = "Message timestamp in epoch milliseconds")
     private Long timestamp;
 
     @NotBlank(message = MESSAGE_NOT_BLANK_ERROR)
