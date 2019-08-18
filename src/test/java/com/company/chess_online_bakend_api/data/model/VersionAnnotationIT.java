@@ -5,6 +5,7 @@
 package com.company.chess_online_bakend_api.data.model;
 
 import com.company.chess_online_bakend_api.bootstrap.dev.RoomBootstrap;
+import com.company.chess_online_bakend_api.data.repository.ChatMessageRepository;
 import com.company.chess_online_bakend_api.data.repository.GameRepository;
 import com.company.chess_online_bakend_api.data.repository.RoomRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -23,6 +24,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("dev")
 public class VersionAnnotationIT {
+
+    @Autowired
+    private ChatMessageRepository chatMessageRepository;
 
     @Autowired
     private GameRepository gameRepository;
@@ -53,5 +57,15 @@ public class VersionAnnotationIT {
         game.setFenNotation("eee");
 
         assertThrows(ObjectOptimisticLockingFailureException.class, () -> gameRepository.save(game));
+    }
+
+    @Test
+    void roomVersionAnnotationTest() {
+        var room = roomRepository.findByNameLike("Alpha").orElseThrow(() -> new RuntimeException("No room found"));
+
+        room.setName("dddd");
+        roomRepository.save(room);
+        room.setName("eeeee");
+        assertThrows(ObjectOptimisticLockingFailureException.class, () -> roomRepository.save(room));
     }
 }
