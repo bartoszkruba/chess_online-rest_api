@@ -14,6 +14,7 @@ import com.company.chess_online_bakend_api.controller.ExceptionAdviceController;
 import com.company.chess_online_bakend_api.controller.RoomController;
 import com.company.chess_online_bakend_api.data.command.GameCommand;
 import com.company.chess_online_bakend_api.data.command.RoomCommand;
+import com.company.chess_online_bakend_api.data.command.RoomPageCommand;
 import com.company.chess_online_bakend_api.exception.RoomNotFoundException;
 import com.company.chess_online_bakend_api.service.GameService;
 import com.company.chess_online_bakend_api.service.RoomService;
@@ -90,9 +91,10 @@ class RoomControllerTest extends AbstractRestControllerTest {
 
         when(roomService.getRoomCount()).thenReturn((long) ROOM_COUNT);
 
-        when(roomService.getRoomPage(ROOM_PAGE))
-                .thenReturn(Set.of(ROOMCOMMAND1_WITHOUT_GAME, ROOMCOMMAND2_WITHOUT_GAME));
-
+        when(roomService.getRoomPage(ROOM_PAGE)).thenReturn(RoomPageCommand.builder()
+                .rooms(Set.of(ROOMCOMMAND1_WITHOUT_GAME, ROOMCOMMAND2_WITHOUT_GAME))
+                .totalRooms((long) ROOM_COUNT)
+                .page(ROOM_PAGE).build());
     }
 
     @Test
@@ -138,9 +140,9 @@ class RoomControllerTest extends AbstractRestControllerTest {
         mockMvc.perform(get(RoomController.BASE_URL + "page/" + ROOM_PAGE)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].game").doesNotExist())
-                .andExpect(jsonPath("$[1].game").doesNotExist());
+                .andExpect(jsonPath("$.rooms", hasSize(2)))
+                .andExpect(jsonPath("$.rooms[0].game").doesNotExist())
+                .andExpect(jsonPath("$.rooms[1].game").doesNotExist());
         ;
 
         verify(roomService, times(1)).getRoomPage(ROOM_PAGE);
