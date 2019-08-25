@@ -22,7 +22,7 @@ public class SocketController {
         this.socketService = socketService;
     }
 
-    @MessageMapping("/game.{id}")
+    @MessageMapping("/game.{id}.ping")
     public void receivePlayerPing(@DestinationVariable Long gameId, Principal principal) {
         socketService.updatePlayerPingInGame(gameId, principal.getName());
     }

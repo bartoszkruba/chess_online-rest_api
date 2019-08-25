@@ -204,7 +204,7 @@ public class SocketServiceImpl implements SocketService {
     @Override
     @Async
     public void updatePlayerPingInGame(Long gameId, String username) {
-        if (username == null) return;
+        if (username == null || gameId == null) return;
         Optional<Game> gameOptional = gameRepository.findById(gameId);
 
         if (gameOptional.isEmpty()) return;
@@ -212,7 +212,7 @@ public class SocketServiceImpl implements SocketService {
 
         if (game.getStatus() != GameStatus.STARTED) return;
 
-        if (game.getWhitePing() != null && username.equals(game.getWhitePlayer().getUsername())) {
+        if (game.getWhitePlayer() != null && username.equals(game.getWhitePlayer().getUsername())) {
             game.setWhitePing(LocalDateTime.now());
             gameRepository.save(game);
         } else if (game.getBlackPlayer() != null && username.equals(game.getBlackPlayer().getUsername())) {
