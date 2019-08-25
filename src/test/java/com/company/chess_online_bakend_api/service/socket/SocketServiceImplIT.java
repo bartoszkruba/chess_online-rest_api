@@ -4,6 +4,10 @@
 
 package com.company.chess_online_bakend_api.service.socket;
 
+import com.company.chess_online_bakend_api.bootstrap.dev.DeleteSessionsBootstrap;
+import com.company.chess_online_bakend_api.bootstrap.dev.RoomBootstrap;
+import com.company.chess_online_bakend_api.bootstrap.dev.UserBootstrap;
+import com.company.chess_online_bakend_api.controller.GameController;
 import com.company.chess_online_bakend_api.data.model.ChatMessage;
 import com.company.chess_online_bakend_api.data.model.Move;
 import com.company.chess_online_bakend_api.data.model.Room;
@@ -15,19 +19,30 @@ import com.company.chess_online_bakend_api.data.model.enums.VerticalPosition;
 import com.company.chess_online_bakend_api.data.notification.ChatMessageNotification;
 import com.company.chess_online_bakend_api.data.notification.enums.GameOverCause;
 import com.company.chess_online_bakend_api.data.notification.enums.NotificationType;
+import com.company.chess_online_bakend_api.data.repository.RoomRepository;
+import com.company.chess_online_bakend_api.data.repository.UserRepository;
 import io.github.artsok.RepeatedIfExceptionsTest;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
 import org.springframework.messaging.simp.stomp.StompHeaders;
 import org.springframework.messaging.simp.stomp.StompSession;
 import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 import org.springframework.web.socket.sockjs.client.SockJsClient;
@@ -46,6 +61,10 @@ import java.util.concurrent.TimeoutException;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 // TODO: 2019-08-24 Sometimes socket tests fail due to timeout exception - find out why
@@ -55,7 +74,23 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class SocketServiceImplIT {
 
     @Autowired
-    SocketService socketService;
+    private SocketService socketService;
+
+    @Autowired
+    private DeleteSessionsBootstrap deleteSessionsBootstrap;
+    @Autowired
+    private RoomBootstrap roomBootstrap;
+    @Autowired
+    private UserBootstrap userBootstrap;
+    @Autowired
+    private RoomRepository roomRepository;
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    WebApplicationContext wac;
+
+    private MockMvc mockMvc;
 
     @Value("${local.server.port}")
     private int port;
@@ -64,9 +99,25 @@ class SocketServiceImplIT {
     private CompletableFuture<Object> completableFuture;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws Exception {
+        deleteSessionsBootstrap.run();
+        roomBootstrap.run();
+        userBootstrap.onApplicationEvent(null);
+
         completableFuture = new CompletableFuture<>();
         URL = "ws://localhost:" + port + "/ws";
+
+        this.mockMvc = MockMvcBuilders
+                .webAppContextSetup(this.wac)
+                .apply(springSecurity())
+                .build();
+    }
+
+    @AfterEach
+    void tearDown() throws Exception {
+        deleteSessionsBootstrap.run();
+        roomRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @RepeatedIfExceptionsTest(repeats = 3)
@@ -340,6 +391,41 @@ class SocketServiceImplIT {
         assertEquals(userId.intValue(), ((Map) notification.get("winner")).get("id"));
 
         stompSession.disconnect();
+    }
+
+    @Test
+    @Disabled
+    @WithMockUser(authorities = {UserBootstrap.ROLE_USER}, username = UserBootstrap.USER_USERNAME)
+    @Transactional
+    void pingWhite() throws Exception {
+        var game = roomRepository.findByNameLike("Alpha").get().getGame();
+
+        int gameId = game.getId().intValue();
+
+        mockMvc.perform(put(GameController.BASE_URL + gameId + "/join/white")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        WebSocketStompClient stompClient = new WebSocketStompClient(new SockJsClient(createTransportClient()));
+        stompClient.setMessageConverter(new MappingJackson2MessageConverter());
+
+        StompSession stompSession = stompClient.connect(URL, new StompSessionHandlerAdapter() {
+        }).get(1, SECONDS);
+
+        String address = "/ws/game." + gameId + ".ping";
+
+        System.out.println(address);
+
+        stompSession.send(address, null);
+
+        var updatedGame = roomRepository.findByNameLike("Alpha").get().getGame();
+
+        System.out.println("************ before:");
+        System.out.println(game.getWhitePing());
+        System.out.println("************ after:");
+        System.out.println(updatedGame.getWhitePing());
+
+        assertNotEquals(game.getWhitePing(), updatedGame.getWhitePing());
     }
 
     private List<Transport> createTransportClient() {

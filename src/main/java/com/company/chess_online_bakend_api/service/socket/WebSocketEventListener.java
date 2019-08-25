@@ -26,7 +26,13 @@ public class WebSocketEventListener {
 
     @EventListener
     public void handleWebSocketConnectListener(SessionConnectedEvent event) {
-        log.debug("Received a new web socket connection");
+        String name = "";
+
+        if (event.getUser() != null) {
+            name = event.getUser().getName();
+        }
+
+        log.debug("Received a new web socket connection: " + name);
     }
 
     @EventListener
@@ -35,6 +41,10 @@ public class WebSocketEventListener {
 
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
         String username = (String) headerAccessor.getSessionAttributes().get("username");
+
+        if (username == null) {
+            username = "unknown";
+        }
 
         log.debug(username + " disconnected");
     }
