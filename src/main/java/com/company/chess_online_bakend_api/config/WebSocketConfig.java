@@ -4,6 +4,7 @@
 
 package com.company.chess_online_bakend_api.config;
 
+import com.company.chess_online_bakend_api.data.model.WebSocketId;
 import com.company.chess_online_bakend_api.data.repository.WebSocketIdRepository;
 import lombok.Builder;
 import lombok.Setter;
@@ -22,6 +23,7 @@ import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
 
 import java.security.Principal;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -55,13 +57,20 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         }
     }
 
-    private static class CustomHandshakeHandler extends DefaultHandshakeHandler {
+    private class CustomHandshakeHandler extends DefaultHandshakeHandler {
         @Override
         protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler,
                                           Map<String, Object> attributes) {
-            String uniqueName = UUID.randomUUID().toString();
+            String uniqueId = UUID.randomUUID().toString();
 
-            return CustomPrincipal.builder().name(uniqueName).build();
+            Optional<WebSocketId> optionalWebSocketId = webSocketIdRepository.findById(uniqueId);
+
+            if (optionalWebSocketId.isEmpty()) {
+                return CustomPrincipal.builder().name(uniqueId).build();
+            } else {
+                log.debug("Generating unique id for web socket connection: " + uniqueId);
+                return this.determineUser(request, wsHandler, attributes);
+            }
         }
     }
 
