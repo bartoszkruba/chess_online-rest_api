@@ -4,9 +4,11 @@
 
 package com.company.chess_online_bakend_api.config;
 
+import com.company.chess_online_bakend_api.data.repository.WebSocketIdRepository;
 import lombok.Builder;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.ServerHttpRequest;
@@ -33,6 +35,13 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     private String username;
     @Value("${spring.rabbitmq.password}")
     private String password;
+
+    private final WebSocketIdRepository webSocketIdRepository;
+
+    @Autowired
+    public WebSocketConfig(WebSocketIdRepository webSocketIdRepository) {
+        this.webSocketIdRepository = webSocketIdRepository;
+    }
 
     @Setter
     @Builder

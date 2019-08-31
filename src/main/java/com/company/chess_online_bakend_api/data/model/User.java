@@ -17,6 +17,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
@@ -66,11 +67,7 @@ public class User extends BaseEntity implements Serializable {
         this.lastName = lastName;
         this.email = email;
         this.profileImage = profileImage;
-        if (roles == null) {
-            this.roles = new HashSet<>();
-        } else {
-            this.roles = roles;
-        }
+        this.roles = Objects.requireNonNullElseGet(roles, HashSet::new);
     }
 
     public User addRole(Role role) {
