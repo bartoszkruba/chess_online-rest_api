@@ -9,7 +9,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
 @ToString(callSuper = true)
@@ -17,6 +19,9 @@ import javax.persistence.ManyToOne;
 @Data
 @NoArgsConstructor
 public class WebSocketId {
+
+    @Column(unique = true)
+    @Id
     String connectionId;
 
     @ManyToOne
