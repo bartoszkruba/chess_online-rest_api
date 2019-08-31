@@ -16,6 +16,7 @@ import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
@@ -50,6 +51,9 @@ public class User extends BaseEntity implements Serializable {
     // @Lob Used for large objects
     @Lob
     private Byte[] profileImage;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    private List<WebSocketId> socketConnections;
 
     @Builder
     public User(Long id, LocalDateTime created, LocalDateTime updated, @NotEmpty String username,
