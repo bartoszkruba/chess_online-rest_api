@@ -43,22 +43,29 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!--        For status check-->
+        <!--        Application status check-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
+
+        <!--        Session management with MySQL-->
         <dependency>
             <groupId>org.springframework.session</groupId>
             <artifactId>spring-session-jdbc</artifactId>
         </dependency>
 
+        <!--        Web Sockets-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-websocket</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-messaging</artifactId>
+        </dependency>
 
-        <!--        For RabbitMQ config-->
+        <!--        RabbitMQ config-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-amqp</artifactId>
@@ -68,6 +75,8 @@
             <artifactId>spring-boot-starter-reactor-netty</artifactId>
         </dependency>
 
+
+        <!--        Dev Tool-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>

@@ -32,9 +32,13 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     private final WebSocketIdRepository webSocketIdRepository;
 
+    private final AuthChannelInterceptorAdapter authChannelInterceptorAdapter;
+
     @Autowired
-    public WebSocketConfig(WebSocketIdRepository webSocketIdRepository) {
+    public WebSocketConfig(WebSocketIdRepository webSocketIdRepository,
+                           AuthChannelInterceptorAdapter authChannelInterceptorAdapter) {
         this.webSocketIdRepository = webSocketIdRepository;
+        this.authChannelInterceptorAdapter = authChannelInterceptorAdapter;
     }
 
 //    @Setter
@@ -79,14 +83,13 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
+        log.info("Registering web socket endpoints: ");
 
+        log.info("- /ws");
+        registry.addEndpoint("/ws").setAllowedOrigins("*");
+        log.info("- /ws with SockJS");
         registry.addEndpoint("/ws").setAllowedOrigins("*")
                 .withSockJS();
-        registry.addEndpoint("/ws").setAllowedOrigins("*");
-
-        registry.addEndpoint("/authenticated").setAllowedOrigins("*")
-                .withSockJS();
-        registry.addEndpoint("/authenticated").setAllowedOrigins("*");
     }
 
     @Override
@@ -99,6 +102,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 .setClientLogin(username)
                 .setClientPasscode(password);
 
+        log.info("Application destination prefixes: /app");
         registry.setApplicationDestinationPrefixes("/app");
     }
 }

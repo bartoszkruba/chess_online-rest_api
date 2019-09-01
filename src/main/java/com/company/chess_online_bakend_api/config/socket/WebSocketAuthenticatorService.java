@@ -5,6 +5,7 @@
 package com.company.chess_online_bakend_api.config.socket;
 
 import com.company.chess_online_bakend_api.data.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,9 +15,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
+@Slf4j
 public class WebSocketAuthenticatorService {
 
     private final UserRepository userRepository;
@@ -29,25 +32,33 @@ public class WebSocketAuthenticatorService {
     }
 
     @Transactional
-    public UsernamePasswordAuthenticationToken getAuthenticatedOrFail(final String username, final String password)
+    public UsernamePasswordAuthenticationToken getAuthenticated(final String username, final String password)
             throws AuthenticationException {
 
-        if (username == null || username.trim().isEmpty()) {
-            throw new AuthenticationCredentialsNotFoundException("Username was null or empty.");
-        }
-        if (password == null || password.trim().isEmpty()) {
-            throw new AuthenticationCredentialsNotFoundException("Password was null or empty.");
+        if (username == null || username.trim().isEmpty() || password == null || password.trim().isEmpty()) {
+            String principal = UUID.randomUUID().toString();
+            log.debug("Credential headers either null or empty, assigning principal: " + principal);
+            return new UsernamePasswordAuthenticationToken(principal, null);
         }
 
+        log.debug("Fetching user from database: " + username);
         var user = userRepository.findByUsernameLike(username)
-                .orElseThrow(() -> new AuthenticationCredentialsNotFoundException("User not found"));
+                .orElseThrow(() -> {
+                    log.debug("User not found");
+                    return new AuthenticationCredentialsNotFoundException("User not found");
+                });
+
+        log.debug("Comparing password");
         if (user.getPassword().equals(bCryptPasswordEncoder.encode(password))) {
 
-            var authorites = user.getRoles().stream()
+            var authorities = user.getRoles().stream()
                     .map(r -> (GrantedAuthority) r::getDescription).collect(Collectors.toList());
 
-            return new UsernamePasswordAuthenticationToken(username, null, authorites);
+            log.debug("Assigning principal: " + username);
+            log.debug("Assigning authorities: " + authorities);
+            return new UsernamePasswordAuthenticationToken(username, null, authorities);
         } else {
+            log.debug("Passwords doesn't match");
             throw new AuthenticationCredentialsNotFoundException("Invalid Password");
         }
     }
