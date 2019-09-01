@@ -14,8 +14,7 @@ public class WebSocketAuthorizationSecurityConfig extends AbstractSecurityWebSoc
     @Override
     protected void configureInbound(MessageSecurityMetadataSourceRegistry messages) {
         // TODO: 2019-09-01 Make sure are secured endpoints
-        messages.simpDestMatchers("**").authenticated();
-        messages.simpSubscribeDestMatchers("*").permitAll();
+        messages.simpDestMatchers("/app/chess/**").authenticated();
 
     }
 
