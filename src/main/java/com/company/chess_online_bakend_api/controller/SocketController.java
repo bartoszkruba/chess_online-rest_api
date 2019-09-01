@@ -24,9 +24,9 @@ public class SocketController {
         this.socketService = socketService;
     }
 
-    @MessageMapping("/game.{gameId}.ping")
+    @MessageMapping("/chess/game.{gameId}.ping")
     public void receivePlayerPing(@DestinationVariable Long gameId, Principal principal) {
-        log.debug("New notification: /game." + gameId + ".ping, from user: " + principal.getName());
+        log.debug("New notification: /game." + gameId + ".ping, principal: " + principal.getName());
 
         socketService.updatePlayerPingInGame(gameId, principal.getName());
     }

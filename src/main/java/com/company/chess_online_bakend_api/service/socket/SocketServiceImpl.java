@@ -15,7 +15,6 @@ import com.company.chess_online_bakend_api.data.model.ChatMessage;
 import com.company.chess_online_bakend_api.data.model.Game;
 import com.company.chess_online_bakend_api.data.model.Move;
 import com.company.chess_online_bakend_api.data.model.User;
-import com.company.chess_online_bakend_api.data.model.enums.GameStatus;
 import com.company.chess_online_bakend_api.data.model.enums.PieceColor;
 import com.company.chess_online_bakend_api.data.notification.GameOverNotification;
 import com.company.chess_online_bakend_api.data.notification.JoinGameNotification;
@@ -202,22 +201,33 @@ public class SocketServiceImpl implements SocketService {
     }
 
     @Override
-    @Async
+//    @Async
     public void updatePlayerPingInGame(Long gameId, String username) {
+        log.debug("Updating ping in game: " + gameId + ", principal: " + username);
         if (username == null || gameId == null) return;
         Optional<Game> gameOptional = gameRepository.findById(gameId);
 
-        if (gameOptional.isEmpty()) return;
+        if (gameOptional.isEmpty()) {
+            log.debug("Game not found");
+            return;
+        }
         var game = gameOptional.get();
 
-        if (game.getStatus() != GameStatus.STARTED) return;
+//        if (game.getStatus() != GameStatus.STARTED) {
+//            log.debug("Game not started");
+//            return;
+//        }
 
         if (game.getWhitePlayer() != null && username.equals(game.getWhitePlayer().getUsername())) {
+            log.debug("Updating white ping");
             game.setWhitePing(LocalDateTime.now());
             gameRepository.save(game);
         } else if (game.getBlackPlayer() != null && username.equals(game.getBlackPlayer().getUsername())) {
+            log.debug("Updating black ping");
             game.setBlackPing(LocalDateTime.now());
             gameRepository.save(game);
+        } else {
+            log.debug("Player not in game");
         }
     }
 }

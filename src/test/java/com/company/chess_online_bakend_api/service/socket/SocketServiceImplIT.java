@@ -19,12 +19,12 @@ import com.company.chess_online_bakend_api.data.model.enums.VerticalPosition;
 import com.company.chess_online_bakend_api.data.notification.ChatMessageNotification;
 import com.company.chess_online_bakend_api.data.notification.enums.GameOverCause;
 import com.company.chess_online_bakend_api.data.notification.enums.NotificationType;
+import com.company.chess_online_bakend_api.data.repository.GameRepository;
 import com.company.chess_online_bakend_api.data.repository.RoomRepository;
 import com.company.chess_online_bakend_api.data.repository.UserRepository;
 import io.github.artsok.RepeatedIfExceptionsTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,8 +41,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.socket.WebSocketHttpHeaders;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 import org.springframework.web.socket.sockjs.client.SockJsClient;
@@ -60,8 +60,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static junit.framework.TestCase.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -86,6 +86,8 @@ class SocketServiceImplIT {
     private RoomRepository roomRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private GameRepository gameRepository;
 
     @Autowired
     WebApplicationContext wac;
@@ -105,10 +107,9 @@ class SocketServiceImplIT {
         userBootstrap.onApplicationEvent(null);
 
         completableFuture = new CompletableFuture<>();
-        URL = "ws://localhost:" + port + "/ws";
+        URL = "ws://localhost:" + port + "/chess";
 
-        this.mockMvc = MockMvcBuilders
-                .webAppContextSetup(this.wac)
+        mockMvc = MockMvcBuilders.webAppContextSetup(wac)
                 .apply(springSecurity())
                 .build();
     }
@@ -394,13 +395,14 @@ class SocketServiceImplIT {
     }
 
     @Test
-    @Disabled
-    @WithMockUser(authorities = {UserBootstrap.ROLE_USER}, username = UserBootstrap.USER_USERNAME)
-    @Transactional
+    @WithMockUser(username = UserBootstrap.USER_USERNAME, authorities = {UserBootstrap.ROLE_USER})
     void pingWhite() throws Exception {
-        var game = roomRepository.findByNameLike("Alpha").get().getGame();
+        StompHeaders connectHeaders = new StompHeaders();
+        connectHeaders.add("login", UserBootstrap.USER_USERNAME);
+        connectHeaders.add("password", UserBootstrap.USER_PASSWORD);
 
-        int gameId = game.getId().intValue();
+        var game = roomRepository.findByNameLike("Alpha").get().getGame();
+        Long gameId = game.getId();
 
         mockMvc.perform(put(GameController.BASE_URL + gameId + "/join/white")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -409,23 +411,24 @@ class SocketServiceImplIT {
         WebSocketStompClient stompClient = new WebSocketStompClient(new SockJsClient(createTransportClient()));
         stompClient.setMessageConverter(new MappingJackson2MessageConverter());
 
-        StompSession stompSession = stompClient.connect(URL, new StompSessionHandlerAdapter() {
-        }).get(1, SECONDS);
+        StompSession stompSession = stompClient.connect(URL, new WebSocketHttpHeaders(), connectHeaders,
+                new StompSessionHandlerAdapter() {
+                }).get(5, SECONDS);
 
-        String address = "/ws/game." + gameId + ".ping";
-
-        System.out.println(address);
+        String address = "/app/chess/game." + gameId + ".ping";
 
         stompSession.send(address, null);
 
-        var updatedGame = roomRepository.findByNameLike("Alpha").get().getGame();
+        // Waiting for service to update game in DB
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
-        System.out.println("************ before:");
-        System.out.println(game.getWhitePing());
-        System.out.println("************ after:");
-        System.out.println(updatedGame.getWhitePing());
+        var updatedGame = gameRepository.findById(gameId).get();
 
-        assertNotEquals(game.getWhitePing(), updatedGame.getWhitePing());
+        assertNotNull(updatedGame.getWhitePing());
     }
 
     private List<Transport> createTransportClient() {

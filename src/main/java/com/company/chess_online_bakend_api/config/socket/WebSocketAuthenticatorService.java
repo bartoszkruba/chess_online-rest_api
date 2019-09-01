@@ -48,8 +48,8 @@ public class WebSocketAuthenticatorService {
                     return new AuthenticationCredentialsNotFoundException("User not found");
                 });
 
-        log.debug("Comparing password");
-        if (user.getPassword().equals(bCryptPasswordEncoder.encode(password))) {
+        log.debug("Comparing passwords");
+        if (bCryptPasswordEncoder.matches(password, user.getPassword())) {
 
             var authorities = user.getRoles().stream()
                     .map(r -> (GrantedAuthority) r::getDescription).collect(Collectors.toList());

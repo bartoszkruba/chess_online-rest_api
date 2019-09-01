@@ -32,10 +32,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         log.info("Registering web socket endpoints: ");
 
-        log.info("- /ws");
-        registry.addEndpoint("/ws").setAllowedOrigins("*");
-        log.info("- /ws with SockJS");
-        registry.addEndpoint("/ws").setAllowedOrigins("*")
+        log.info("- /chess");
+        registry.addEndpoint("/chess").setAllowedOrigins("*");
+        log.info("- /chess with SockJS");
+        registry.addEndpoint("/chess").setAllowedOrigins("*")
                 .withSockJS();
     }
 
