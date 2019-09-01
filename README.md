@@ -41,7 +41,7 @@ $ mvn clean package docker:build docker:push
 
 ### Development Configuration:
 Clone docker-compose repository from GitHub  
-```shell script
+```
 $ git pull https://github.com/bartoszkruba/chess_online_docker-compose.git    
 ```
 
@@ -50,7 +50,7 @@ Then cd into **dev** folder
 
 Run docker-compose file though following command:
 
-```shell script
+```
 $ docker-compose up
 ```
 
@@ -74,12 +74,12 @@ Galera image requires  running etcd cluster installed on each of the Docker phys
 How to configure etcd (CentOS 7):
 
 1: Install etcd package:
-```shell script
+```
 yum install etcd
 ```
 
 2: Edit configuration
-```shell script
+```
 $ vim /etc/etcd/etcd.conf
 ```
 
@@ -96,13 +96,13 @@ ETCD_INITIAL_CLUSTER_TOKEN="etcd-cluster-1"
 ETCD_ADVERTISE_CLIENT_URLS="http://0.0.0.0:2379"
 ```
 3: Start the service:
-```shell script
+```
 $ systemctl enable etcd
 $ systemctl start etcd
 ```
 
 4: Verify cluster status
-```shell script
+```
 $ etcdctl cluster-health
 ```
 
@@ -111,7 +111,7 @@ You can find more info about edcb and Galera Cluste configuration [here](https:/
 #### Deploying on Docker Swarm Stacks
 
 Clone docker-compose repository from GitHub  
-```shell script
+```
 $ git pull https://github.com/bartoszkruba/chess_online_docker-compose.git    
 ```
 
@@ -130,7 +130,7 @@ DISCOVERY_SERVICE: '192.168.55.111:2379,192.168.55.112:2379,192.168.55.207:2379'
 Recommended setup for high availability is at least 3 Gale Cluster replicas
   
 Deploy Docker stock by following command:
-```shell script
+```
 $ docker stock deploy -c docker-compose.yml {your_stack_name}
 ```
 
@@ -144,15 +144,26 @@ Swagger documentation for REST API can be accessed through following endpoint:
 http://localhost:8080/swagger-ui.html
 ```
 ### WebSockets:
-Socket messages are broadcasted through STOMP protocol
-
-Application socket endpoint:
-```http request
-ws://localhost:{your_port}/ws
+Socket endpoint:
 ```
-Subscribing to room (chat messages & game info):
+ws:YOUR_URL/ws
+```
+
+#### Subscribe endpoints: 
+
+In order to receive information about game and chat messages subscribe to room channel:
 ```
 /topic/room.{room_id}
+```
+
+#### Web Socket Authorization:
+Include following headers to web socket connect request:
+```
+login {your_username}
+```
+
+```
+password {your_password}
 ```
 
 ## Used Libraries:
