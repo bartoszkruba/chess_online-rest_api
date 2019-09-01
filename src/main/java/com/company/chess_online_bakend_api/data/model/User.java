@@ -16,7 +16,6 @@ import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -49,24 +48,15 @@ public class User extends BaseEntity implements Serializable {
     @Email
     private String email;
 
-    // @Lob Used for large objects
-    @Lob
-    private Byte[] profileImage;
-
-    @OneToMany(fetch = FetchType.LAZY)
-    private List<WebSocketId> socketConnections;
-
     @Builder
     public User(Long id, LocalDateTime created, LocalDateTime updated, @NotEmpty String username,
-                @NotEmpty String password, String firstName, String lastName, @Email String email,
-                Byte[] profileImage, Set<Role> roles) {
+                @NotEmpty String password, String firstName, String lastName, @Email String email, Set<Role> roles) {
         super(id, created, updated);
         this.username = username;
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.profileImage = profileImage;
         this.roles = Objects.requireNonNullElseGet(roles, HashSet::new);
     }
 
