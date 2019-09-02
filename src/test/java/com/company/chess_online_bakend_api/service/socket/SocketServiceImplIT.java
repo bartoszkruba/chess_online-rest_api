@@ -61,6 +61,7 @@ import java.util.concurrent.TimeoutException;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static junit.framework.TestCase.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -392,6 +393,41 @@ class SocketServiceImplIT {
         assertEquals(userId.intValue(), ((Map) notification.get("winner")).get("id"));
 
         stompSession.disconnect();
+    }
+
+    @Test
+    @WithMockUser(username = UserBootstrap.USER_USERNAME, authorities = {UserBootstrap.ROLE_USER})
+    void pingWhiteNotAuthorized() throws Exception {
+        StompHeaders connectHeaders = new StompHeaders();
+
+        var game = roomRepository.findByNameLike("Alpha").get().getGame();
+        Long gameId = game.getId();
+
+        mockMvc.perform(put(GameController.BASE_URL + gameId + "/join/white")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        WebSocketStompClient stompClient = new WebSocketStompClient(new SockJsClient(createTransportClient()));
+        stompClient.setMessageConverter(new MappingJackson2MessageConverter());
+
+        StompSession stompSession = stompClient.connect(URL, new WebSocketHttpHeaders(), connectHeaders,
+                new StompSessionHandlerAdapter() {
+                }).get(5, SECONDS);
+
+        String address = "/app/chess/game." + gameId + ".ping";
+
+        stompSession.send(address, null);
+
+        // Waiting for service to update game in DB
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        var updatedGame = gameRepository.findById(gameId).get();
+
+        assertNull(updatedGame.getWhitePing());
     }
 
     @Test

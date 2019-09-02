@@ -31,14 +31,15 @@ public class WebSocketAuthenticatorService {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
+
     @Transactional
     public UsernamePasswordAuthenticationToken getAuthenticated(final String username, final String password)
             throws AuthenticationException {
 
         if (username == null || username.trim().isEmpty() || password == null || password.trim().isEmpty()) {
             String principal = UUID.randomUUID().toString();
-            log.debug("Credential headers either null or empty, assigning principal: " + principal);
-            return new UsernamePasswordAuthenticationToken(principal, null);
+            log.debug("Credential headers either null or empty, assigning null principal: ");
+            return new UsernamePasswordAuthenticationToken(null, null);
         }
 
         log.debug("Fetching user from database: " + username);
@@ -61,5 +62,9 @@ public class WebSocketAuthenticatorService {
             log.debug("Passwords doesn't match");
             throw new AuthenticationCredentialsNotFoundException("Invalid Password");
         }
+    }
+
+    public boolean checkIfUserExists(String username) {
+        return userRepository.findByUsernameLike(username).isPresent();
     }
 }
