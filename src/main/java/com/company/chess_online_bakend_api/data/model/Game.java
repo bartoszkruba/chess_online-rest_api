@@ -40,9 +40,13 @@ public class Game extends BaseEntity {
 
     @ManyToOne
     private User whitePlayer;
+    // Used to determine if player disconnected
+    private LocalDateTime whitePing;
 
     @ManyToOne
     private User blackPlayer;
+    // Used to determine if player disconnected
+    private LocalDateTime blackPing;
 
     private Boolean isKingAttacked;
     private Boolean isCheckmate;
@@ -53,12 +57,15 @@ public class Game extends BaseEntity {
     @Builder
     public Game(Long id, LocalDateTime created, LocalDateTime updated, Room room, GameStatus status, User whitePlayer,
                 User blackPlayer, Integer turn, Board board, String fenNotation, List<Move> moves,
-                Boolean isKingAttacked, Boolean isCheckmate, Boolean isDraw) {
+                Boolean isKingAttacked, Boolean isCheckmate, Boolean isDraw, LocalDateTime whitePing,
+                LocalDateTime blackPing) {
         super(id, created, updated);
         this.room = room;
         this.status = status;
         this.whitePlayer = whitePlayer;
+        this.whitePing = whitePing;
         this.blackPlayer = blackPlayer;
+        this.blackPing = blackPing;
         this.turn = turn;
         this.board = board;
         this.fenNotation = fenNotation;

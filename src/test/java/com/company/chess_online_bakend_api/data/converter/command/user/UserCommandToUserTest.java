@@ -51,7 +51,6 @@ class UserCommandToUserTest {
         assertNull(convertedUser.getFirstName());
         assertNull(convertedUser.getLastName());
         assertNull(convertedUser.getPassword());
-        assertNull(convertedUser.getProfileImage());
         assertNull(convertedUser.getCreated());
         assertNull(convertedUser.getUpdated());
     }
@@ -78,7 +77,6 @@ class UserCommandToUserTest {
 
         assertNull(convertedUser.getCreated());
         assertNull(convertedUser.getUpdated());
-        assertNull(convertedUser.getProfileImage());
 
         assertEquals(0, convertedUser.getRoles().size());
     }
