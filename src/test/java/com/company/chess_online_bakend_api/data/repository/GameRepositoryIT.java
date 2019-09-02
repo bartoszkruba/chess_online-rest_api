@@ -10,12 +10,12 @@ package com.company.chess_online_bakend_api.data.repository;
 
 import com.company.chess_online_bakend_api.bootstrap.dev.RoomBootstrap;
 import com.company.chess_online_bakend_api.data.model.Game;
-import com.company.chess_online_bakend_api.data.model.Room;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Optional;
@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
+@ActiveProfiles("dev")
 public class GameRepositoryIT {
 
     private final Long ROOM_ID = 1L;
@@ -43,7 +44,8 @@ public class GameRepositoryIT {
 
     @Test
     void findByRoom() {
-        Optional<Game> optionalGame = gameRepository.findGameByRoom(Room.builder().id(ROOM_ID).build());
+        var room = roomRepository.findById(ROOM_ID).orElseThrow(() -> new RuntimeException("Room not found"));
+        Optional<Game> optionalGame = gameRepository.findGameByRoom(room);
 
         assertTrue(optionalGame.isPresent());
         assertEquals(ROOM_ID, optionalGame.get().getRoom().getId());

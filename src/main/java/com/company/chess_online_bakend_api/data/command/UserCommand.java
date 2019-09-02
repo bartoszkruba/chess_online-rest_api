@@ -41,29 +41,30 @@ public class UserCommand extends BaseEntityCommand {
     @Size(min = 3, max = 30, message = USERNAME_SIZE_MESSAGE)
     @ValidUsernameConstraint
     @UniqueUsernameConstraint
-    @ApiModelProperty(required = true)
+    @ApiModelProperty(required = true, value = "Users username")
     private String username;
 
     @NotEmpty(message = PASSWORD_NOT_EMPTY_MESSAGE)
     @Size(min = 3, max = 30, message = PASSWORD_NOT_SIZE_MESSAGE)
     @ValidPasswordConstraint
-    @ApiModelProperty(required = true)
+    @ApiModelProperty(required = true, value = "Users password")
     private String password;
 
     @ValidNameConstraint
+    @ApiModelProperty(value = "Users first name")
     private String firstName;
 
     @ValidNameConstraint
+    @ApiModelProperty(value = "Users last name")
     private String lastName;
 
     @NotEmpty(message = EMAIL_NOT_EMPTY_MESSAGE)
     @Email(message = EMAIL_NOT_VALID_MESSAGE)
-    @ApiModelProperty(required = true)
+    @ApiModelProperty(required = true, value = "Users email")
     private String email;
 
     @Builder
-    public UserCommand(Long id, @NotEmpty String username,
-                       @NotEmpty String password, String firstName, String lastName, @Email String email) {
+    public UserCommand(Long id, @NotEmpty String username, @NotEmpty String password, String firstName, String lastName, @Email String email) {
 
         super(id);
         this.username = username;

@@ -15,6 +15,7 @@ package com.company.chess_online_bakend_api.controller;
 import com.company.chess_online_bakend_api.data.command.CountCommand;
 import com.company.chess_online_bakend_api.data.command.GameCommand;
 import com.company.chess_online_bakend_api.data.command.RoomCommand;
+import com.company.chess_online_bakend_api.data.command.RoomPageCommand;
 import com.company.chess_online_bakend_api.service.GameService;
 import com.company.chess_online_bakend_api.service.RoomService;
 import io.swagger.annotations.Api;
@@ -26,7 +27,6 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Set;
 
 @Api
 @Slf4j
@@ -80,7 +80,7 @@ public class RoomController {
             notes = "Ten rooms per page")
     @GetMapping({"page/{page}", "page/{page}/"})
     @ResponseStatus(HttpStatus.OK)
-    public Set<RoomCommand> getRoomPage(@PathVariable int page) {
+    public RoomPageCommand getRoomPage(@PathVariable int page) {
         log.debug("New request: GET " + BASE_URL + "page/" + page);
 
         return roomService.getRoomPage(page);

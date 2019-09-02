@@ -8,7 +8,7 @@
 
 package com.company.chess_online_bakend_api.config;
 
-import com.company.chess_online_bakend_api.bootstrap.dev.DeleteSessionBootstrap;
+import com.company.chess_online_bakend_api.bootstrap.dev.DeleteSessionsBootstrap;
 import com.company.chess_online_bakend_api.bootstrap.dev.UserBootstrap;
 import com.company.chess_online_bakend_api.controller.AuthenticationController;
 import com.company.chess_online_bakend_api.data.repository.RoleRepository;
@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class SessionTest {
 
     @Autowired
-    DeleteSessionBootstrap deleteSessionBootstrap;
+    DeleteSessionsBootstrap deleteSessionsBootstrap;
 
     @Autowired
     UserBootstrap userBootstrap;
@@ -50,14 +50,14 @@ public class SessionTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        deleteSessionBootstrap.run();
+        deleteSessionsBootstrap.run();
         userBootstrap.onApplicationEvent(null);
 
     }
 
     @AfterEach
     void tearDown() throws Exception {
-        deleteSessionBootstrap.run();
+        deleteSessionsBootstrap.run();
         userRepository.deleteAll();
         roleRepository.deleteAll();
     }

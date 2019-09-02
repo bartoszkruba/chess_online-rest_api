@@ -1,13 +1,5 @@
 /*
- * 7/26/19 8:09 PM. Created by Bartosz Kruba.
- */
-
-/*
- * 7/26/19 7:15 PM. Created by Bartosz Kruba.
- */
-
-/*
- * 7/26/19 7:12 PM. Created by Bartosz Kruba.
+ * 8/24/19, 3:16 PM. Updated by Bartosz Kruba.
  */
 
 package com.company.chess_online_bakend_api.data.command;
@@ -19,13 +11,22 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Builder
-public class CountCommand {
+public class ChatMessagePageCommand {
 
-    @ApiModelProperty(value = "Collection count")
-    private Long count;
+    @ApiModelProperty("Page number (starts from 0)")
+    private Integer page;
+
+    @ApiModelProperty("Total message count")
+    private Long totalMessages;
+
+    @ApiModelProperty("Found messages")
+    private List<ChatMessageCommand> messages;
+
 }

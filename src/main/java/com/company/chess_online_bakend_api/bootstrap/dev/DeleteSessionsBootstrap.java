@@ -30,14 +30,14 @@ import java.sql.Statement;
 @Slf4j
 @Component
 @Profile("dev")
-public class DeleteSessionBootstrap implements CommandLineRunner {
+public class DeleteSessionsBootstrap implements CommandLineRunner {
 
     @Value("${spring.datasource.url}")
-    public String URL;
+    private String URL;
     @Value("${spring.datasource.username}")
-    public String USERNAME;
+    private String USERNAME;
     @Value("${spring.datasource.password}")
-    public String PASSWORD;
+    private String PASSWORD;
 
     @Override
     public void run(String... args) throws Exception {
