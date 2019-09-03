@@ -9,13 +9,14 @@
 package com.company.chess_online_bakend_api.service;
 
 import com.company.chess_online_bakend_api.data.command.RoomCommand;
-import com.company.chess_online_bakend_api.data.command.RoomPageCommand;
+
+import java.util.Set;
 
 public interface RoomService extends CrudService<RoomCommand, Long> {
 
     long getRoomCount();
 
-    RoomPageCommand getRoomPage(int page);
+    Set<RoomCommand> getRoomPage(int page);
 
     RoomCommand createNewRoom(RoomCommand roomCommand);
 }

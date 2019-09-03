@@ -13,7 +13,6 @@
 package com.company.chess_online_bakend_api.service.jpa;
 
 import com.company.chess_online_bakend_api.data.command.ChatMessageCommand;
-import com.company.chess_online_bakend_api.data.command.ChatMessagePageCommand;
 import com.company.chess_online_bakend_api.data.converter.command.chatMessage.ChatMessageToChatMessageCommand;
 import com.company.chess_online_bakend_api.data.model.ChatMessage;
 import com.company.chess_online_bakend_api.data.repository.ChatMessageRepository;
@@ -29,6 +28,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -65,7 +65,7 @@ public class ChatMessageServiceJpaImpl implements ChatMessageService {
     }
 
     @Override
-    public ChatMessagePageCommand getMessagePageForRoom(Long roomId, int page) {
+    public List<ChatMessageCommand> getMessagePageForRoom(Long roomId, int page) {
         log.debug("Getting messages from room: " + roomId + ", page: " + page);
 
         var room = roomRepository.findById(roomId)
@@ -73,17 +73,9 @@ public class ChatMessageServiceJpaImpl implements ChatMessageService {
 
         var pageRequest = PageRequest.of(page, 10, Sort.by("created").descending());
 
-        var messages = chatMessageRepository.findByRoom(room, pageRequest)
-                .stream()
+        return chatMessageRepository.findByRoom(room, pageRequest).stream()
                 .map(chatMessageToChatMessageCommand::convert)
                 .collect(Collectors.toList());
-
-        return ChatMessagePageCommand.builder()
-                .messages(messages)
-                .page(page)
-                .totalMessages((long) room.getChatMessages().size())
-                .build();
-
     }
 
     @Override

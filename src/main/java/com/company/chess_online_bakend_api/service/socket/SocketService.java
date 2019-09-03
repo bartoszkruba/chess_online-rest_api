@@ -28,6 +28,4 @@ public interface SocketService {
     void broadcastGameOverWithCheckmate(User winner, PieceColor winnerColor, String fenNotation, Long gameId, Long roomId);
 
     void broadcastGameOverWithPlayerLeft(User winner, PieceColor winnerColor, String fenNotation, Long gameId, Long roomId);
-
-    void updatePlayerPingInGame(Long gameId, String username);
 }

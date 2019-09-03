@@ -24,9 +24,6 @@ import java.util.List;
 @NoArgsConstructor
 public class Room extends BaseEntity {
 
-    @Version
-    private Long version;
-
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Game game;
 

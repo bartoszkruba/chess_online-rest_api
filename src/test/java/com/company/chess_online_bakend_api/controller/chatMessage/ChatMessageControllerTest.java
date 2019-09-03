@@ -9,7 +9,6 @@ import com.company.chess_online_bakend_api.controller.ChatMessageController;
 import com.company.chess_online_bakend_api.controller.ExceptionAdviceController;
 import com.company.chess_online_bakend_api.controller.RoomController;
 import com.company.chess_online_bakend_api.data.command.ChatMessageCommand;
-import com.company.chess_online_bakend_api.data.command.ChatMessagePageCommand;
 import com.company.chess_online_bakend_api.exception.RoomNotFoundException;
 import com.company.chess_online_bakend_api.service.jpa.ChatMessageServiceJpaImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -106,17 +105,12 @@ class ChatMessageControllerTest extends AbstractRestControllerTest {
                 ChatMessageCommand.builder().id(1L).build(),
                 ChatMessageCommand.builder().id(2L).build());
 
-        when(chatMessageService.getMessagePageForRoom(roomId, page)).thenReturn(ChatMessagePageCommand
-                .builder()
-                .messages(chatMessageCommandList)
-                .totalMessages(2L)
-                .page(page)
-                .build());
+        when(chatMessageService.getMessagePageForRoom(roomId, page)).thenReturn(chatMessageCommandList);
 
         mockMvc.perform(get(RoomController.BASE_URL + roomId + "/message/page/" + page)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.messages", hasSize(2)));
+                .andExpect(jsonPath("$", hasSize(2)));
 
         verify(chatMessageService, times(1)).getMessagePageForRoom(roomId, page);
         verifyNoMoreInteractions(chatMessageService);
