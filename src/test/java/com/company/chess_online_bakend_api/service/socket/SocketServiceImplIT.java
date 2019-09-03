@@ -4,10 +4,6 @@
 
 package com.company.chess_online_bakend_api.service.socket;
 
-import com.company.chess_online_bakend_api.bootstrap.dev.DeleteSessionsBootstrap;
-import com.company.chess_online_bakend_api.bootstrap.dev.RoomBootstrap;
-import com.company.chess_online_bakend_api.bootstrap.dev.UserBootstrap;
-import com.company.chess_online_bakend_api.controller.GameController;
 import com.company.chess_online_bakend_api.data.model.ChatMessage;
 import com.company.chess_online_bakend_api.data.model.Move;
 import com.company.chess_online_bakend_api.data.model.Room;
@@ -19,30 +15,19 @@ import com.company.chess_online_bakend_api.data.model.enums.VerticalPosition;
 import com.company.chess_online_bakend_api.data.notification.ChatMessageNotification;
 import com.company.chess_online_bakend_api.data.notification.enums.GameOverCause;
 import com.company.chess_online_bakend_api.data.notification.enums.NotificationType;
-import com.company.chess_online_bakend_api.data.repository.GameRepository;
-import com.company.chess_online_bakend_api.data.repository.RoomRepository;
-import com.company.chess_online_bakend_api.data.repository.UserRepository;
-import io.github.artsok.RepeatedIfExceptionsTest;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
 import org.springframework.messaging.simp.stomp.StompHeaders;
 import org.springframework.messaging.simp.stomp.StompSession;
 import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.socket.WebSocketHttpHeaders;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 import org.springframework.web.socket.sockjs.client.SockJsClient;
@@ -60,40 +45,16 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static junit.framework.TestCase.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-// TODO: 2019-08-24 Sometimes socket tests fail due to timeout exception - find out why
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("dev")
 class SocketServiceImplIT {
 
     @Autowired
-    private SocketService socketService;
-
-    @Autowired
-    private DeleteSessionsBootstrap deleteSessionsBootstrap;
-    @Autowired
-    private RoomBootstrap roomBootstrap;
-    @Autowired
-    private UserBootstrap userBootstrap;
-    @Autowired
-    private RoomRepository roomRepository;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private GameRepository gameRepository;
-
-    @Autowired
-    WebApplicationContext wac;
-
-    private MockMvc mockMvc;
+    SocketService socketService;
 
     @Value("${local.server.port}")
     private int port;
@@ -102,27 +63,12 @@ class SocketServiceImplIT {
     private CompletableFuture<Object> completableFuture;
 
     @BeforeEach
-    void setUp() throws Exception {
-        deleteSessionsBootstrap.run();
-        roomBootstrap.run();
-        userBootstrap.onApplicationEvent(null);
-
+    void setUp() {
         completableFuture = new CompletableFuture<>();
-        URL = "ws://localhost:" + port + "/chess";
-
-        mockMvc = MockMvcBuilders.webAppContextSetup(wac)
-                .apply(springSecurity())
-                .build();
+        URL = "ws://localhost:" + port + "/ws";
     }
 
-    @AfterEach
-    void tearDown() throws Exception {
-        deleteSessionsBootstrap.run();
-        roomRepository.deleteAll();
-        userRepository.deleteAll();
-    }
-
-    @RepeatedIfExceptionsTest(repeats = 3)
+    @Test
     void sendChatMessageNotification() throws InterruptedException, ExecutionException, TimeoutException {
         Long roomId = 1L;
         String username = "username";
@@ -158,7 +104,7 @@ class SocketServiceImplIT {
         stompSession.disconnect();
     }
 
-    @RepeatedIfExceptionsTest(repeats = 3)
+    @Test
     void sendJoinGameNotification() throws InterruptedException, ExecutionException, TimeoutException {
         Long roomId = 1L;
         Long userId = 2L;
@@ -192,7 +138,7 @@ class SocketServiceImplIT {
         stompSession.disconnect();
     }
 
-    @RepeatedIfExceptionsTest(repeats = 3)
+    @Test
     void sendLeaveGameNotification() throws InterruptedException, ExecutionException, TimeoutException {
         Long roomId = 1L;
         Long userId = 2L;
@@ -226,7 +172,7 @@ class SocketServiceImplIT {
         stompSession.disconnect();
     }
 
-    @RepeatedIfExceptionsTest(repeats = 3)
+    @Test
     void sendMoveNotification() throws InterruptedException, ExecutionException, TimeoutException {
         Long roomId = 1L;
         var color = PieceColor.WHITE;
@@ -299,7 +245,7 @@ class SocketServiceImplIT {
         stompSession.disconnect();
     }
 
-    @RepeatedIfExceptionsTest(repeats = 3)
+    @Test
     void sendGameOverDraw() throws InterruptedException, ExecutionException, TimeoutException {
         Long gameId = 1L;
         Long roomId = 2L;
@@ -325,7 +271,7 @@ class SocketServiceImplIT {
         stompSession.disconnect();
     }
 
-    @RepeatedIfExceptionsTest(repeats = 3)
+    @Test
     void sendGameOverCheckmate() throws InterruptedException, ExecutionException, TimeoutException {
         Long gameId = 1L;
         Long roomId = 2L;
@@ -360,7 +306,7 @@ class SocketServiceImplIT {
         stompSession.disconnect();
     }
 
-    @RepeatedIfExceptionsTest(repeats = 3)
+    @Test
     void sendGameOverPlayerLeft() throws InterruptedException, ExecutionException, TimeoutException {
         Long gameId = 1L;
         Long roomId = 2L;
@@ -393,78 +339,6 @@ class SocketServiceImplIT {
         assertEquals(userId.intValue(), ((Map) notification.get("winner")).get("id"));
 
         stompSession.disconnect();
-    }
-
-    @Test
-    @WithMockUser(username = UserBootstrap.USER_USERNAME, authorities = {UserBootstrap.ROLE_USER})
-    void pingWhiteNotAuthorized() throws Exception {
-        StompHeaders connectHeaders = new StompHeaders();
-
-        var game = roomRepository.findByNameLike("Alpha").get().getGame();
-        Long gameId = game.getId();
-
-        mockMvc.perform(put(GameController.BASE_URL + gameId + "/join/white")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-
-        WebSocketStompClient stompClient = new WebSocketStompClient(new SockJsClient(createTransportClient()));
-        stompClient.setMessageConverter(new MappingJackson2MessageConverter());
-
-        StompSession stompSession = stompClient.connect(URL, new WebSocketHttpHeaders(), connectHeaders,
-                new StompSessionHandlerAdapter() {
-                }).get(5, SECONDS);
-
-        String address = "/app/chess/game." + gameId + ".ping";
-
-        stompSession.send(address, null);
-
-        // Waiting for service to update game in DB
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        var updatedGame = gameRepository.findById(gameId).get();
-
-        assertNull(updatedGame.getWhitePing());
-    }
-
-    @Test
-    @WithMockUser(username = UserBootstrap.USER_USERNAME, authorities = {UserBootstrap.ROLE_USER})
-    void pingWhite() throws Exception {
-        StompHeaders connectHeaders = new StompHeaders();
-        connectHeaders.add("login", UserBootstrap.USER_USERNAME);
-        connectHeaders.add("password", UserBootstrap.USER_PASSWORD);
-
-        var game = roomRepository.findByNameLike("Alpha").get().getGame();
-        Long gameId = game.getId();
-
-        mockMvc.perform(put(GameController.BASE_URL + gameId + "/join/white")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-
-        WebSocketStompClient stompClient = new WebSocketStompClient(new SockJsClient(createTransportClient()));
-        stompClient.setMessageConverter(new MappingJackson2MessageConverter());
-
-        StompSession stompSession = stompClient.connect(URL, new WebSocketHttpHeaders(), connectHeaders,
-                new StompSessionHandlerAdapter() {
-                }).get(5, SECONDS);
-
-        String address = "/app/chess/game." + gameId + ".ping";
-
-        stompSession.send(address, null);
-
-        // Waiting for service to update game in DB
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        var updatedGame = gameRepository.findById(gameId).get();
-
-        assertNotNull(updatedGame.getWhitePing());
     }
 
     private List<Transport> createTransportClient() {

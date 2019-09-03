@@ -16,7 +16,6 @@ import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
@@ -48,16 +47,26 @@ public class User extends BaseEntity implements Serializable {
     @Email
     private String email;
 
+    // @Lob Used for large objects
+    @Lob
+    private Byte[] profileImage;
+
     @Builder
     public User(Long id, LocalDateTime created, LocalDateTime updated, @NotEmpty String username,
-                @NotEmpty String password, String firstName, String lastName, @Email String email, Set<Role> roles) {
+                @NotEmpty String password, String firstName, String lastName, @Email String email,
+                Byte[] profileImage, Set<Role> roles) {
         super(id, created, updated);
         this.username = username;
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.roles = Objects.requireNonNullElseGet(roles, HashSet::new);
+        this.profileImage = profileImage;
+        if (roles == null) {
+            this.roles = new HashSet<>();
+        } else {
+            this.roles = roles;
+        }
     }
 
     public User addRole(Role role) {

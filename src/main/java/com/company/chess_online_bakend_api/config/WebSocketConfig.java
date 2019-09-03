@@ -1,12 +1,8 @@
 /*
- * 8/31/19, 7:17 PM. Updated by Bartosz Kruba.
- */
-
-/*
  * 7/27/19 4:11 PM. Updated by Bartosz Kruba.
  */
 
-package com.company.chess_online_bakend_api.config.socket;
+package com.company.chess_online_bakend_api.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,13 +26,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        log.info("Registering web socket endpoints: ");
-
-        log.info("- /chess");
-        registry.addEndpoint("/chess").setAllowedOrigins("*");
-        log.info("- /chess with SockJS");
-        registry.addEndpoint("/chess").setAllowedOrigins("*")
-                .withSockJS();
+        registry.addEndpoint("/ws").setAllowedOrigins("*").withSockJS();
+        registry.addEndpoint("/ws").setAllowedOrigins("*");
     }
 
     @Override
@@ -49,7 +40,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 .setClientLogin(username)
                 .setClientPasscode(password);
 
-        log.info("Application destination prefixes: /app");
         registry.setApplicationDestinationPrefixes("/app");
     }
 }

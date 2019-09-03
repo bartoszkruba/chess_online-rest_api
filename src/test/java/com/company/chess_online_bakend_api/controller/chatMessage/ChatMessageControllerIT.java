@@ -4,7 +4,7 @@
 
 package com.company.chess_online_bakend_api.controller.chatMessage;
 
-import com.company.chess_online_bakend_api.bootstrap.dev.DeleteSessionsBootstrap;
+import com.company.chess_online_bakend_api.bootstrap.dev.DeleteSessionBootstrap;
 import com.company.chess_online_bakend_api.bootstrap.dev.UserBootstrap;
 import com.company.chess_online_bakend_api.controller.AbstractRestControllerTest;
 import com.company.chess_online_bakend_api.controller.RoomController;
@@ -38,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ChatMessageControllerIT extends AbstractRestControllerTest {
 
     @Autowired
-    private DeleteSessionsBootstrap deleteSessionsBootstrap;
+    private DeleteSessionBootstrap deleteSessionBootstrap;
 
     @Autowired
     private RoomRepository roomRepository;
@@ -66,7 +66,7 @@ public class ChatMessageControllerIT extends AbstractRestControllerTest {
     void tearDown() throws Exception {
         userRepository.deleteAll();
         roomRepository.deleteAll();
-        deleteSessionsBootstrap.run();
+        deleteSessionBootstrap.run();
     }
 
     @Test

@@ -13,7 +13,6 @@
 package com.company.chess_online_bakend_api.data.command;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,6 +25,5 @@ import lombok.NoArgsConstructor;
 @Builder
 public class CountCommand {
 
-    @ApiModelProperty(value = "Collection count")
     private Long count;
 }

@@ -11,7 +11,10 @@ package com.company.chess_online_bakend_api.data.model;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -22,9 +25,6 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 public class Board extends BaseEntity {
-
-    @Version
-    private Long version;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Piece> pieces;

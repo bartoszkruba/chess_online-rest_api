@@ -74,8 +74,6 @@ public class GameController {
     public GameCommand joinGame(@PathVariable Long id, @PathVariable PieceColor color, Principal principal) {
         log.debug("New request: PUT " + BASE_URL + id + "/join/" + color);
 
-        log.debug("******* " + principal);
-
         return gameService.joinGame(color, principal.getName(), id);
     }
 

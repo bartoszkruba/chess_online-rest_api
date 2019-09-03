@@ -9,7 +9,6 @@
 package com.company.chess_online_bakend_api.controller;
 
 import com.company.chess_online_bakend_api.data.command.ChatMessageCommand;
-import com.company.chess_online_bakend_api.data.command.ChatMessagePageCommand;
 import com.company.chess_online_bakend_api.data.command.CountCommand;
 import com.company.chess_online_bakend_api.service.ChatMessageService;
 import io.swagger.annotations.ApiOperation;
@@ -21,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.security.Principal;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -49,7 +49,7 @@ public class ChatMessageController {
     @GetMapping({RoomController.BASE_URL + "{id}/message/page/{page}",
             RoomController.BASE_URL + "{id}/message/page/{page}/"})
     @ResponseStatus(HttpStatus.OK)
-    public ChatMessagePageCommand getMessagePageForRoom(@PathVariable Long id, @PathVariable int page) {
+    public List<ChatMessageCommand> getMessagePageForRoom(@PathVariable Long id, @PathVariable int page) {
         log.debug("New request: Get " + RoomController.BASE_URL + id + "/message/page/" + page);
 
         return chatMessageService.getMessagePageForRoom(id, page);

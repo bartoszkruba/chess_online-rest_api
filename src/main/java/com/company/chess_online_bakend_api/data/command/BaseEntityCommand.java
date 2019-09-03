@@ -8,7 +8,6 @@
 
 package com.company.chess_online_bakend_api.data.command;
 
-import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,7 +16,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public abstract class BaseEntityCommand {
-
-    @ApiModelProperty(value = "Objects id")
     private Long id;
 }

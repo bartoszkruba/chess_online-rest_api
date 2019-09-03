@@ -121,14 +121,13 @@ class RoomServiceJpaImplTest {
         Pageable pageRequest = PageRequest.of(0, 10, Sort.by("name").ascending());
         when(roomRepository.findAll(pageRequest)).thenReturn(roomsPage);
 
-        Set<RoomCommand> roomList = roomService.getRoomPage(0).getRooms();
+        Set<RoomCommand> roomList = roomService.getRoomPage(0);
 
         assertEquals(2, roomList.size());
         assertTrue(roomList.contains(ROOMCOMMAND1_WITHOUT_GAME));
         assertTrue(roomList.contains(ROOMCOMMAND2_WITHOUT_GAME));
 
         verify(roomRepository, times(1)).findAll(pageRequest);
-        verify(roomRepository, times(1)).count();
         verifyNoMoreInteractions(roomRepository);
     }
 
