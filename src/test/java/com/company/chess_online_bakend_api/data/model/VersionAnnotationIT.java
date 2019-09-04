@@ -49,7 +49,7 @@ public class VersionAnnotationIT {
 
     @Test
     void gameVersionAnnotationTest() {
-        var room = roomRepository.findByNameLike("Alpha").orElseThrow(() -> new RuntimeException("No room found"));
+        var room = roomRepository.findByNameLike("Room 1").orElseThrow(() -> new RuntimeException("No room found"));
         var game = gameRepository.findGameByRoom(room).orElseThrow(() -> new RuntimeException("No game found"));
 
         game.setFenNotation("ddd");
@@ -61,7 +61,7 @@ public class VersionAnnotationIT {
 
     @Test
     void roomVersionAnnotationTest() {
-        var room = roomRepository.findByNameLike("Alpha").orElseThrow(() -> new RuntimeException("No room found"));
+        var room = roomRepository.findByNameLike("Room 1").orElseThrow(() -> new RuntimeException("No room found"));
 
         room.setName("dddd");
         roomRepository.save(room);
