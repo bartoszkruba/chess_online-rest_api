@@ -400,7 +400,7 @@ class SocketServiceImplIT {
     void pingWhiteNotAuthorized() throws Exception {
         StompHeaders connectHeaders = new StompHeaders();
 
-        var game = roomRepository.findByNameLike("Alpha").get().getGame();
+        var game = roomRepository.findByNameLike("Room 1").get().getGame();
         Long gameId = game.getId();
 
         mockMvc.perform(put(GameController.BASE_URL + gameId + "/join/white")
@@ -437,7 +437,7 @@ class SocketServiceImplIT {
         connectHeaders.add("login", UserBootstrap.USER_USERNAME);
         connectHeaders.add("password", UserBootstrap.USER_PASSWORD);
 
-        var game = roomRepository.findByNameLike("Alpha").get().getGame();
+        var game = roomRepository.findByNameLike("Room 1").get().getGame();
         Long gameId = game.getId();
 
         mockMvc.perform(put(GameController.BASE_URL + gameId + "/join/white")

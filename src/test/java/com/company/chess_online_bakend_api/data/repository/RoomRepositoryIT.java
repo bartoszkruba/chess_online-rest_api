@@ -36,12 +36,13 @@ class RoomRepositoryIT {
 
     @Autowired
     RoomRepository roomRepository;
+    @Autowired
+    RoomBootstrap roomBootstrap;
 
 
     @BeforeEach
     void setUp() throws Exception {
-
-        roomRepository.deleteAll();
+        roomBootstrap.run();
 
         RoomBootstrap roomBootstrap = new RoomBootstrap(roomRepository);
         roomBootstrap.run();
@@ -54,15 +55,15 @@ class RoomRepositoryIT {
 
     @Test
     void findByName() {
-        Optional<Room> roomOptional = roomRepository.findByNameLike("Alpha");
+        Optional<Room> roomOptional = roomRepository.findByNameLike("Room 1");
 
-        assertEquals("Alpha", roomOptional.get().getName());
+        assertEquals("Room 1", roomOptional.get().getName());
     }
 
     @Test
     @Transactional
     void findByGame() {
-        Room room = roomRepository.findByNameLike("Alpha").get();
+        Room room = roomRepository.findByNameLike("Room 1").get();
 
         Room foundRoom = roomRepository.findRoomByGame(room.getGame()).get();
 
@@ -83,7 +84,7 @@ class RoomRepositoryIT {
 
         assertEquals(5, rooms.get().count());
         Optional<Room> roomOptional = rooms.stream()
-                .filter(r -> r.getName().equals("Alpha"))
+                .filter(r -> r.getName().equals("Room 1"))
                 .findFirst();
         assertTrue(roomOptional.isPresent());
     }

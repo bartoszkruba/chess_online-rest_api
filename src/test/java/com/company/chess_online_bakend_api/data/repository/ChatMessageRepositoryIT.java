@@ -60,7 +60,7 @@ class ChatMessageRepositoryIT {
 
         ChatMessage chatMessage3 = ChatMessage.builder().message("message3").build();
 
-        Room room = Room.builder().name("Alpha").build();
+        Room room = Room.builder().name("Room 1").build();
 
         room.addChatMessage(chatMessage1);
         room.addChatMessage(chatMessage2);
@@ -91,7 +91,7 @@ class ChatMessageRepositoryIT {
 
         ChatMessage chatMessage3 = ChatMessage.builder().message("message3").build();
 
-        Room room = Room.builder().name("Alpha").build();
+        Room room = Room.builder().name("Room 1").build();
 
         room.addChatMessage(chatMessage1);
         room.addChatMessage(chatMessage2);

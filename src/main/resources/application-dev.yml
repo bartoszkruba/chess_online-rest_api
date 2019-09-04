@@ -1,3 +1,5 @@
+rooms: 20
+
 spring:
   jpa:
     show-sql: false

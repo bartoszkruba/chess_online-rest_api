@@ -113,7 +113,7 @@ public class RoomControllerIT extends AbstractRestControllerTest {
     void createNewRoomNameAlreadyExists() throws Exception {
         mockMvc.perform(post(RoomController.BASE_URL)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(RoomCommand.builder().name("Alpha").build())))
+                .content(asJsonString(RoomCommand.builder().name("Room 1").build())))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status", Matchers.equalTo(400)))
                 .andExpect(jsonPath("$.errors.name[0]", Matchers.equalTo(UniqueRoomNameConstraint.ERROR_MESSAGE)))
@@ -149,7 +149,7 @@ public class RoomControllerIT extends AbstractRestControllerTest {
     @Test
     @WithMockUser(authorities = UserBootstrap.ROLE_ADMIN)
     void deleteRoomLoggedInAsAdmin() throws Exception {
-        mockMvc.perform(delete(RoomController.BASE_URL + roomRepository.findByNameLike("Alpha").get().getId())
+        mockMvc.perform(delete(RoomController.BASE_URL + roomRepository.findByNameLike("Room 1").get().getId())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
