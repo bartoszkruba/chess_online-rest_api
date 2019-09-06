@@ -1,0 +1,12 @@
+language: java
+jdk: openjdk11
+
+services:
+  - rabbitmq
+  - mysql
+
+before_install:
+  - mysql -e 'CREATE DATABASE chess_online_dev;'
+
+script:
+  - ./mvnw clean integration-test
