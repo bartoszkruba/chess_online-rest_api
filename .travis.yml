@@ -6,7 +6,7 @@ services:
   - mysql
 
 before_install:
-  - mysql -u root -e 'UPDATE user SET password=PASSWORD('password') WHERE user='root';\nFLUSH PRIVILEGES;'
+  - mysql -u root -e 'USE mysql;\n UPDATE user SET password=PASSWORD('password') WHERE user='root';\nFLUSH PRIVILEGES;'
   - mysql -u root -e 'CREATE DATABASE chess_online_dev;'
 
 script:
