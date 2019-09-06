@@ -36,7 +36,7 @@ public class DeleteSessionsBootstrap implements CommandLineRunner {
     private String URL;
     @Value("${spring.datasource.username}")
     private String USERNAME;
-    @Value("${spring.datasource.password}")
+    @Value("${spring.datasource.password:}")
     private String PASSWORD;
 
     @Override
