@@ -14,8 +14,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost/chess_online_prod?useSSL=false&serverTimezone=Europe/Stockholm
     username: root
-    password: password
-
+#    password: password
 
 logging:
   level:
