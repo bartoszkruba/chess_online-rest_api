@@ -7,5 +7,8 @@ services:
   - rabbitmq
   - mysql
 
+before_install:
+  - mysql -e 'CREATE DATABASE IF NOT EXISTS chess_online_dev;'
+
 script:
   - ./mvnw clean integration-test
