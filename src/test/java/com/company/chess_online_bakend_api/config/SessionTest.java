@@ -27,6 +27,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -97,8 +98,11 @@ public class SessionTest {
     private ResultSet getResultSet(String sql)
             throws SQLException {
 
+        var properties = new Properties();
+        properties.put("user", "root");
+
         Connection conn = DriverManager
-                .getConnection("jdbc:mysql://localhost/chess_online_dev?useSSL=false&serverTimezone=Europe/Stockholm", "root", "password");
+                .getConnection("jdbc:mysql://localhost/chess_online_dev?useSSL=false", properties);
         Statement stat = conn.createStatement();
         return stat.executeQuery(sql);
     }

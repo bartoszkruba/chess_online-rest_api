@@ -25,6 +25,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Properties;
 
 
 @Slf4j
@@ -47,7 +48,10 @@ public class DeleteSessionsBootstrap implements CommandLineRunner {
     private void deleteAllSessions() throws SQLException {
         log.info("Deleting old sessions.");
 
-        Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+        var properties = new Properties();
+        properties.put("user", "root");
+
+        Connection conn = DriverManager.getConnection(URL, properties);
 
         Statement statement = conn.createStatement();
         statement.execute("DELETE FROM SPRING_SESSION");

@@ -5,8 +5,19 @@ services:
   - rabbitmq
   - mysql
 
+# Making that sure right mysql version is used
+addons:
+  apt:
+    sources:
+      - mysql-5.7-trusty
+    packages:
+      - mysql-server
+
+dist: trusty
+
+sudo: required
+
 before_install:
-  - mysql -u root -e 'USE mysql;\n UPDATE user SET password=PASSWORD('password') WHERE user='root';\nFLUSH PRIVILEGES;'
   - mysql -u root -e 'CREATE DATABASE chess_online_dev;'
 
 script:
