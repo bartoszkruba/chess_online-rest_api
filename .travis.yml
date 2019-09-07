@@ -7,8 +7,15 @@ services:
   - rabbitmq
   - mysql
 
+addons:
+  sonarcloud:
+    organization: "bartoszkruba-github"
+    token:
+      secure: $SONARCLOUD_TOKEN
+
 before_install:
   - mysql -e 'CREATE DATABASE IF NOT EXISTS chess_online_dev;'
 
 script:
-  - ./mvnw clean integration-test
+  #  - ./mvnw clean integration-test
+  - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar
