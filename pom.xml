@@ -206,40 +206,19 @@
                     </excludes>
                 </configuration>
                 <executions>
-                    <!-- Prepares the property pointing to the JaCoCo
-                    runtime agent which is passed as VM argument when Maven the Surefire plugin
-                    is executed. -->
                     <execution>
-                        <id>pre-unit-test</id>
+                        <id>prepare-agent</id>
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
                     </execution>
-                    <!-- Ensures that the code coverage report for
-                    unit tests is created after unit tests have been run. -->
                     <execution>
-                        <id>post-unit-test</id>
-                        <phase>test</phase>
+                        <id>report</id>
                         <goals>
                             <goal>report</goal>
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.eluder.coveralls</groupId>
-                <artifactId>coveralls-maven-plugin</artifactId>
-                <version>${build-plugin.coveralls.version}</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>javax.xml.bind</groupId>
-                        <artifactId>jaxb-api</artifactId>
-                        <version>2.2.3</version>
-                    </dependency>
-                </dependencies>
-                <configuration>
-                    <repoToken>ARRS1euTkYY5uUyChT7v4I01aRLFD8tU2</repoToken>
-                </configuration>
             </plugin>
 
             <!--            Fabric8-->
