@@ -25,19 +25,20 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Properties;
 
 
 @Slf4j
 @Component
 @Profile("dev")
-public class DeleteSessionBootstrap implements CommandLineRunner {
+public class DeleteSessionsBootstrap implements CommandLineRunner {
 
     @Value("${spring.datasource.url}")
-    public String URL;
+    private String URL;
     @Value("${spring.datasource.username}")
-    public String USERNAME;
-    @Value("${spring.datasource.password}")
-    public String PASSWORD;
+    private String USERNAME;
+    @Value("${spring.datasource.password:}")
+    private String PASSWORD;
 
     @Override
     public void run(String... args) throws Exception {
@@ -47,7 +48,10 @@ public class DeleteSessionBootstrap implements CommandLineRunner {
     private void deleteAllSessions() throws SQLException {
         log.info("Deleting old sessions.");
 
-        Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+        var properties = new Properties();
+        properties.put("user", "root");
+
+        Connection conn = DriverManager.getConnection(URL, properties);
 
         Statement statement = conn.createStatement();
         statement.execute("DELETE FROM SPRING_SESSION");

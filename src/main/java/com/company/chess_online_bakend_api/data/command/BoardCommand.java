@@ -9,6 +9,7 @@
 package com.company.chess_online_bakend_api.data.command;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
 import java.util.HashSet;
@@ -22,6 +23,7 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class BoardCommand extends BaseEntityCommand {
 
+    @ApiModelProperty(value = "List with all boards pieces")
     Set<PieceCommand> pieces;
 
     @Builder

@@ -8,7 +8,7 @@
 
 package com.company.chess_online_bakend_api.config;
 
-import com.company.chess_online_bakend_api.bootstrap.dev.DeleteSessionBootstrap;
+import com.company.chess_online_bakend_api.bootstrap.dev.DeleteSessionsBootstrap;
 import com.company.chess_online_bakend_api.bootstrap.dev.UserBootstrap;
 import com.company.chess_online_bakend_api.controller.AuthenticationController;
 import com.company.chess_online_bakend_api.data.repository.RoleRepository;
@@ -27,6 +27,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -37,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class SessionTest {
 
     @Autowired
-    DeleteSessionBootstrap deleteSessionBootstrap;
+    DeleteSessionsBootstrap deleteSessionsBootstrap;
 
     @Autowired
     UserBootstrap userBootstrap;
@@ -50,14 +51,14 @@ public class SessionTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        deleteSessionBootstrap.run();
+        deleteSessionsBootstrap.run();
         userBootstrap.onApplicationEvent(null);
 
     }
 
     @AfterEach
     void tearDown() throws Exception {
-        deleteSessionBootstrap.run();
+        deleteSessionsBootstrap.run();
         userRepository.deleteAll();
         roleRepository.deleteAll();
     }
@@ -97,8 +98,11 @@ public class SessionTest {
     private ResultSet getResultSet(String sql)
             throws SQLException {
 
+        var properties = new Properties();
+        properties.put("user", "root");
+
         Connection conn = DriverManager
-                .getConnection("jdbc:mysql://localhost/chess_online_dev?useSSL=false&serverTimezone=Europe/Stockholm", "root", "password");
+                .getConnection("jdbc:mysql://localhost/chess_online_dev?useSSL=false", properties);
         Statement stat = conn.createStatement();
         return stat.executeQuery(sql);
     }

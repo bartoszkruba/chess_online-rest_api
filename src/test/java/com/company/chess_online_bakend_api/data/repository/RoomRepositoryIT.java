@@ -9,7 +9,6 @@
 package com.company.chess_online_bakend_api.data.repository;
 
 import com.company.chess_online_bakend_api.bootstrap.dev.RoomBootstrap;
-import com.company.chess_online_bakend_api.data.model.Game;
 import com.company.chess_online_bakend_api.data.model.Room;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,15 +31,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
+@ActiveProfiles("dev")
 class RoomRepositoryIT {
 
     @Autowired
     RoomRepository roomRepository;
+    @Autowired
+    RoomBootstrap roomBootstrap;
+
 
     @BeforeEach
     void setUp() throws Exception {
-
-        roomRepository.deleteAll();
+        roomBootstrap.run();
 
         RoomBootstrap roomBootstrap = new RoomBootstrap(roomRepository);
         roomBootstrap.run();
@@ -52,17 +55,17 @@ class RoomRepositoryIT {
 
     @Test
     void findByName() {
-        Optional<Room> roomOptional = roomRepository.findByNameLike("Alpha");
+        Optional<Room> roomOptional = roomRepository.findByNameLike("Room 1");
 
-        assertEquals("Alpha", roomOptional.get().getName());
+        assertEquals("Room 1", roomOptional.get().getName());
     }
 
     @Test
     @Transactional
     void findByGame() {
-        Room room = roomRepository.findByNameLike("Alpha").get();
+        Room room = roomRepository.findByNameLike("Room 1").get();
 
-        Room foundRoom = roomRepository.findRoomByGame(Game.builder().id(room.getGame().getId()).build()).get();
+        Room foundRoom = roomRepository.findRoomByGame(room.getGame()).get();
 
         assertEquals(room, foundRoom);
     }
@@ -81,7 +84,7 @@ class RoomRepositoryIT {
 
         assertEquals(5, rooms.get().count());
         Optional<Room> roomOptional = rooms.stream()
-                .filter(r -> r.getName().equals("Alpha"))
+                .filter(r -> r.getName().equals("Room 1"))
                 .findFirst();
         assertTrue(roomOptional.isPresent());
     }

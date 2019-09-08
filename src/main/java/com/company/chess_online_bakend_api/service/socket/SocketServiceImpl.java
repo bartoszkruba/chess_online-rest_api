@@ -12,6 +12,7 @@ import com.company.chess_online_bakend_api.data.converter.notification.chatMessa
 import com.company.chess_online_bakend_api.data.converter.notification.move.MoveToMoveNotification;
 import com.company.chess_online_bakend_api.data.converter.notification.user.UserToUserNotification;
 import com.company.chess_online_bakend_api.data.model.ChatMessage;
+import com.company.chess_online_bakend_api.data.model.Game;
 import com.company.chess_online_bakend_api.data.model.Move;
 import com.company.chess_online_bakend_api.data.model.User;
 import com.company.chess_online_bakend_api.data.model.enums.PieceColor;
@@ -19,14 +20,20 @@ import com.company.chess_online_bakend_api.data.notification.GameOverNotificatio
 import com.company.chess_online_bakend_api.data.notification.JoinGameNotification;
 import com.company.chess_online_bakend_api.data.notification.LeaveGameNotification;
 import com.company.chess_online_bakend_api.data.notification.enums.GameOverCause;
+import com.company.chess_online_bakend_api.data.repository.GameRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.Optional;
+
 @Slf4j
 @Service
 public class SocketServiceImpl implements SocketService {
+
+    private final GameRepository gameRepository;
 
     private final UserToUserNotification userToUserNotification;
     private final ChatMessageToChatNotification chatMessageToChatNotification;
@@ -34,10 +41,11 @@ public class SocketServiceImpl implements SocketService {
 
     private final SimpMessageSendingOperations messagingTemplate;
 
-    public SocketServiceImpl(UserToUserNotification userToUserNotification,
+    public SocketServiceImpl(GameRepository gameRepository, UserToUserNotification userToUserNotification,
                              ChatMessageToChatNotification chatMessageToChatNotification,
                              MoveToMoveNotification moveToMoveNotification,
                              SimpMessageSendingOperations messagingTemplate) {
+        this.gameRepository = gameRepository;
         this.userToUserNotification = userToUserNotification;
         this.chatMessageToChatNotification = chatMessageToChatNotification;
         this.moveToMoveNotification = moveToMoveNotification;
@@ -190,5 +198,36 @@ public class SocketServiceImpl implements SocketService {
                 .build();
 
         messagingTemplate.convertAndSend(channel, gameOverNotification);
+    }
+
+    @Override
+//    @Async
+    public void updatePlayerPingInGame(Long gameId, String username) {
+        log.debug("Updating ping in game: " + gameId + ", principal: " + username);
+        if (username == null || gameId == null) return;
+        Optional<Game> gameOptional = gameRepository.findById(gameId);
+
+        if (gameOptional.isEmpty()) {
+            log.debug("Game not found");
+            return;
+        }
+        var game = gameOptional.get();
+
+//        if (game.getStatus() != GameStatus.STARTED) {
+//            log.debug("Game not started");
+//            return;
+//        }
+
+        if (game.getWhitePlayer() != null && username.equals(game.getWhitePlayer().getUsername())) {
+            log.debug("Updating white ping");
+            game.setWhitePing(LocalDateTime.now());
+            gameRepository.save(game);
+        } else if (game.getBlackPlayer() != null && username.equals(game.getBlackPlayer().getUsername())) {
+            log.debug("Updating black ping");
+            game.setBlackPing(LocalDateTime.now());
+            gameRepository.save(game);
+        } else {
+            log.debug("Player not in game");
+        }
     }
 }

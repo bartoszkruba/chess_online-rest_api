@@ -9,6 +9,7 @@
 package com.company.chess_online_bakend_api.service.jpa;
 
 import com.company.chess_online_bakend_api.data.command.RoomCommand;
+import com.company.chess_online_bakend_api.data.command.RoomPageCommand;
 import com.company.chess_online_bakend_api.data.converter.command.room.RoomCommandToRoom;
 import com.company.chess_online_bakend_api.data.converter.command.room.RoomToRoomCommand;
 import com.company.chess_online_bakend_api.data.model.Room;
@@ -20,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -52,17 +52,16 @@ public class RoomServiceJpaImpl implements RoomService {
     }
 
     @Override
-    public Set<RoomCommand> getRoomPage(int page) {
+    public RoomPageCommand getRoomPage(int page) {
         log.debug("Getting room page " + page);
 
-        Pageable pageRequest = PageRequest.of(page, 10, Sort.by("name").ascending());
-        Page<Room> roomPage = roomRepository.findAll(pageRequest);
-        return roomPage.get()
-                // Don't want to send room with game and board
-                // and all pieces etc if we just gonna send list with rooms.
-                .map(roomToRoomCommand::convertWithoutGame)
-                .peek(System.out::println)
-                .collect(Collectors.toSet());
+        Page<Room> roomPage = roomRepository.findAll(PageRequest.of(page, 10, Sort.by("name").ascending()));
+
+        // Don't want to send room with game and board
+        // and all pieces etc if we just gonna send list with rooms.
+        var rooms = roomPage.get().map(roomToRoomCommand::convertWithoutGame).collect(Collectors.toSet());
+
+        return RoomPageCommand.builder().page(page).rooms(rooms).totalRooms(getRoomCount()).build();
     }
 
     @Override

@@ -1,0 +1,22 @@
+language: java
+jdk: openjdk11
+
+dist: bionic
+
+services:
+  - rabbitmq
+  - mysql
+
+addons:
+  sonarcloud:
+    organization: "bartoszkruba-github"
+    token:
+      secure: "IN9FdnV1BSaDNZX/OxpDS/crYgMPdO3aHzpA0gLgeaq0oZoUTv6xm+9k6wL6QDg0d1A9ZanfyHJ/NcXkHxnfM6riyoC8XBi/3H6WJpBWTDfLdYTwgyUgikZWFvthFoYwWSyaZYHoCsGUxlb2uG6BpFVwaQsJRKQU9ew1gTzyG/aXb/07cZiT1xUrTFyD4s80m50ty5v9Epf7MIrmWf+ZVbTWKdpkd7z9q5ErxuSgVXlqzQgAgypKo2KovP7yh1Y0dqbXSO+9TTk08XfCE1UxQyqvKRnHQb/Kja/hAYJZe46B2mGq7xpDe7DFpfgRX3jPBVPsyoCs+Ww4H7W9Z2tSqEPJ3qex8dT76TXiojuSdSG57lmpC4EJqkzvlSVBVkZDIaZ26yFb4vMiZYVKK0KY3AuilbQBgtE7oFQFMYJKN4W1qVKJehpHK4p6pq+hz4IZ3S+xA3ip+t1AVkT5g4jTyfJrdTIp7uL0ZNllhkOwTn5gRelA+iZjTv67UesAJcCof6/+S3lYXKXhWaO15vsSTfUS+sbTRN2wB9X/vwjwf3nbIPFY4Obh5AerYVg5EIf96EjU+BZJBfAKyR59rNnJ6Qod4UxnDsJcN8y/8mevS8heAass+uUjdlQhMF+jw0CG8zRJXG4qM5gKMnAhMd4s0L/NybzXxMFMPxrb1q3chEU="
+
+
+before_install:
+  - mysql -e 'CREATE DATABASE IF NOT EXISTS chess_online_dev;'
+
+script:
+  #  - ./mvnw clean integration-test
+  - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar

@@ -94,7 +94,7 @@ public class GameControllerIT extends AbstractRestControllerTest {
     void joinGameAsAdmin() throws Exception {
 
         Long userId = userRepository.findByUsernameLike(UserBootstrap.ADMIN_USERNAME).get().getId();
-        Long gameId = roomRepository.findByNameLike("Alpha").get().getGame().getId();
+        Long gameId = roomRepository.findByNameLike("Room 1").get().getGame().getId();
 
         String url = GameController.BASE_URL + gameId + "/join/white";
 
@@ -110,7 +110,7 @@ public class GameControllerIT extends AbstractRestControllerTest {
     void joinGameAsUser() throws Exception {
 
         Long userId = userRepository.findByUsernameLike(UserBootstrap.USER_USERNAME).get().getId();
-        Long gameId = roomRepository.findByNameLike("Alpha").get().getGame().getId();
+        Long gameId = roomRepository.findByNameLike("Room 1").get().getGame().getId();
 
         String url = GameController.BASE_URL + gameId + "/join/BLACK";
 
@@ -144,7 +144,7 @@ public class GameControllerIT extends AbstractRestControllerTest {
     @WithMockUser(username = "invalid username", authorities = UserBootstrap.ROLE_USER)
     void joinGameUsernameNotFound() throws Exception {
         Long userId = userRepository.findByUsernameLike(UserBootstrap.USER_USERNAME).get().getId();
-        Long gameId = roomRepository.findByNameLike("Alpha").get().getGame().getId();
+        Long gameId = roomRepository.findByNameLike("Room 1").get().getGame().getId();
 
         String url = GameController.BASE_URL + gameId + "/join/BLACK";
 
@@ -167,7 +167,7 @@ public class GameControllerIT extends AbstractRestControllerTest {
     void leaveGameLoggedAsUser() throws Exception {
 
         User user = userRepository.findByUsernameLike(UserBootstrap.USER_USERNAME).get();
-        Room room = roomRepository.findByNameLike("Alpha").get();
+        Room room = roomRepository.findByNameLike("Room 1").get();
         Game game = room.getGame();
         Long gameId = game.getId();
 
@@ -189,7 +189,7 @@ public class GameControllerIT extends AbstractRestControllerTest {
     @WithMockUser(username = UserBootstrap.ADMIN_USERNAME, authorities = UserBootstrap.ROLE_ADMIN)
     void leaveGameLoggedAsAdmin() throws Exception {
         User user = userRepository.findByUsernameLike(UserBootstrap.ADMIN_USERNAME).get();
-        Room room = roomRepository.findByNameLike("Alpha").get();
+        Room room = roomRepository.findByNameLike("Room 1").get();
         Game game = room.getGame();
         Long gameId = game.getId();
 
@@ -281,7 +281,7 @@ public class GameControllerIT extends AbstractRestControllerTest {
     @Test
     @WithMockUser(username = UserBootstrap.USER_USERNAME)
     void performMoveAsUser() throws Exception {
-        Long gameId = roomRepository.findByNameLike("Alpha").get().getGame().getId();
+        Long gameId = roomRepository.findByNameLike("Room 1").get().getGame().getId();
 
         String from = "d2";
         String to = "d3";
@@ -310,7 +310,7 @@ public class GameControllerIT extends AbstractRestControllerTest {
     @Test
     @WithMockUser(username = UserBootstrap.ADMIN_USERNAME)
     void performMoveAsAdmin() throws Exception {
-        Long gameId = roomRepository.findByNameLike("Alpha").get().getGame().getId();
+        Long gameId = roomRepository.findByNameLike("Room 1").get().getGame().getId();
 
         String from = "d2";
         String to = "d3";

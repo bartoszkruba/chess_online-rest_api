@@ -35,19 +35,19 @@ import static org.mockito.Mockito.*;
 class RoomServiceJpaImplTest {
 
     private final Long COUNT = 10L;
-    private final Room ROOM1 = Room.builder().name("Alpha").id(1L).build();
-    private final Room ROOM2 = Room.builder().name("Beta").id(2L).build();
+    private final Room ROOM1 = Room.builder().name("Room 1").id(1L).build();
+    private final Room ROOM2 = Room.builder().name("Room 2").id(2L).build();
 
-    private final RoomCommand ROOMCOMMAND1 = RoomCommand.builder().name("Alpha").id(1L).build();
-    private final RoomCommand ROOMCOMMAND2 = RoomCommand.builder().name("Beta").id(2L).build();
+    private final RoomCommand ROOMCOMMAND1 = RoomCommand.builder().name("Room 1").id(1L).build();
+    private final RoomCommand ROOMCOMMAND2 = RoomCommand.builder().name("Room 2").id(2L).build();
 
     private final RoomCommand ROOMCOMMAND1_WITHOUT_GAME = RoomCommand.builder()
-            .name("Alpha")
+            .name("Room 1")
             .gameStatus(GameStatus.WAITNG_TO_START)
             .id(1L).build();
 
     private final RoomCommand ROOMCOMMAND2_WITHOUT_GAME = RoomCommand.builder()
-            .name("Beta")
+            .name("Room 2")
             .gameStatus(GameStatus.WAITNG_TO_START)
             .id(1L).build();
 
@@ -121,13 +121,14 @@ class RoomServiceJpaImplTest {
         Pageable pageRequest = PageRequest.of(0, 10, Sort.by("name").ascending());
         when(roomRepository.findAll(pageRequest)).thenReturn(roomsPage);
 
-        Set<RoomCommand> roomList = roomService.getRoomPage(0);
+        Set<RoomCommand> roomList = roomService.getRoomPage(0).getRooms();
 
         assertEquals(2, roomList.size());
         assertTrue(roomList.contains(ROOMCOMMAND1_WITHOUT_GAME));
         assertTrue(roomList.contains(ROOMCOMMAND2_WITHOUT_GAME));
 
         verify(roomRepository, times(1)).findAll(pageRequest);
+        verify(roomRepository, times(1)).count();
         verifyNoMoreInteractions(roomRepository);
     }
 

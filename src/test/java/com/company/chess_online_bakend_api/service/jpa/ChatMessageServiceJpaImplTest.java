@@ -119,7 +119,7 @@ class ChatMessageServiceJpaImplTest {
         List<ChatMessage> messages = Arrays.asList(chatMessage1, chatMessage2);
         Page messagesPage = new PageImpl(messages);
 
-        var room = Room.builder().id(1L).build();
+        var room = Room.builder().id(1L).chatMessages(Arrays.asList(chatMessage1, chatMessage2)).build();
 
         when(roomRepository.findById(1L)).thenReturn(Optional.of(room));
         when(chatMessageRepository.findByRoom(any(), any())).thenReturn(messagesPage);
@@ -129,7 +129,9 @@ class ChatMessageServiceJpaImplTest {
         when(chatMessageToChatMessageCommand.convert(chatMessage2))
                 .thenReturn(ChatMessageCommand.builder().id(2L).build());
 
-        List<ChatMessageCommand> messageCommands = chatMessageService.getMessagePageForRoom(1L, 0);
+        List<ChatMessageCommand> messageCommands = chatMessageService
+                .getMessagePageForRoom(1L, 0)
+                .getMessages();
 
         assertEquals(2, messageCommands.size());
         assertEquals(Long.valueOf(1), messageCommands.get(0).getId());
