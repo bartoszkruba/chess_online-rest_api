@@ -1,5 +1,5 @@
 # Chess Online - REST API
-[![CircleCI](https://circleci.com/gh/bartoszkruba/chess_online-rest_api/tree/master.svg?style=svg)](https://circleci.com/gh/bartoszkruba/chess_online-rest_api/tree/master) 
+[![Build Status](https://travis-ci.org/bartoszkruba/chess_online-rest_api.svg?branch=master)](https://travis-ci.org/bartoszkruba/chess_online-rest_api) 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=com.company%3Achess_online_rest_api&metric=alert_status)](https://sonarcloud.io/dashboard?id=com.company%3Achess_online_rest_api)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=com.company%3Achess_online_rest_api&metric=coverage)](https://sonarcloud.io/dashboard?id=com.company%3Achess_online_rest_api)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=com.company%3Achess_online_rest_api&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=com.company%3Achess_online_rest_api)
