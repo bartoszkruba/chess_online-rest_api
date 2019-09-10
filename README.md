@@ -1,6 +1,8 @@
 # Chess Online - REST API
 [![CircleCI](https://circleci.com/gh/bartoszkruba/chess_online-rest_api/tree/master.svg?style=svg)](https://circleci.com/gh/bartoszkruba/chess_online-rest_api/tree/master) 
-[![Coverage Status](https://coveralls.io/repos/github/bartoszkruba/chess_online-backend_api/badge.svg?branch=master)](https://coveralls.io/github/bartoszkruba/chess_online-backend_api?branch=master)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=com.company%3Achess_online_rest_api&metric=alert_status)](https://sonarcloud.io/dashboard?id=com.company%3Achess_online_rest_api)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=com.company%3Achess_online_rest_api&metric=coverage)](https://sonarcloud.io/dashboard?id=com.company%3Achess_online_rest_api)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=com.company%3Achess_online_rest_api&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=com.company%3Achess_online_rest_api)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 
 REST API server for chess online web app written in Java using Spring Boot and MYSQL for data storage. 
