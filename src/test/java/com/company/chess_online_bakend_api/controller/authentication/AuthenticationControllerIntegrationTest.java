@@ -41,7 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("dev")
-public class AuthenticationControllerIT extends AbstractRestControllerTest {
+public class AuthenticationControllerIntegrationTest extends AbstractRestControllerTest {
     private MockMvc mockMvc;
 
     private final Long ID = 1L;

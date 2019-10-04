@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @ActiveProfiles("dev")
-class ChatMessageRepositoryIT {
+class ChatMessageRepositoryIntegrationTest {
 
     @Autowired
     ChatMessageRepository chatMessageRepository;

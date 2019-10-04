@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @ActiveProfiles("dev")
-class RoomRepositoryIT {
+class RoomRepositoryIntegrationTest {
 
     @Autowired
     RoomRepository roomRepository;
@@ -42,9 +42,6 @@ class RoomRepositoryIT {
 
     @BeforeEach
     void setUp() throws Exception {
-        roomBootstrap.run();
-
-        RoomBootstrap roomBootstrap = new RoomBootstrap(roomRepository);
         roomBootstrap.run();
     }
 

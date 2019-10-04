@@ -35,7 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("dev")
-public class ChatMessageControllerIT extends AbstractRestControllerTest {
+public class ChatMessageControllerIntegrationTest extends AbstractRestControllerTest {
 
     @Autowired
     private DeleteSessionsBootstrap deleteSessionsBootstrap;

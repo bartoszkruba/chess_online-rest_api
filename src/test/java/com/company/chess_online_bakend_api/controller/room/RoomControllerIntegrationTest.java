@@ -44,7 +44,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("dev")
-public class RoomControllerIT extends AbstractRestControllerTest {
+public class RoomControllerIntegrationTest extends AbstractRestControllerTest {
 
     private final Long ROOMCOMMAND1_ID = 3L;
 

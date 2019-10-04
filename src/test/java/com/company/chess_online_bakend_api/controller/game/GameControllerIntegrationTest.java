@@ -46,7 +46,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("dev")
-public class GameControllerIT extends AbstractRestControllerTest {
+public class GameControllerIntegrationTest extends AbstractRestControllerTest {
 
     MockMvc mockMvc;
 

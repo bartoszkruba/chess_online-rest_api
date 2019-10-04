@@ -10,6 +10,7 @@ package com.company.chess_online_bakend_api.data.repository;
 
 import com.company.chess_online_bakend_api.bootstrap.dev.RoomBootstrap;
 import com.company.chess_online_bakend_api.data.model.Game;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,9 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @ActiveProfiles("dev")
-public class GameRepositoryIT {
-
-    private final Long ROOM_ID = 1L;
+public class GameRepositoryIntegrationTest {
 
     @Autowired
     RoomRepository roomRepository;
@@ -36,14 +35,23 @@ public class GameRepositoryIT {
     @Autowired
     GameRepository gameRepository;
 
+    @Autowired
+    RoomBootstrap roomBootstrap;
+
     @BeforeEach
     void setUp() throws Exception {
-        RoomBootstrap roomBootstrap = new RoomBootstrap(roomRepository);
         roomBootstrap.run();
+    }
+
+    @AfterEach
+    void tearDown() {
+        roomRepository.deleteAll();
     }
 
     @Test
     void findByRoom() {
+        Long ROOM_ID = roomRepository.findByNameLike("Room 1").get().getId();
+
         var room = roomRepository.findById(ROOM_ID).orElseThrow(() -> new RuntimeException("Room not found"));
         Optional<Game> optionalGame = gameRepository.findGameByRoom(room);
 
