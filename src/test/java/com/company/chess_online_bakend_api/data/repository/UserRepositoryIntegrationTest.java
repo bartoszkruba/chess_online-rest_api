@@ -9,7 +9,7 @@
 package com.company.chess_online_bakend_api.data.repository;
 
 import com.company.chess_online_bakend_api.bootstrap.dev.UserBootstrap;
-import com.company.chess_online_bakend_api.data.model.Role;
+import com.company.chess_online_bakend_api.data.model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,13 +19,15 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @ActiveProfiles("dev")
-class RoleRepositoryIT {
+class UserRepositoryIntegrationTest {
 
     @Autowired
     RoleRepository roleRepository;
@@ -38,28 +40,23 @@ class RoleRepositoryIT {
 
     @BeforeEach
     void setUp() {
-        userRepository.deleteAll();
         roleRepository.deleteAll();
+        userRepository.deleteAll();
 
         UserBootstrap userBootstrap = new UserBootstrap(userRepository, roleRepository, bCryptPasswordEncoder);
         userBootstrap.onApplicationEvent(null);
     }
 
     @Test
-    public void testFindAdminRoleByDescription() throws Exception {
-        Role role = roleRepository.findByDescription("ROLE_ADMIN");
-        assertEquals("ROLE_ADMIN", role.getDescription());
+    public void testFindByUsername() throws Exception {
+        Optional<User> userOptional = userRepository.findByUsernameLike(UserBootstrap.USER_USERNAME);
+        assertTrue(userOptional.isPresent());
+        assertEquals(UserBootstrap.USER_USERNAME, userOptional.get().getUsername());
     }
 
     @Test
-    public void testFindUserRoleByDescription() throws Exception {
-        Role role = roleRepository.findByDescription("ROLE_USER");
-        assertEquals("ROLE_USER", role.getDescription());
-    }
-
-    @Test
-    public void findByDescriptionNoMatch() throws Exception {
-        Role role = roleRepository.findByDescription("Do not exists");
-        assertNull(role);
+    public void findByUsernameNoMatch() throws Exception {
+        Optional<User> userOptional = userRepository.findByUsernameLike("Do not exists");
+        assertTrue(userOptional.isEmpty());
     }
 }
