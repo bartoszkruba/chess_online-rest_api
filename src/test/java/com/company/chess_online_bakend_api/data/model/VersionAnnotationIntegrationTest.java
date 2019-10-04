@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("dev")
-public class VersionAnnotationIT {
+public class VersionAnnotationIntegrationTest {
 
     @Autowired
     private ChatMessageRepository chatMessageRepository;

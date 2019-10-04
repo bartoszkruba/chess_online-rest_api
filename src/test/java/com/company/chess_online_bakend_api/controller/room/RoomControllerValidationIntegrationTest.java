@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class RoomControllerValidationIT extends AbstractRestControllerTest {
+public class RoomControllerValidationIntegrationTest extends AbstractRestControllerTest {
 
     private MockMvc mockMvc;
 
