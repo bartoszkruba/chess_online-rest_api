@@ -4,7 +4,7 @@ jdk: openjdk11
 dist: bionic
 
 services:
-  - rabbitmq
+  - docker
   - mysql
 
 addons:
@@ -16,7 +16,8 @@ addons:
 
 before_install:
   - mysql -e 'CREATE DATABASE IF NOT EXISTS chess_online_dev;'
+  - docker run -d -e RABBITMQ_DEFAULT_USER=guest -e RABBITMQ_DEFAULT_PASS=guest -p 4369:4369 -p 5671:5671 -p 5672:5672 -p 15672:15672 -p 61613:61613  itzg/rabbitmq-stomp
+
 
 script:
-  #  - ./mvnw clean integration-test
   - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar
